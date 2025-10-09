@@ -1,0 +1,300 @@
+@import url('https://fonts.cdnfonts.com/css/general-sans');
+
+body {
+  font-family: 'General Sans', sans-serif !important;
+}
+
+
+
+
+
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  flex-wrap: wrap;
+}
+
+/* Left Panel */
+.login-left-panel {
+  flex: 1;
+  background: linear-gradient(127.16deg, #024729 4.67%, #7AA80F 115.48%, #9BC308 123.46%, #C1E100 128.9%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  padding: 3rem;
+}
+
+.login-left-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.login-left-content p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+/* Right Panel */
+.login-right-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fdfdfd;
+  padding: 2rem;
+}
+
+.login-form-box {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+.login-form-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: center;
+}
+
+/* Role Switch */
+.role-switch {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.role-switch button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  background: #eee;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.role-switch button.active {
+  background: #172a74;
+  color: #fff;
+}
+
+/* Form */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 0.3rem;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.form-input:focus {
+  border: 1px solid #172a74;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #2c3e50;
+
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-button:hover {
+  background: #0d1b4c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-left-panel {
+    flex: 100%;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .login-right-panel {
+    flex: 100%;
+    padding: 2rem;
+  }
+}
+
+
+
+
+
+
+.dashboard-page {
+
+
+  min-height: 100vh;
+}
+
+.dashboard-header h3 {
+  color: #343a40;
+}
+
+.dashboard-card {
+  border-radius: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.dashboard-graph {
+  border-radius: 15px;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* src/styles/custom.css */
+
+/* Variables and General Reset */
+:root {
+    --primary-color: #007bff; /* Bootstrap primary for consistency */
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --sidebar-bg: #2c3e50; /* Darker, professional sidebar */
+    --sidebar-text: #ecf0f1;
+    --sidebar-hover-bg: #34495e;
+    --topbar-height: 56px;
+    --content-bg: #f8f9fa; /* Light background for main content */
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+body {
+    font-family: 'Inter', sans-serif; /* A modern, clean font */
+    background-color: var(--content-bg);
+}
+
+
+.topbar{
+     background-color: var(--content-bg);
+   height: 70px !important;
+}
+/* --- Sidebar Styling --- */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 0;
+    transition: all 0.3s;
+    flex-shrink: 0;
+    height: 100vh;
+    position: fixed;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.25rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--sidebar-text);
+}
+
+.nav-link {
+    color: var(--sidebar-text);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.95rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: var(--sidebar-hover-bg);
+    color: var(--primary-color); /* Highlight active/hover with primary color */
+}
+
+.nav-link svg {
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+}
+
+/* --- Topbar Styling --- */
+.topbar {
+    height: var(--topbar-height);
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+   
+    z-index: 1000;
+}
+
+/* --- Content Area --- */
+.main-content {
+    flex-grow: 1;
+    padding-top: var(--topbar-height); /* Space for fixed topbar */
+}
+
+.page-content {
+   
+}
+a{
+  text-decoration: none;
+}
+/* --- Utility Classes (Spacing/Cards) --- */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.5rem;
+}
+
+.badge-subscription {
+    font-weight: 600;
+    padding: 0.5em 0.75em;
+    border-radius: 0.3rem;
+}
+
+.badge-investor { background-color: #007bff; color: white; }
+.badge-trader { background-color: #28a745; color: white; }
+.badge-trial { background-color: #ffc107; color: #343a40; }
+
+/* Small utility for Lucide icons */
+.lucide-icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+

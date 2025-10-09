@@ -1,0 +1,82 @@
+
+
+.header {
+    background-color: white;
+    /* Dark navy background */
+    color: black;
+}
+
+.synced-btn {
+    background-color: #f8f9fa;
+    border: none;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-weight: 500;
+}
+
+.synced-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #28a745;
+    display: inline-block;
+    margin-right: 6px;
+    position: relative;
+}
+
+.synced-icon::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 6px;
+    height: 6px;
+    background-color: #28a745;
+    border-radius: 50%;
+}
+
+
+
+
+
+
+/* Sidebar.css */
+
+
+
+
+/* Menu Sections */
+.menu-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    color: #89b6d6;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 15px 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    border-radius: 5px;
+    color: #000 !important;
+    /* Gray-400 */
+    /* font-weight: 500; */
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    opacity: .8;
+    text-transform: none !important;
+
+
+
+}
+
+
