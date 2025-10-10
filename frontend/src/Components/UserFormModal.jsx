@@ -1,55 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { UserPlus, Save } from 'lucide-react';
-import { addUser } from '../slices/crmuserSlice'
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { UserPlus, Save } from "lucide-react";
+import { addUser } from "../slices/crmuserSlice";
 
 const UserFormModal = ({ show, handleClose, userData }) => {
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    role: 'Support Agent',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    role: "Support Agent",
+    password: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
     if (userData) {
       setFormData({
-        name: userData.name || '',
-        email: userData.email || '',
-        role: userData.role || 'Support Agent',
-        password: '',
-        confirmPassword: '',
+        name: userData.name || "",
+        email: userData.email || "",
+        role: userData.role || "Support Agent",
+        password: "",
+        confirmPassword: "",
       });
     } else {
       setFormData({
-        name: '',
-        email: '',
-        role: 'Support Agent',
-        password: '',
-        confirmPassword: '',
+        name: "",
+        email: "",
+        role: "Support Agent",
+        password: "",
+        confirmPassword: "",
       });
     }
   }, [userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!userData && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    // ✅ Send data to Redux/Backend
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      role: formData.role,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+    };
+
     try {
-      await dispatch(addUser(formData)).unwrap();
+      await dispatch(addUser(payload)).unwrap();
       alert("User added successfully!");
       handleClose();
     } catch (err) {
@@ -61,9 +69,13 @@ const UserFormModal = ({ show, handleClose, userData }) => {
 
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
-      <Modal.Header closeButton className={`bg-${isEditMode ? 'primary' : 'success'} text-white`}>
+      <Modal.Header
+        closeButton
+        className={`bg-${isEditMode ? "primary" : "success"} text-white`}
+      >
         <Modal.Title>
-          <UserPlus className="lucide-icon me-2" /> {isEditMode ? 'Edit CRM User' : 'Add New CRM User'}
+          <UserPlus className="lucide-icon me-2" />{" "}
+          {isEditMode ? "Edit CRM User" : "Add New CRM User"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -105,8 +117,8 @@ const UserFormModal = ({ show, handleClose, userData }) => {
             >
               <option value="Admin">Admin</option>
               <option value="Manager">Manager</option>
-              <option value="Sales Executive">Sales Executive</option>
-              <option value="Support Agent">Support Agent</option>
+              <option value="Sales">Sales</option>
+              <option value="Support">Support</option>
             </Form.Select>
           </Form.Group>
 
@@ -146,7 +158,8 @@ const UserFormModal = ({ show, handleClose, userData }) => {
               Cancel
             </Button>
             <Button variant="primary" type="submit">
-              <Save className="lucide-icon me-2" /> {isEditMode ? 'Update User' : 'Add User'}
+              <Save className="lucide-icon me-2" />{" "}
+              {isEditMode ? "Update User" : "Add User"}
             </Button>
           </div>
         </Form>

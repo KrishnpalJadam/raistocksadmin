@@ -33,11 +33,12 @@ export const fetchUsers = createAsyncThunk(
 );
 
 
-// ✅ Add new CRM user
 export const addUser = createAsyncThunk(
   "crmUsers/addUser",
   async (userData, thunkAPI) => {
     try {
+console.log("📦 Sending user data:", userData);
+
       const res = await fetch(`${API_URL}/api/admin/user-management`, {
         method: "POST",
         headers: {
@@ -47,14 +48,28 @@ export const addUser = createAsyncThunk(
         body: JSON.stringify(userData),
       });
 
-      if (!res.ok) throw new Error("Failed to add CRM user");
-      const data = await res.json();
+      const text = await res.text(); // read raw text (in case backend doesn’t send JSON)
+      console.log("🧾 Raw response:", text);
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || `Failed to add CRM user: ${res.status}`);
+      }
+
       return data.data;
     } catch (err) {
+      console.error("❌ Error adding user:", err);
       return thunkAPI.rejectWithValue(err.message);
     }
   }
 );
+
 
 const crmUserSlice = createSlice({
   name: "crmUsers",
