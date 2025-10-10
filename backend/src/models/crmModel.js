@@ -14,7 +14,6 @@ const crmSchema = new mongoose.Schema(
     role: {
       type: String,
       required: [true, "Role is required"],
-      enum: ["Admin", "Manager", "Sales", "Support"], // optional enum
     },
     password: {
       type: String,

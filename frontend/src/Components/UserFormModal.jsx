@@ -115,10 +115,14 @@ const UserFormModal = ({ show, handleClose, userData }) => {
               value={formData.role}
               onChange={handleChange}
             >
-              <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
-              <option value="Sales">Sales</option>
-              <option value="Support">Support</option>
+              <option value="Admin">Admin (Full Access)</option>
+              <option value="Manager">Manager (Supervisory)</option>
+              <option value="Sales Executive">
+                Sales Executive (Leads/Clients)
+              </option>
+              <option value="Support Agent">
+                Support Agent (Support/Emails)
+              </option>
             </Form.Select>
           </Form.Group>
 
