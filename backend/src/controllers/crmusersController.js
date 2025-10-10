@@ -3,7 +3,7 @@ import CRM from "../models/crmModel.js";
 // ✅ Create CRM User
 export const createCRM = async (req, res) => {
   try {
-    const { name, email, role, password, confirmPassword } = req.body;
+    const { name, email, role, password, confirmPassword, status } = req.body;
 
     if (!name || !email || !role || !password || !confirmPassword) {
       return res.status(400).json({ message: "All fields are required" });
@@ -25,6 +25,7 @@ export const createCRM = async (req, res) => {
       role,
       password,
       confirmPassword,
+      status: status || "Active", // Default to Active if not provided
     });
 
     res.status(201).json({
@@ -63,17 +64,30 @@ export const getCRMById = async (req, res) => {
   }
 };
 
-// ✅ Update CRM user
+ // ✅ Update CRM user (allow partial updates)
 export const updateCRM = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, role, password, confirmPassword } = req.body;
+    const { name, email, role, password, confirmPassword, status } = req.body;
 
-    const updatedCRM = await CRM.findByIdAndUpdate(
-      id,
-      { name, email, role, password, confirmPassword },
-      { new: true, runValidators: true }
-    );
+    // Only include fields that are actually sent
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (role) updateFields.role = role;
+    if (status) updateFields.status = status;
+    if (password && confirmPassword) {
+      if (password !== confirmPassword) {
+        return res.status(400).json({ message: "Passwords do not match" });
+      }
+      updateFields.password = password;
+      updateFields.confirmPassword = confirmPassword;
+    }
+
+    const updatedCRM = await CRM.findByIdAndUpdate(id, updateFields, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedCRM) {
       return res.status(404).json({ message: "CRM user not found" });
@@ -88,6 +102,7 @@ export const updateCRM = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // ✅ Delete CRM user
 export const deleteCRM = async (req, res) => {

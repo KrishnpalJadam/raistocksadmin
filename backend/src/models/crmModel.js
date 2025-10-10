@@ -23,6 +23,11 @@ const crmSchema = new mongoose.Schema(
       type: String,
       required: [true, "Confirm Password is required"],
     },
+    status:{
+      type: String,
+      enum: ["Active", "Suspended"],
+      default: "Active",
+    },
     date: {
       type: Date,
       default: Date.now,
