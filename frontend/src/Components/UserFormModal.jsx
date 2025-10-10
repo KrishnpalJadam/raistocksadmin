@@ -4,7 +4,10 @@ import { useDispatch } from "react-redux";
 import { UserPlus, Save } from "lucide-react";
 import { addUser } from "../slices/crmuserSlice";
 
-const UserFormModal = ({ show, handleClose, userData }) => {
+// Accept an optional onSubmit prop (used for edit mode). When editing we should
+// call the provided onSubmit instead of dispatching addUser which always hits
+// the create endpoint.
+const UserFormModal = ({ show, handleClose, userData, onSubmit }) => {
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -42,26 +45,63 @@ const UserFormModal = ({ show, handleClose, userData }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const isEditMode = !!userData;
 
-    if (!userData && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
+    if (!isEditMode) {
+      // Create new user: password fields are required
+      if (formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
 
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      role: formData.role,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-    };
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      };
 
-    try {
-      await dispatch(addUser(payload)).unwrap();
-      alert("User added successfully!");
-      handleClose();
-    } catch (err) {
-      alert(`Error: ${err}`);
+      try {
+        await dispatch(addUser(payload)).unwrap();
+        alert("User added successfully!");
+        handleClose();
+      } catch (err) {
+        alert(`Error: ${err}`);
+      }
+    } else {
+      // Edit mode: call the provided onSubmit (UserManagement passes this prop)
+      // Only send editable fields. Do not send empty password fields unless
+      // the user filled them.
+      const payload = {
+        _id: userData._id,
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+      };
+
+      // include password only if user entered both fields
+      if (formData.password || formData.confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
+          alert("Passwords do not match!");
+          return;
+        }
+        payload.password = formData.password;
+        payload.confirmPassword = formData.confirmPassword;
+      }
+
+      try {
+        if (typeof onSubmit === "function") {
+          await onSubmit(payload);
+        } else {
+          // fallback: no onSubmit provided — alert and close
+          console.warn("Edit submitted but no onSubmit handler provided");
+        }
+        alert("User updated successfully!");
+        handleClose();
+      } catch (err) {
+        alert(`Error updating user: ${err}`);
+      }
     }
   };
 

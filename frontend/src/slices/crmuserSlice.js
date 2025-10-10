@@ -85,31 +85,29 @@ export const updateUser = createAsyncThunk(
   }
 );
 
-// ---- Just ADDED NEW update CRM USEr
-// ✅ Update CRM User (only name, email, and role)
-export const updateCRMUser = createAsyncThunk(
+ // ✅ Update CRM User (only name, email, and role)
+ export const updateCRMUser = createAsyncThunk(
   "crmUsers/updateCRMUser",
-  async ({ id, name, email, role }, thunkAPI) => {
+  async ({ id, ...updateData }, thunkAPI) => {
     try {
       const res = await fetch(`${API_URL}/api/admin/user-management/${id}`, {
-        method: "PUT",
+        method: "PUT", // ✅ important
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${TOKEN}`,
         },
-        body: JSON.stringify({ name, email, role }),
+        body: JSON.stringify(updateData),
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to update CRM user");
-      }
+      if (!res.ok) throw new Error(data.message || "Failed to update user");
       return data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
+
 
 // ✅ Toggle Status (Suspend/Activate)
 export const toggleUserStatus = createAsyncThunk(

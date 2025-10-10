@@ -64,7 +64,8 @@ export const getCRMById = async (req, res) => {
   }
 };
 
- // ✅ Update CRM user (allow partial updates)
+ 
+// ✅ Update CRM user (allow partial updates)
 export const updateCRM = async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,6 +103,7 @@ export const updateCRM = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 // ✅ Delete CRM user
