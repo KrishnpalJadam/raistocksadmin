@@ -138,6 +138,7 @@ const ResearchReportAdd = () => {
               >
                 <Download size={16} className="me-1" /> Open/Download
               </a>
+              <button className="btn btn-danger ms-3 btn-sm">Delete</button>
             </div>
           </div>
         ))}
