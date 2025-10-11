@@ -154,9 +154,7 @@ const UserManagement = () => {
                                             <Button variant="outline-danger" size="sm" className="me-1" title="Remove User" onClick={() => handleDeleteUser(user)}>
                                                 <Trash className="lucide-icon" />
                                             </Button>
-                                            <Button variant="outline-secondary" size="sm" title="Suspend/Activate">
-                                                <Lock className="lucide-icon" />
-                                            </Button>
+                                           
                                         </td>
                                     </tr>
                                 ))
