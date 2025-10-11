@@ -6,18 +6,14 @@ import {
   updateMarketInsight,
   deleteMarketInsight,
 } from "../controllers/marketInsightController.js";
-import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Routes
-router.route("/")
-  .get(getAllMarketInsights)      // GET all insights
-  .post(protect, createMarketInsight);     // POST a new insight
-
-router.route("/:id")
-  .get( getMarketInsightById)      // GET single insight
-  .put(updateMarketInsight)       // UPDATE insight
-  .delete(deleteMarketInsight);   // DELETE insight
+// CRUD routes
+router.post("/", createMarketInsight); // Create
+router.get("/", getAllMarketInsights); // Get all
+router.get("/:id", getMarketInsightById); // Get one by ID
+router.put("/:id", updateMarketInsight); // Update by ID
+router.delete("/:id", deleteMarketInsight); // Delete by ID
 
 export default router;
