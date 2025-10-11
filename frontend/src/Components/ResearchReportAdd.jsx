@@ -139,7 +139,7 @@ const ResearchReportAdd = () => {
                 }
                 className="btn btn-primary btn-sm d-flex align-items-center me-2"
               >
-                <Download size={16} className="me-1" /> Open/Download
+                <Download size={16} className="me-1" /> Download
               </button>
             </div>
           </div>
