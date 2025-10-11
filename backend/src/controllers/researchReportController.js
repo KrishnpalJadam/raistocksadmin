@@ -21,9 +21,16 @@ export const uploadResearchReport = async (req, res) => {
     });
 
     await newReport.save();
-    res.status(201).json({ message: "Research report uploaded successfully", report: newReport });
+    res
+      .status(201)
+      .json({
+        message: "Research report uploaded successfully",
+        report: newReport,
+      });
   } catch (error) {
-    res.status(500).json({ message: "Failed to upload report", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to upload report", error: error.message });
   }
 };
 
@@ -31,10 +38,15 @@ export const uploadResearchReport = async (req, res) => {
 export const getAllReports = async (req, res) => {
   try {
     // include fileName and fileType so frontend can show/download correctly
-    const reports = await ResearchReport.find({}, "title description createdAt fileName fileType");
+    const reports = await ResearchReport.find(
+      {},
+      "title description createdAt fileName fileType"
+    );
     res.status(200).json(reports);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch reports", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch reports", error: error.message });
   }
 };
 
@@ -47,11 +59,15 @@ export const downloadReport = async (req, res) => {
     res.set({
       "Content-Type": report.fileType || "application/octet-stream",
       // use the original uploaded filename for download
-      "Content-Disposition": `attachment; filename="${report.fileName || report.title}"`,
+      "Content-Disposition": `attachment; filename="${
+        report.fileName || report.title
+      }"`,
     });
     res.send(report.file);
   } catch (error) {
-    res.status(500).json({ message: "Failed to download report", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to download report", error: error.message });
   }
 };
 
@@ -63,6 +79,8 @@ export const deleteReport = async (req, res) => {
 
     res.status(200).json({ message: "Report deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete report", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete report", error: error.message });
   }
 };
