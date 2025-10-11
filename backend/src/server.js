@@ -8,7 +8,8 @@ import marketPhaseRoutes from "./routes/marketPhaseRoutes.js";
 import leadRoutes from "./routes/leadRoutes.js";
 import crmRoutes from "./routes/crmRoutes.js";
 import connectDB from "./config/db.js";
-
+import marketInsightRoutes from "./routes/marketInsightRoutes.js";
+ import researchReportRoutes from "./routes/researchReportRoutes.js"; 
 
 dotenv.config();
 connectDB();
@@ -27,7 +28,12 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/users/market-trend", marketTrendRoutes);
 app.use("/api/users/market-phase", marketPhaseRoutes);
 app.use("/api/admin/leads", leadRoutes);
-app.use("/api/admin/user-management", crmRoutes); // CRM routes
+app.use("/api/admin/user-management", crmRoutes);
+app.use("/api/market-insights", marketInsightRoutes);
+app.use("/api/research-reports", researchReportRoutes);
+
+ 
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
