@@ -18,6 +18,7 @@ import UserManagement from "./Components/UserManagement";
 import Leads from "./Components/Leads";
 import Settings from "./Components/Settings";
 import TradeSatup from "./Components/TradeSatup";
+import ResearchReportAdd from "./Components/ResearchReportAdd";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="leads" element={<Leads />} />
           <Route path="settings" element={<Settings />} />
           <Route path="tradeSatup" element={<TradeSatup />} />
+          <Route path="addResearchReport" element={<ResearchReportAdd />} />
          
         </Route>
       </Routes>

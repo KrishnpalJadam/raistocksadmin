@@ -50,7 +50,7 @@ const RAIData = () => {
             result: "Profit",
             pnl: 5280,
         },
-         {
+        {
             id: 2,
             title: "Buy Banknifty 56000 CE 31 July exp at 277",
             segment: "Index option",
@@ -72,7 +72,7 @@ const RAIData = () => {
             result: "Profit",
             pnl: 5280,
         },
-         {
+        {
             id: 3,
             title: "Buy Banknifty 56000 CE 31 July exp at 277",
             segment: "Index option",
@@ -100,6 +100,7 @@ const RAIData = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedTrade, setSelectedTrade] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [updateModal, setUpdateModal] = useState(false);
     const [AddshowModal, AddsetShowModal] = useState(false);
 
     const ITEMS_PER_PAGE = 10;
@@ -130,8 +131,12 @@ const RAIData = () => {
         setSelectedTrade(trade);
         setShowModal(true);
     };
-     const AddhandleView = (trade) => {
-        
+    const handleUpdate = () => {
+
+        setUpdateModal(true);
+    };
+    const AddhandleView = (trade) => {
+
         AddsetShowModal(true);
     };
 
@@ -143,15 +148,15 @@ const RAIData = () => {
 
     return (
         <div className="page-content">
-            
-<Modal show={AddshowModal} onHide={() => AddsetShowModal(false)} size="lg" centered className="trade-view-modal" > <Modal.Header closeButton className="bg-primary bg-opacity-10 border-bottom"> <Modal.Title className="fw-bold text-primary">  <Plus className="me-2 text-success" /> Add New Trade</Modal.Title> </Modal.Header> <Modal.Body className="p-4"> 
-     <div className="mb-4  p-0"> 
-                 <Card.Header className="bg-white fw-bold d-flex align-items-center">
-                      </Card.Header>
-                       <Card.Body> <Form> <Row className="g-3"> {/* Trade Title */} 
 
-                         {/* Segment */} <Col md={4}> <Form.Group> <Form.Label>Segment</Form.Label> <Form.Select defaultValue="Cash"> <option>Cash</option> <option>Index future</option> <option>Index option</option> <option>Commodity future</option> <option>Commodity option</option> <option>Stock future</option> <option>Stock option</option> </Form.Select> </Form.Group> </Col> {/* Trade Type */} <Col md={4}> <Form.Group> <Form.Label>Trade Type</Form.Label> <Form.Select> <option>Swing</option> <option>Intraday</option> <option>Scalp</option> <option>Invest</option> <option>Strategy</option> </Form.Select> </Form.Group> </Col> {/* Action */} <Col md={4}> <Form.Group> <Form.Label>Action</Form.Label> <Form.Select> <option>Buy</option> <option>Sell</option> <option>Long</option> <option>Short</option> </Form.Select> </Form.Group> </Col> {/* On */} <Col md={6}> <Form.Group> <Form.Label>On</Form.Label> <Form.Control type="text" placeholder="Banknifty / Reliance etc." /> </Form.Group> </Col> {/* Entry Price */} <Col md={3}> <Form.Group> <Form.Label>Entry Price</Form.Label> <Form.Control type="number" placeholder="277" /> </Form.Group> </Col> {/* Stoploss */} <Col md={3}> <Form.Group> <Form.Label>Stoploss</Form.Label> <Form.Control type="text" placeholder="207 or NA" /> </Form.Group> </Col> {/* Targets */} <Col md={4}> <Form.Group> <Form.Label>Target 1</Form.Label> <Form.Control type="number" placeholder="344" /> </Form.Group> </Col> <Col md={4}> <Form.Group> <Form.Label>Target 2</Form.Label> <Form.Control type="number" placeholder="384" /> </Form.Group> </Col> <Col md={4}> <Form.Group> <Form.Label>Target 3</Form.Label> <Form.Control type="number" placeholder="436" /> </Form.Group> </Col> {/* Duration */} <Col md={6}> <Form.Group> <Form.Label>Time Duration</Form.Label> <Form.Select> <option>Today</option> <option>Tomorrow</option> <option>15 Days</option> <option>1 to 2 Months</option> <option>1 to 3 Months</option> <option>1 to 4 Months</option> <option>1 to 6 Months</option> <option>2 to 3 months</option> <option>2 to 4 Months</option> <option>3 to 6 Months</option> <option>3 Months to 1 Year</option> <option>3 Months to 2 Years</option> <option>4 Months to 1 Year</option> <option>6 Months to 1 Year</option> <option>6 Months to 2 Years</option> <option>1 to 2 Years</option> <option>1 to 3 Years</option> </Form.Select> </Form.Group> </Col> {/* Weightage */} <Col md={3}> <Form.Group> <Form.Label>Weightage Value</Form.Label> <Form.Control type="number" placeholder="6" /> </Form.Group> </Col> <Col md={3}> <Form.Group> <Form.Label>Weightage Extension</Form.Label> <Form.Select> <option>% of your capital</option> <option>% of your capital or minimum 1 lot</option> </Form.Select> </Form.Group> </Col> {/* Lot Size & Lots */} <Col md={3}> <Form.Group> <Form.Label>Lot Size</Form.Label> <Form.Control type="number" placeholder="Optional" /> </Form.Group> </Col> <Col md={3}> <Form.Group> <Form.Label>Lots</Form.Label> <Form.Control type="number" defaultValue={1} /> </Form.Group> </Col> {/* Date & Time */} <Col md={6}> <Form.Group> <Form.Label>Recommendation Date & Time</Form.Label> <Form.Control type="datetime-local" /> </Form.Group> </Col><Col md={4}> <Form.Group> <Form.Label>Status</Form.Label> <Form.Select > <option>Select</option> <option>Live</option> <option>close</option> </Form.Select> </Form.Group> </Col>  </Row> <div className="mt-4 text-end"> <Button type="submit" variant="success"> Add Trade </Button> </div> </Form> </Card.Body> </div>
-     </Modal.Body> <Modal.Footer className="bg-light border-top"> <Button variant="outline-secondary" className="px-4" onClick={() => setShowModal(false)} > Close </Button> </Modal.Footer> </Modal>
+            <Modal show={AddshowModal} onHide={() => AddsetShowModal(false)} size="lg" centered className="trade-view-modal" > <Modal.Header closeButton className="bg-primary bg-opacity-10 border-bottom"> <Modal.Title className="fw-bold text-primary">  <Plus className="me-2 text-success" /> Add New Trade</Modal.Title> </Modal.Header> <Modal.Body className="p-4">
+                <div className="mb-4  p-0">
+                    <Card.Header className="bg-white fw-bold d-flex align-items-center">
+                    </Card.Header>
+                    <Card.Body> <Form> <Row className="g-3"> {/* Trade Title */}
+
+                        {/* Segment */} <Col md={4}> <Form.Group> <Form.Label>Segment</Form.Label> <Form.Select defaultValue="Cash"> <option>Cash</option> <option>Index future</option> <option>Index option</option> <option>Commodity future</option> <option>Commodity option</option> <option>Stock future</option> <option>Stock option</option> </Form.Select> </Form.Group> </Col> {/* Trade Type */} <Col md={4}> <Form.Group> <Form.Label>Trade Type</Form.Label> <Form.Select> <option>Swing</option> <option>Intraday</option> <option>Scalp</option> <option>Invest</option> <option>Strategy</option> </Form.Select> </Form.Group> </Col> {/* Action */} <Col md={4}> <Form.Group> <Form.Label>Action</Form.Label> <Form.Select> <option>Buy</option> <option>Sell</option> <option>Long</option> <option>Short</option> </Form.Select> </Form.Group> </Col> {/* On */} <Col md={6}> <Form.Group> <Form.Label>On</Form.Label> <Form.Control type="text" placeholder="Banknifty / Reliance etc." /> </Form.Group> </Col> {/* Entry Price */} <Col md={3}> <Form.Group> <Form.Label>Entry Price</Form.Label> <Form.Control type="number" placeholder="277" /> </Form.Group> </Col> {/* Stoploss */} <Col md={3}> <Form.Group> <Form.Label>Stoploss</Form.Label> <Form.Control type="text" placeholder="207 or NA" /> </Form.Group> </Col> {/* Targets */} <Col md={4}> <Form.Group> <Form.Label>Target 1</Form.Label> <Form.Control type="number" placeholder="344" /> </Form.Group> </Col> <Col md={4}> <Form.Group> <Form.Label>Target 2</Form.Label> <Form.Control type="number" placeholder="384" /> </Form.Group> </Col> <Col md={4}> <Form.Group> <Form.Label>Target 3</Form.Label> <Form.Control type="number" placeholder="436" /> </Form.Group> </Col> {/* Duration */} <Col md={6}> <Form.Group> <Form.Label>Time Duration</Form.Label> <Form.Select> <option>Today</option> <option>Tomorrow</option> <option>15 Days</option> <option>1 to 2 Months</option> <option>1 to 3 Months</option> <option>1 to 4 Months</option> <option>1 to 6 Months</option> <option>2 to 3 months</option> <option>2 to 4 Months</option> <option>3 to 6 Months</option> <option>3 Months to 1 Year</option> <option>3 Months to 2 Years</option> <option>4 Months to 1 Year</option> <option>6 Months to 1 Year</option> <option>6 Months to 2 Years</option> <option>1 to 2 Years</option> <option>1 to 3 Years</option> </Form.Select> </Form.Group> </Col> {/* Weightage */} <Col md={3}> <Form.Group> <Form.Label>Weightage Value</Form.Label> <Form.Control type="number" placeholder="6" /> </Form.Group> </Col> <Col md={3}> <Form.Group> <Form.Label>Weightage Extension</Form.Label> <Form.Select> <option>% of your capital</option> <option>% of your capital or minimum 1 lot</option> </Form.Select> </Form.Group> </Col> {/* Lot Size & Lots */} <Col md={3}> <Form.Group> <Form.Label>Lot Size</Form.Label> <Form.Control type="number" placeholder="Optional" /> </Form.Group> </Col> <Col md={3}> <Form.Group> <Form.Label>Lots</Form.Label> <Form.Control type="number" defaultValue={1} /> </Form.Group> </Col> {/* Date & Time */} <Col md={6}> <Form.Group> <Form.Label>Recommendation Date & Time</Form.Label> <Form.Control type="datetime-local" /> </Form.Group> </Col><Col md={4}> <Form.Group> <Form.Label>Status</Form.Label> <Form.Select > <option>Select</option> <option>Live</option> <option>close</option> </Form.Select> </Form.Group> </Col>  </Row> <div className="mt-4 text-end"> <Button type="submit" variant="success"> Add Trade </Button> </div> </Form> </Card.Body> </div>
+            </Modal.Body> <Modal.Footer className="bg-light border-top"> <Button variant="outline-secondary" className="px-4" onClick={() => setShowModal(false)} > Close </Button> </Modal.Footer> </Modal>
             {/* --- Trade Table --- */}
             <Card className="shadow-sm">
                 <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center">
@@ -176,18 +181,13 @@ const RAIData = () => {
                         <thead>
                             <tr>
                                 <th>#</th>
-                               
+
                                 <th>Segment</th>
                                 <th>Type</th>
                                 <th>Action</th>
                                 <th>On</th>
                                 <th>Entry</th>
-                                <th>Targets</th>
-                                <th>Stoploss</th>
-                                <th>Duration</th>
-                                <th>Weightage</th>
-                                <th>Lot Size</th>
-                                <th>Lots</th>
+
                                 <th>Status</th>
                                 <th>Result</th>
                                 <th>PnL</th>
@@ -199,22 +199,13 @@ const RAIData = () => {
                                 paginatedTrades.map((t) => (
                                     <tr key={t.id}>
                                         <td>{t.id}</td>
-                                      
+
                                         <td>{t.segment}</td>
                                         <td>{t.tradeType}</td>
                                         <td>{t.action}</td>
                                         <td>{t.on}</td>
                                         <td>₹{t.entry}</td>
-                                        <td>
-                                            {t.target1}, {t.target2}, {t.target3}
-                                        </td>
-                                        <td>{t.stoploss}</td>
-                                        <td>{t.duration}</td>
-                                        <td>
-                                            {t.weightageValue} {t.weightageExtension}
-                                        </td>
-                                        <td>{t.lotSize}</td>
-                                        <td>{t.lots}</td>
+
                                         <td>
                                             <span
                                                 className={`badge bg-${t.status === "Live" ? "info" : "secondary"
@@ -233,6 +224,7 @@ const RAIData = () => {
                                         </td>
                                         <td>
                                             <div className="d-flex gap-2">
+                                                <Button className="btn-sm" onClick={() => handleUpdate()}>Update</Button>
                                                 <Button
                                                     size="sm"
                                                     variant="outline-primary"
@@ -294,6 +286,67 @@ const RAIData = () => {
                     )}
                 </Card.Body>
             </Card>
+            {/* --- update Modal --- */}
+            <Modal show={updateModal} onHide={() => setUpdateModal(false)} size="lg" centered className="trade-view-modal">
+                <Modal.Header closeButton className="bg-primary bg-opacity-10 border-bottom">
+                    <Modal.Title className="fw-bold text-primary">
+                        Update Trade
+                    </Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body className="p-4">
+                    <form>
+                        {/* Title Field */}
+                        <div className="mb-3">
+                            <label className="form-label fw-semibold">Title</label>
+                            <select name="" id="" className="form-select">
+                                <option value="">Select Title</option>
+                                <option value="">Update</option>
+                                <option value="">Book Profit</option>
+                                <option value="">Stoploss Hit</option>
+                                <option value="">Exit</option>
+                            </select>
+                        </div>
+
+                        {/* Comment Field */}
+                        <div className="mb-3">
+                            <label className="form-label fw-semibold">Comment</label>
+                            <textarea
+                                className="form-control"
+                                rows="3"
+                                placeholder="Write your comment here..."
+                            ></textarea>
+                        </div>
+
+                        {/* Translation Field */}
+                        <div className="mb-3">
+                            <label className="form-label fw-semibold">Trade SL Hit</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter"
+                            />
+                        </div>
+
+                        {/* Update Button */}
+                        <div className="text-end">
+                            <Button variant="primary" type="submit" className="px-4">
+                                Update
+                            </Button>
+                        </div>
+                    </form>
+                </Modal.Body>
+
+                <Modal.Footer className="bg-light border-top">
+                    <Button
+                        variant="outline-secondary"
+                        className="px-4"
+                        onClick={() => setUpdateModal(false)}
+                    >
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             {/* --- View Modal --- */} <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered className="trade-view-modal" > <Modal.Header closeButton className="bg-primary bg-opacity-10 border-bottom"> <Modal.Title className="fw-bold text-primary"> <Eye className="me-2 text-primary" size={18} /> Trade Details </Modal.Title> </Modal.Header> <Modal.Body className="p-4"> {selectedTrade ? (<div className="table-responsive"> <Table hover bordered className="align-middle"> <tbody> {Object.entries(selectedTrade).map(([key, value]) => (<tr key={key}> <td style={{ width: "35%", backgroundColor: "#f8f9fa", fontWeight: "600", textTransform: "capitalize", color: "#495057", }} > {key.replace(/([A-Z])/g, " $1")} </td> <td style={{ color: "#212529", fontWeight: "500", }} > {Array.isArray(value) ? value.join(", ") : value ? String(value) : "-"} </td> </tr>))} </tbody> </Table> </div>) : (<div className="text-center text-muted py-4">No trade selected.</div>)} </Modal.Body> <Modal.Footer className="bg-light border-top"> <Button variant="outline-secondary" className="px-4" onClick={() => setShowModal(false)} > Close </Button> </Modal.Footer> </Modal>
         </div>

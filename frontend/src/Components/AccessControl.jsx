@@ -79,11 +79,11 @@ const AccessControl = () => {
                         );
                     })}
                 </Row>
-                <div className="text-center mt-3">
+                {/* <div className="text-center mt-3">
                     <Button variant="outline-primary" size="sm">
                         Edit Detailed Role Permissions
                     </Button>
-                </div>
+                </div> */}
             </Card.Body>
         </Card>
     );

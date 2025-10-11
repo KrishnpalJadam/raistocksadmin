@@ -19,6 +19,7 @@ const Sidebar = () => {
         { name: 'Support', icon: Ticket, path: 'support', section: 'Admin' },
         { name: 'User Management', icon: User, path: 'user-management', section: 'Admin' },
         { name: 'Leads', icon: TrendingUp, path: 'leads', section: 'Admin' },
+        { name: 'Add Research Report', icon: TrendingUp, path: 'addResearchReport', section: 'Admin' },
         { name: 'Settings', icon: Settings, path: 'settings', section: 'System' },
     ];
 

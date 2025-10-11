@@ -183,15 +183,7 @@ const Clients = () => {
                                         >
                                             <Pencil className="lucide-icon" />
                                         </Button>
-                                        <Button variant="outline-info" size="sm" className="me-1" title="Subscription">
-                                            <DollarSign className="lucide-icon" />
-                                        </Button>
-                                        <Button variant="outline-secondary" size="sm" className="me-1" title="KYC">
-                                            <FileText className="lucide-icon" />
-                                        </Button>
-                                        <Button variant="outline-danger" size="sm" title="Reset Password">
-                                            <Key className="lucide-icon" />
-                                        </Button>
+                                      
                                     </td>
                                 </tr>
                             ))}
