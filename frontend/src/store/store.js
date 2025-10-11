@@ -5,6 +5,7 @@ import crmUsersReducer from "../slices/crmuserSlice";
 import marketInsightsReducer from "../slices/marketInsightSlice";
 import marketPhasesReducer from "../slices/marketPhaseSlice";
 import marketTrendsReducer from "../slices/marketTrendSlice";
+import researchReportsReducer from "../slices/researchReportSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,5 +14,6 @@ export const store = configureStore({
     marketInsights: marketInsightsReducer,
     marketPhases: marketPhasesReducer,
     marketTrends: marketTrendsReducer,
+    researchReports: researchReportsReducer,
   },
 });
