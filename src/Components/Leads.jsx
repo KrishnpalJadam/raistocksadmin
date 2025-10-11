@@ -1,6 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Card, Table, Button, Form, Row, Col, Pagination } from 'react-bootstrap';
-import { Search, Trash } from 'lucide-react';
+import {
+  Card,
+  Table,
+  Button,
+  Form,
+  Row,
+  Col,
+  Pagination,
+  Modal,
+} from 'react-bootstrap';
+import { Search, Trash, Plus } from 'lucide-react';
 
 // Mock Data (with Source)
 const mockLeadsTable = [
@@ -37,6 +46,13 @@ const Leads = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('All');
+  const [showModal, setShowModal] = useState(false);
+  const [newLead, setNewLead] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    source: 'Web',
+  });
 
   const handleStatusChange = (id, newStatus) => {
     setLeads((prev) =>
@@ -48,6 +64,27 @@ const Leads = () => {
     if (window.confirm('Are you sure you want to delete this lead?')) {
       setLeads((prev) => prev.filter((lead) => lead.id !== id));
     }
+  };
+
+  const handleAddLead = () => {
+    if (!newLead.name || !newLead.email || !newLead.phone) {
+      alert('Please fill all fields.');
+      return;
+    }
+
+    const newId = leads.length ? Math.max(...leads.map((l) => l.id)) + 1 : 1;
+    const date = new Date().toISOString().split('T')[0];
+
+    const addedLead = {
+      id: newId,
+      ...newLead,
+      status: 'New Lead',
+      date,
+    };
+
+    setLeads([addedLead, ...leads]);
+    setNewLead({ name: '', email: '', phone: '', source: 'Web' });
+    setShowModal(false);
   };
 
   const filteredLeads = useMemo(() => {
@@ -77,7 +114,12 @@ const Leads = () => {
 
   return (
     <div className="page-content">
-      <h2 className="mb-4">📈 Leads Management</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0">📈 Leads Management</h2>
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+          <Plus size={18} className="me-2" /> Add Lead
+        </Button>
+      </div>
 
       <Card className="mt-4">
         <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center">
@@ -101,7 +143,6 @@ const Leads = () => {
               </Form.Group>
             </Col>
             <Col md={4}>
-         
               <Form.Select
                 size="sm"
                 value={statusFilter}
@@ -110,7 +151,6 @@ const Leads = () => {
                   setCurrentPage(1);
                 }}
               >
-               
                 {statusOptions.map((opt) => (
                   <option key={opt.label} value={opt.label}>
                     {opt.label}
@@ -239,6 +279,72 @@ const Leads = () => {
           </div>
         </Card.Body>
       </Card>
+
+      {/* Add Lead Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Lead</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter full name"
+                value={newLead.name}
+                onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={newLead.email}
+                onChange={(e) =>
+                  setNewLead({ ...newLead, email: e.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Contact</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter contact number"
+                value={newLead.phone}
+                onChange={(e) =>
+                  setNewLead({ ...newLead, phone: e.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Source</Form.Label>
+              <Form.Select
+                value={newLead.source}
+                onChange={(e) =>
+                  setNewLead({ ...newLead, source: e.target.value })
+                }
+              >
+                <option value="Web">Web</option>
+                <option value="Reference">Reference</option>
+                <option value="Add">Add</option>
+              </Form.Select>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleAddLead}>
+            Add Lead
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

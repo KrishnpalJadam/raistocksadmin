@@ -298,3 +298,12 @@ a{
 }
 
 
+.rai-icon-bg {
+  padding: 0.5rem;
+  background-color: #e9f5ff; /* Light blue background for icons */
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
