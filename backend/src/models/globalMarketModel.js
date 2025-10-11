@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const marketInsightModel = new mongoose.Schema(
+const globalmarketModel = new mongoose.Schema(
   {
     country: {
       type: String,
@@ -26,5 +26,5 @@ const marketInsightModel = new mongoose.Schema(
   { timestamps: true }
 );
 
-const MarketInsight = mongoose.model("MarketInsight", marketInsightModel);
-export default MarketInsight;
+const GlobalMarket = mongoose.model("GlobalMarket", globalmarketModel);
+export default GlobalMarket;
