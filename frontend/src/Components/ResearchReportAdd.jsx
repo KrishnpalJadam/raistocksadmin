@@ -8,10 +8,16 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const ResearchReportAdd = () => {
   const dispatch = useDispatch();
-  const { items: reports = [], status } = useSelector((s) => s.researchReports || { items: [] });
+  const { items: reports = [], status } = useSelector(
+    (s) => s.researchReports || { items: [] }
+  );
 
   const [showModal, setShowModal] = useState(false);
-  const [newReport, setNewReport] = useState({ title: "", description: "", file: null });
+  const [newReport, setNewReport] = useState({
+    title: "",
+    description: "",
+    file: null,
+  });
 
   useEffect(() => {
     dispatch(fetchReports());
@@ -23,6 +29,29 @@ const ResearchReportAdd = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setNewReport({ ...newReport, [name]: files ? files[0] : value });
+  };
+
+  const handleDownload = async (id, fileName) => {
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/research-reports/download/${id}`
+      );
+      if (!res.ok) throw new Error("Failed to download file");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName || "report";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -44,8 +73,6 @@ const ResearchReportAdd = () => {
       console.error("Upload failed", err);
     }
   };
-
- 
 
   const getIconColor = (type) => {
     switch (type) {
@@ -82,7 +109,7 @@ const ResearchReportAdd = () => {
               <div
                 className="rai-icon-bg me-3 d-flex justify-content-center align-items-center"
                 style={{
-                  backgroundColor: `${getIconColor(report.type || "") }15`,
+                  backgroundColor: `${getIconColor(report.type || "")}15`,
                   minWidth: "40px",
                   height: "40px",
                   borderRadius: "8px",
@@ -101,20 +128,19 @@ const ResearchReportAdd = () => {
             <div className="d-flex align-items-center flex-shrink-0">
               <div className="text-end me-4 d-none d-md-block">
                 <span className="d-block small text-muted">
-                  {report.createdAt ? new Date(report.createdAt).toLocaleString() : ""}
+                  {report.createdAt
+                    ? new Date(report.createdAt).toLocaleString()
+                    : ""}
                 </span>
               </div>
-
-              <a
-                href={`${API_BASE}/api/research-reports/download/${report._id || report.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() =>
+                  handleDownload(report._id || report.id, report.fileName)
+                }
                 className="btn btn-primary btn-sm d-flex align-items-center me-2"
               >
                 <Download size={16} className="me-1" /> Open/Download
-              </a>
-
-              
+              </button>
             </div>
           </div>
         ))}
