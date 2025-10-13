@@ -16,12 +16,11 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Restrict who can create admins
+    // Default role logic
     let finalRole = "user";
     let finalSubRole = null;
 
     if (req.user && req.user.role === "admin") {
-      // If an admin is creating the account
       finalRole = role || "user";
       finalSubRole = role === "admin" ? subRole || null : null;
     }
@@ -30,6 +29,7 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create user
     const user = await User.create({
       name,
       email,
@@ -38,6 +38,7 @@ export const registerUser = async (req, res) => {
       subRole: finalSubRole,
     });
 
+    // Create JWT token (auto-login)
     const token = jwt.sign(
       {
         id: user._id,
@@ -48,8 +49,9 @@ export const registerUser = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    // ✅ Send token and user info — acts like auto-login
     res.status(201).json({
-      message: "User registered successfully",
+      message: "User registered and logged in successfully",
       user: {
         id: user._id,
         name: user.name,
@@ -64,6 +66,7 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // ==================== LOGIN USER ====================
 export const loginUser = async (req, res) => {

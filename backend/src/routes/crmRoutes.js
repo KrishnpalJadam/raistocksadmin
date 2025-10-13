@@ -6,18 +6,17 @@ import {
   updateCRM,
   deleteCRM,
 } from "../controllers/crmusersController.js";
-import { protect } from "../middleware/authMiddleware.js"; // optional
 
 const router = express.Router();
 
 // ✅ Admin-only CRM routes
 router.route("/")
-  .post(protect, createCRM) // Create CRM user
-  .get(protect, getAllCRM); // Get all CRM users
+  .post(createCRM) // Create CRM user
+  .get(getAllCRM); // Get all CRM users
 
 router.route("/:id")
-  .get(protect, getCRMById) // Get single user
-  .put(protect, updateCRM)  // Update
-  .delete(protect, deleteCRM); // Delete
+  .get(getCRMById) // Get single user
+  .put(updateCRM)  // Update
+  .delete(deleteCRM); // Delete
 
 export default router;
