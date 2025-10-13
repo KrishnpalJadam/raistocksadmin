@@ -67,7 +67,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-
 // ==================== LOGIN USER ====================
 export const loginUser = async (req, res) => {
   try {
@@ -132,6 +131,46 @@ export const getUsers = async (req, res) => {
     res.json(users);
   } catch (error) {
     console.error("Get Users Error:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ==================== UPDATE PASSWORD FOR AUTHENTICATED USER ====================
+export const updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "All password fields are required" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New passwords do not match" });
+    }
+
+    // req.user is set by auth middleware (protect)
+    const userId = req.user && req.user.id ? req.user.id : req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash and save new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update Password Error:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createCRM,
+  loginCRM,
   getAllCRM,
   getCRMById,
   updateCRM,
@@ -9,14 +10,13 @@ import {
 
 const router = express.Router();
 
-// ✅ Admin-only CRM routes
+router.post("/register", createCRM);
+router.post("/login", loginCRM);
 router.route("/")
-  .post(createCRM) // Create CRM user
-  .get(getAllCRM); // Get all CRM users
-
+  .get(getAllCRM);
 router.route("/:id")
-  .get(getCRMById) // Get single user
-  .put(updateCRM)  // Update
-  .delete(deleteCRM); // Delete
+  .get(getCRMById)
+  .put(updateCRM)
+  .delete(deleteCRM);
 
 export default router;

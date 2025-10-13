@@ -16,9 +16,56 @@ const Settings = () => {
     setPasswords((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Password reset request submitted!");
+
+    if (
+      !passwords.currentPassword ||
+      !passwords.newPassword ||
+      !passwords.confirmPassword
+    ) {
+      alert("Please fill all password fields.");
+      return;
+    }
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      alert("New passwords do not match.");
+      return;
+    }
+
+    try {
+      const token =
+        (localStorage.getItem("login_details") &&
+          JSON.parse(localStorage.getItem("login_details")).token) ||
+        null;
+      const res = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000"
+        }/api/users/password`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+          body: JSON.stringify({
+            currentPassword: passwords.currentPassword,
+            newPassword: passwords.newPassword,
+            confirmPassword: passwords.confirmPassword,
+          }),
+        }
+      );
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.message || "Failed to update password");
+      alert("Password updated successfully");
+      setPasswords({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (err) {
+      alert(`Error: ${err.message || err}`);
+    }
   };
 
   return (
@@ -31,7 +78,8 @@ const Settings = () => {
             <Lock className="lucide-icon me-2" /> Change Your Password
           </h5>
           <p className="text-muted small mb-0">
-            Update your account password below. Make sure it’s secure and unique.
+            Update your account password below. Make sure it’s secure and
+            unique.
           </p>
         </Card.Header>
 
