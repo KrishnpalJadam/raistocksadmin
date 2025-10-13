@@ -166,8 +166,12 @@ const TradeSatup = () => {
                           </div>
 
                         </div>
+<div className="row">
+  <div className="col-sm-4">
+<button className="btn btn-primary">Save</button>
 
-
+  </div>
+</div>
                       </Card>
                     </Col>
 
@@ -194,7 +198,14 @@ const TradeSatup = () => {
                               Fetch VIX
                             </Button>
                           </Col>
+                          
                         </Row>
+                        <div className="row mt-3">
+  <div className="col-sm-4">
+<button className="btn btn-primary">Save</button>
+
+  </div>
+</div>
                       </Card>
                     </Col>
                     <Col md={6}>
@@ -249,7 +260,12 @@ const TradeSatup = () => {
 
                         </Row>
 
+<div className="row mt-2">
+  <div className="col-sm-4">
+<button className="btn btn-primary">Save</button>
 
+  </div>
+</div>
                       </Card>
                     </Col>
 
@@ -300,6 +316,12 @@ const TradeSatup = () => {
                       />
                     </Col>
                   </Row>
+                  <div className="row mt-2">
+  <div className="col-sm-4">
+<button className="btn btn-primary">Save</button>
+
+  </div>
+</div>
                 </Form>
               )}
 
@@ -348,6 +370,12 @@ const TradeSatup = () => {
                       />
                     </Col>
                   </Row>
+                  <div className="row mt-2">
+  <div className="col-sm-4">
+<button className="btn btn-primary">Save</button>
+
+  </div>
+</div>
                 </Form>
               )}
             </>
@@ -356,14 +384,7 @@ const TradeSatup = () => {
           {activeTab === "view" && <TradeSatupView />}
         </Card.Body>
 
-        <Card.Footer className="d-flex justify-content-end gap-2">
-          <Button variant="secondary" size="sm" >
-            Reset
-          </Button>
-          <Button variant="success" size="sm">
-            <Save size={14} /> Save Changes
-          </Button>
-        </Card.Footer>
+    
       </Card>
     </div>
   );
