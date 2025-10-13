@@ -9,9 +9,14 @@ import {
   updateMarketInsight,
   deleteMarketInsight,
 } from "../slices/marketInsightSlice";
-import { createMarketPhase } from "../slices/marketPhaseSlice";
-import { fetchMarketPhases } from "../slices/marketPhaseSlice";
-import { createMarketTrend } from "../slices/marketTrendSlice";
+import {
+  createMarketPhase,
+  fetchMarketPhases,
+} from "../slices/marketPhaseSlice";
+import {
+  createMarketTrend,
+  fetchMarketTrends,
+} from "../slices/marketTrendSlice";
 import { createVix } from "../slices/vixSlice";
 import { createGlobalMarket } from "../slices/globalMarketSlice";
 
@@ -34,6 +39,43 @@ const TradeSatup = () => {
     globalcomment: "",
     vixValue: "",
     date: new Date().toISOString().slice(0, 10),
+  };
+
+  const handleInlineCreate = () => {
+    // Decide which module to create based on activeModule
+    if (activeModule === "marketInsight") {
+      const payload = { ...marketInsight };
+      if (!payload.sentiment) payload.sentiment = null;
+      dispatch(createMarketInsight(payload))
+        .unwrap()
+        .then(() => {
+          alert("Market Insight created successfully");
+          setMarketInsight(empty);
+        })
+        .catch((err) =>
+          alert("Failed to create Market Insight: " + (err?.message || err))
+        );
+    } else if (activeModule === "marketPhase") {
+      // reuse inline phase creator
+      handleCreateMarketPhaseInline();
+    } else if (activeModule === "marketTrend") {
+      const t = {
+        title: marketInsight.title || "",
+        description: marketInsight.comment || "",
+        date: marketInsight.date,
+      };
+      dispatch(createMarketTrend(t))
+        .unwrap()
+        .then(() => {
+          alert("Market Trend created successfully");
+          setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+          dispatch(fetchMarketTrends());
+          setActiveTab("view");
+        })
+        .catch((err) =>
+          alert("Failed to create Market Trend: " + (err?.message || err))
+        );
+    }
   };
 
   const [marketInsight, setMarketInsight] = useState(empty);
@@ -160,6 +202,44 @@ const TradeSatup = () => {
   const handleDelete = (id) => {
     if (window.confirm("Delete this market insight?"))
       dispatch(deleteMarketInsight(id));
+  };
+
+  const handleSavePhase = () => {
+    const payload = {
+      title: marketInsight.title || "",
+      description: marketInsight.comment || "",
+      date: marketInsight.date,
+    };
+    dispatch(createMarketPhase(payload))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchMarketPhases());
+        alert("Market Phase created successfully");
+        setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+        setActiveTab("view");
+      })
+      .catch((err) =>
+        alert("Failed to create Market Phase: " + (err?.message || err))
+      );
+  };
+
+  const handleSaveTrend = () => {
+    const payload = {
+      title: marketInsight.title || "",
+      description: marketInsight.comment || "",
+      date: marketInsight.date,
+    };
+    dispatch(createMarketTrend(payload))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchMarketTrends());
+        alert("Market Trend created successfully");
+        setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+        setActiveTab("view");
+      })
+      .catch((err) =>
+        alert("Failed to create Market Trend: " + (err?.message || err))
+      );
   };
 
   return (
@@ -357,7 +437,7 @@ const TradeSatup = () => {
                           <Button
                             variant="success"
                             size="sm"
-                            onClick={handleCreateMarketPhaseInline}
+                            onClick={() => handleInlineCreate()}
                           >
                             <Save size={14} /> Market Create
                           </Button>
@@ -537,7 +617,16 @@ const TradeSatup = () => {
                     <Col md={4}>
                       <Form.Group>
                         <Form.Label>Date</Form.Label>
-                        <Form.Control type="date" />
+                        <Form.Control
+                          type="date"
+                          value={marketInsight.date || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
                       </Form.Group>
                     </Col>
                     <Col md={4}>
@@ -580,6 +669,26 @@ const TradeSatup = () => {
                       <Form.Check label="Make this phase visible to users" />
                     </Col>
                   </Row>
+                  <Row className="mt-2">
+                    <Col />
+                    <Col className="text-end">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => setMarketInsight(empty)}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={handleSavePhase}
+                      >
+                        Save Phase
+                      </Button>
+                    </Col>
+                  </Row>
                 </Form>
               )}
               {/* Place Create VIX button inside VIX card area so it's clear it's for VIX only */}
@@ -591,7 +700,16 @@ const TradeSatup = () => {
                     <Col md={4}>
                       <Form.Group>
                         <Form.Label>Date</Form.Label>
-                        <Form.Control type="date" />
+                        <Form.Control
+                          type="date"
+                          value={marketInsight.date || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
                       </Form.Group>
                     </Col>
 
@@ -634,6 +752,26 @@ const TradeSatup = () => {
 
                     <Col md={12}>
                       <Form.Check label="Make this trend visible to users" />
+                    </Col>
+                  </Row>
+                  <Row className="mt-2">
+                    <Col />
+                    <Col className="text-end">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => setMarketInsight(empty)}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={handleSaveTrend}
+                      >
+                        Save Trend
+                      </Button>
                     </Col>
                   </Row>
                 </Form>
