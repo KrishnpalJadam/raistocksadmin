@@ -1,49 +1,16 @@
-// ResearchReportAdd.jsx
-import React, { useState } from "react";
-import { FileText, Download } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { FileText, Download, Trash2 } from "lucide-react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchReports, uploadReport } from "../slices/researchReportSlice";
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const ResearchReportAdd = () => {
-  // --- DUMMY RESEARCH REPORT DATA ---
-  const dummyReports = [
-    {
-      id: 1,
-      title: "Sector Deep Dive: The Indian Auto Ancillary Sector (Q3 FY26)",
-      filename: "AutoAncillary_Q3FY26_DeepDive.pdf",
-      date: "October 1, 2025",
-      size: "1.2 MB",
-      type: "Sectoral",
-      link: "/reports/auto_ancillary_report.pdf",
-    },
-    {
-      id: 2,
-      title: "Q2 Earnings Preview: Banking and Financial Services",
-      filename: "Q2_Banking_Preview.pdf",
-      date: "September 28, 2025",
-      size: "750 KB",
-      type: "Earnings",
-      link: "/reports/q2_banking_preview.pdf",
-    },
-    {
-      id: 3,
-      title: "Long Term Idea: Power Grid Corporation of India Ltd. (Buy)",
-      filename: "POWERGRID_LongTerm_Idea.pdf",
-      date: "September 25, 2025",
-      size: "450 KB",
-      type: "Stock Specific",
-      link: "/reports/powergrid_report.pdf",
-    },
-    {
-      id: 4,
-      title: "Commodity Outlook: Crude Oil and Gold Price Projections",
-      filename: "Commodity_Outlook_Q4_FY26.pdf",
-      date: "September 20, 2025",
-      size: "980 KB",
-      type: "Macro",
-      link: "/reports/commodity_outlook.pdf",
-    },
-  ];
+  const dispatch = useDispatch();
+  const { items: reports = [], status } = useSelector(
+    (s) => s.researchReports || { items: [] }
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [newReport, setNewReport] = useState({
@@ -52,22 +19,59 @@ const ResearchReportAdd = () => {
     file: null,
   });
 
+  useEffect(() => {
+    dispatch(fetchReports());
+  }, [dispatch]);
+
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setNewReport({
-      ...newReport,
-      [name]: files ? files[0] : value,
-    });
+    setNewReport({ ...newReport, [name]: files ? files[0] : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleDownload = async (id, fileName) => {
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/research-reports/download/${id}`
+      );
+      if (!res.ok) throw new Error("Failed to download file");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName || "report";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("New Report:", newReport);
-    // You can handle upload or API call here
-    handleClose();
+    if (!newReport.file) return;
+    const formData = new FormData();
+    formData.append("title", newReport.title);
+    formData.append("description", newReport.description);
+    formData.append("file", newReport.file);
+
+    try {
+      await dispatch(uploadReport(formData)).unwrap();
+      // refresh list
+      dispatch(fetchReports());
+      setNewReport({ title: "", description: "", file: null });
+      handleClose();
+    } catch (err) {
+      // keep simple: console error
+      console.error("Upload failed", err);
+    }
   };
 
   const getIconColor = (type) => {
@@ -95,49 +99,48 @@ const ResearchReportAdd = () => {
       </div>
 
       <div className="list-group">
-        {dummyReports.map((report) => (
+        {status === "loading" && <div className="text-muted">Loading...</div>}
+        {reports.map((report) => (
           <div
-            key={report.id}
+            key={report._id || report.id}
             className="list-group-item repot list-group-item-action d-flex justify-content-between align-items-center rai-report-item"
           >
             <div className="d-flex align-items-center">
               <div
                 className="rai-icon-bg me-3 d-flex justify-content-center align-items-center"
                 style={{
-                  backgroundColor: `${getIconColor(report.type)}15`,
+                  backgroundColor: `${getIconColor(report.type || "")}15`,
                   minWidth: "40px",
                   height: "40px",
                   borderRadius: "8px",
                 }}
               >
-                <FileText size={20} color={getIconColor(report.type)} />
+                <FileText size={20} color={getIconColor(report.type || "")} />
               </div>
               <div>
                 <h5 className="mb-0 fw-bold" style={{ fontSize: "1rem" }}>
                   {report.title}
                 </h5>
-                <p className="text-muted mb-0 small">
-                  {report.filename} ({report.type} Report)
-                </p>
+                <p className="text-muted mb-0 small">{report.description}</p>
               </div>
             </div>
 
             <div className="d-flex align-items-center flex-shrink-0">
               <div className="text-end me-4 d-none d-md-block">
                 <span className="d-block small text-muted">
-                  Date: {report.date}
+                  {report.createdAt
+                    ? new Date(report.createdAt).toLocaleString()
+                    : ""}
                 </span>
               </div>
-
-              <a
-                href={report.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary btn-sm d-flex align-items-center"
-                download={report.filename}
+              <button
+                onClick={() =>
+                  handleDownload(report._id || report.id, report.fileName)
+                }
+                className="btn btn-primary btn-sm d-flex align-items-center me-2"
               >
-                <Download size={16} className="me-1" /> Open/Download
-              </a>
+                <Download size={16} className="me-1" /> Download
+              </button>
             </div>
           </div>
         ))}
