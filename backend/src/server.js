@@ -23,7 +23,8 @@ const app = express();
 const whitelist = [
   "https://unique-youtiao-11d4e5.netlify.app",
   "http://localhost:5173",
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "http://localhost:5174"
 ];
 
 const corsOptions = {
