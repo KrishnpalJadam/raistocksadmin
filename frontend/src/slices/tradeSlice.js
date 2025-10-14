@@ -72,10 +72,9 @@ const slice = createSlice({
   initialState: { items: [], status: "idle", error: null },
   reducers: {},
   extraReducers: (b) => {
-    b
-      .addCase(fetchTrades.pending, (s) => {
-        s.status = "loading";
-      })
+    b.addCase(fetchTrades.pending, (s) => {
+      s.status = "loading";
+    })
       .addCase(fetchTrades.fulfilled, (s, a) => {
         s.status = "succeeded";
         s.items = a.payload;
@@ -88,11 +87,15 @@ const slice = createSlice({
         s.items.unshift(a.payload);
       })
       .addCase(updateTrade.fulfilled, (s, a) => {
-        const idx = s.items.findIndex((x) => x._id === a.payload._id || x.id === a.payload.id);
+        const idx = s.items.findIndex(
+          (x) => x._id === a.payload._id || x.id === a.payload.id
+        );
         if (idx >= 0) s.items[idx] = a.payload;
       })
       .addCase(deleteTrade.fulfilled, (s, a) => {
-        s.items = s.items.filter((x) => x._id !== a.payload && x.id !== a.payload);
+        s.items = s.items.filter(
+          (x) => x._id !== a.payload && x.id !== a.payload
+        );
       });
   },
 });
