@@ -1,7 +1,9 @@
-import GlobalMarket from "../models/globalmarketModel.js";
+import GlobalMarket from "../models/globalMarketModel.js";
+
 
  
 
+ 
 // ✅ Create a new global market entry
 export const createGlobalMarket = async (req, res) => {
   try {

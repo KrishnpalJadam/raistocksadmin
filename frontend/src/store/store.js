@@ -8,6 +8,7 @@ import marketTrendsReducer from "../slices/marketTrendSlice";
 import researchReportsReducer from "../slices/researchReportSlice";
 import vixReducer from "../slices/vixSlice";
 import globalMarketReducer from "../slices/globalMarketSlice";
+import tradeReducer from "../slices/tradeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -19,5 +20,6 @@ export const store = configureStore({
     researchReports: researchReportsReducer,
     vix: vixReducer,
     globalMarket: globalMarketReducer,
+    trades: tradeReducer,
   },
 });
