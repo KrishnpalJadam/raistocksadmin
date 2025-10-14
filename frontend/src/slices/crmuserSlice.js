@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN = import.meta.env.VITE_ADMIN_TOKEN;
 
 // ✅ Fetch all CRM users
