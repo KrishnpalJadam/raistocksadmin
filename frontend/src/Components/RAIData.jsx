@@ -12,6 +12,7 @@ import {
 import { Search, Edit, Plus, Target, Eye, Trash2, User } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTrades, createTrade, deleteTrade } from "../slices/tradeSlice";
+import { createTradeAction } from "../slices/tradeActionsSlice";
 
 const RAIData = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,11 @@ const RAIData = () => {
   const [selectedTrade, setSelectedTrade] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
+  // trade action form state (used inside Update modal)
+  const [actionType, setActionType] = useState("update");
+  const [actionPrice, setActionPrice] = useState("");
+  const [actionTitle, setActionTitle] = useState("");
+  const [actionComment, setActionComment] = useState("");
   const [AddshowModal, AddsetShowModal] = useState(false);
 
   const emptyForm = {
@@ -89,8 +95,48 @@ const RAIData = () => {
     setSelectedTrade(trade);
     setShowModal(true);
   };
-  const handleUpdate = () => {
+  // Open update modal for a specific trade
+  const handleUpdate = (trade) => {
+    setSelectedTrade(trade);
     setUpdateModal(true);
+  };
+
+  // submit handler for trade action (Update / Book Profit / Stoploss Hit)
+  const handleActionSubmit = (e) => {
+    e.preventDefault();
+
+    // selectedTrade must be set by clicking Update on a row or via View -> Update
+    const trade = selectedTrade;
+    if (!trade) {
+      return alert(
+        "No trade selected to apply action. Click Update on a trade row first."
+      );
+    }
+
+    const payload = {
+      tradeId: trade._id || trade.id,
+      type: actionType || "update",
+      title: actionTitle || actionType || "update",
+      price: Number(actionPrice) || 0,
+      comment: actionComment || "",
+    };
+
+    dispatch(
+      createTradeAction({ tradeId: payload.tradeId, actionData: payload })
+    )
+      .unwrap()
+      .then(() => {
+        alert("Action created");
+        // reset local action form and close modal
+        setActionPrice("");
+        setActionTitle("");
+        setActionComment("");
+        setActionType("update");
+        setUpdateModal(false);
+      })
+      .catch((err) => {
+        alert("Failed to create action: " + (err?.message || err));
+      });
   };
   const AddhandleView = (trade) => {
     AddsetShowModal(true);
@@ -480,7 +526,7 @@ const RAIData = () => {
                       <div className="d-flex gap-2">
                         <Button
                           className="btn-sm"
-                          onClick={() => handleUpdate()}
+                          onClick={() => handleUpdate(t)}
                         >
                           Update
                         </Button>
@@ -562,19 +608,49 @@ const RAIData = () => {
           </Modal.Title>
         </Modal.Header>
 
+        {/* TRADE ACTIONS */}
         <Modal.Body className="p-4">
-      {/* Here will be update the from here there are tradeActions -- update , book_info , stoploss_hit */}
-          <form>
-            {/* Title Field */}
+          {/* Here will be update the from here there are tradeActions -- update , book_info , stoploss_hit */}
+          <form onSubmit={handleActionSubmit}>
+            {/* Title / Action Type Field */}
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Action</label>
+              <select
+                value={actionType}
+                onChange={(e) => setActionType(e.target.value)}
+                className="form-select"
+              >
+                <option value="update">Update</option>
+                <option value="book_profit">Book Profit</option>
+                <option value="stoploss_hit">Stoploss Hit</option>
+                <option value="exit">Exit</option>
+              </select>
+            </div>
+
+            {/* Title Field (optional override) */}
             <div className="mb-3">
               <label className="form-label fw-semibold">Title</label>
-              <select name="" id="" className="form-select">
-                <option value="">Select Title</option>
-                <option value="">Update</option>
-                <option value="">Book Profit</option>
-                <option value="">Stoploss Hit</option>
-                <option value="">Exit</option>
-              </select>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Optional title (defaults to action)"
+                value={actionTitle}
+                onChange={(e) => setActionTitle(e.target.value)}
+              />
+            </div>
+
+            {/* Price Field */}
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Price</label>
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Enter trade price"
+                min="0"
+                step="any"
+                value={actionPrice}
+                onChange={(e) => setActionPrice(e.target.value)}
+              />
             </div>
 
             {/* Comment Field */}
@@ -584,6 +660,8 @@ const RAIData = () => {
                 className="form-control"
                 rows="3"
                 placeholder="Write your comment here..."
+                value={actionComment}
+                onChange={(e) => setActionComment(e.target.value)}
               ></textarea>
             </div>
 
@@ -593,7 +671,7 @@ const RAIData = () => {
               <input type="text" className="form-control" placeholder="Enter" />
             </div>
 
-{/* this is where we will submit our actions.. */}
+            {/* this is where we will submit our actions.. */}
             {/* Update Button */}
             <div className="text-end">
               <Button variant="primary" type="submit" className="px-4">
