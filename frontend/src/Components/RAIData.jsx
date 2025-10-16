@@ -563,6 +563,7 @@ const RAIData = () => {
         </Modal.Header>
 
         <Modal.Body className="p-4">
+      {/* Here will be update the from here there are tradeActions -- update , book_info , stoploss_hit */}
           <form>
             {/* Title Field */}
             <div className="mb-3">
@@ -592,6 +593,7 @@ const RAIData = () => {
               <input type="text" className="form-control" placeholder="Enter" />
             </div>
 
+{/* this is where we will submit our actions.. */}
             {/* Update Button */}
             <div className="text-end">
               <Button variant="primary" type="submit" className="px-4">
