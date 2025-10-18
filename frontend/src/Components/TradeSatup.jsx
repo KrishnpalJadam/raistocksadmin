@@ -11,6 +11,7 @@ import {
 } from "../slices/marketInsightSlice";
 import { createMarketPhase } from "../slices/marketPhaseSlice";
 import { createMarketTrend } from "../slices/marketTrendSlice";
+import MarketSetupForm from "./MarketSetupForm";
 
 const TradeSatup = () => {
   const [activeModule, setActiveModule] = useState("marketInsight"); // marketInsight | marketPhase | marketTrend
@@ -130,6 +131,7 @@ const TradeSatup = () => {
                 <option value="marketInsight">Market Insight</option>
                 <option value="marketPhase">Market Phase</option>
                 <option value="marketTrend">Market Trend</option>
+                <option value="marketSatup">Market Satup</option>
               </Form.Select>
 
               {/* ---------------- Market Insight ---------------- */}
@@ -427,6 +429,7 @@ const TradeSatup = () => {
                       </Button>
                     </Col>
                   </Row>
+
                 </Form>
               )}
 
@@ -549,6 +552,15 @@ const TradeSatup = () => {
                   </div>
                 </Form>
               )}
+
+              {/* market satup */}
+ {activeModule === "marketSatup" && (
+  <>
+  <MarketSetupForm/>
+  </>
+ )}
+
+
             </>
           )}
 
