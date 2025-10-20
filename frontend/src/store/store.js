@@ -10,6 +10,7 @@ import vixReducer from "../slices/vixSlice";
 import globalMarketReducer from "../slices/globalMarketSlice";
 import tradeReducer from "../slices/tradeSlice";
 import tradeActionReducer from "../slices/tradeActionsSlice";
+import supportReducer from "../slices/supportSlice";
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,8 @@ export const store = configureStore({
     globalMarket: globalMarketReducer,
     trades: tradeReducer,
         tradeActions: tradeActionReducer,
+            support: supportReducer,
+
 
   },
 });
