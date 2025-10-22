@@ -35,6 +35,24 @@ export const createTrade = createAsyncThunk(
   }
 );
 
+export const updateTradeStatus = createAsyncThunk(
+  "trades/updateStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TRADE_API}/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const body = await res.json();
+      if (!res.ok) return rejectWithValue(body);
+      return body.trade || body;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const updateTrade = createAsyncThunk(
   "trades/update",
   async ({ id, data }, { rejectWithValue }) => {
@@ -70,7 +88,11 @@ export const deleteTrade = createAsyncThunk(
 const slice = createSlice({
   name: "trades",
   initialState: { items: [], status: "idle", error: null },
-  reducers: {},
+  reducers: {
+    updateWithActions: (state, action) => {
+      state.items = action.payload;
+    },
+  },
   extraReducers: (b) => {
     b.addCase(fetchTrades.pending, (s) => {
       s.status = "loading";
@@ -84,13 +106,33 @@ const slice = createSlice({
         s.error = a.payload || a.error?.message;
       })
       .addCase(createTrade.fulfilled, (s, a) => {
-        s.items.unshift(a.payload);
+        // Ensure new trade has status
+        const trade = a.payload;
+        s.items.unshift({
+          ...trade,
+          status: trade.status || "Live",
+        });
       })
       .addCase(updateTrade.fulfilled, (s, a) => {
         const idx = s.items.findIndex(
           (x) => x._id === a.payload._id || x.id === a.payload.id
         );
         if (idx >= 0) s.items[idx] = a.payload;
+      })
+      .addCase(updateTradeStatus.fulfilled, (s, a) => {
+        const updated = a.payload?.trade || a.payload;
+        if (!updated?._id && !updated?.id) return;
+
+        const idx = s.items.findIndex(
+          (x) => x._id === updated._id || x.id === updated.id
+        );
+        if (idx >= 0) {
+          s.items[idx] = {
+            ...s.items[idx],
+            ...updated,
+            status: updated.status || s.items[idx].status,
+          };
+        }
       })
       .addCase(deleteTrade.fulfilled, (s, a) => {
         s.items = s.items.filter(
