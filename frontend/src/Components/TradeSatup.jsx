@@ -9,16 +9,9 @@ import {
   updateMarketInsight,
   deleteMarketInsight,
 } from "../slices/marketInsightSlice";
-import {
-  createMarketPhase,
-  fetchMarketPhases,
-} from "../slices/marketPhaseSlice";
-import {
-  createMarketTrend,
-  fetchMarketTrends,
-} from "../slices/marketTrendSlice";
-import { createVix } from "../slices/vixSlice";
-import { createGlobalMarket } from "../slices/globalMarketSlice";
+import { createMarketPhase } from "../slices/marketPhaseSlice";
+import { createMarketTrend } from "../slices/marketTrendSlice";
+import MarketSetupForm from "./MarketSetupForm";
 
 const TradeSatup = () => {
   const [activeModule, setActiveModule] = useState("marketInsight"); // marketInsight | marketPhase | marketTrend
@@ -287,6 +280,7 @@ const TradeSatup = () => {
                 <option value="marketInsight">Market Insight</option>
                 <option value="marketPhase">Market Phase</option>
                 <option value="marketTrend">Market Trend</option>
+                <option value="marketSatup">Market Satup</option>
               </Form.Select>
 
               {/* ---------------- Market Insight ---------------- */}
@@ -442,6 +436,8 @@ const TradeSatup = () => {
                             <Save size={14} /> Market Create
                           </Button>
                         </div>
+
+
                       </Card>
                     </Col>
 
@@ -477,16 +473,14 @@ const TradeSatup = () => {
                               Fetch VIX
                             </Button>
                           </Col>
-                          <Col md={3} className="d-flex align-items-end">
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={handleCreateVix}
-                            >
-                              Create VIX
-                            </Button>
-                          </Col>
+
                         </Row>
+                        <div className="row mt-3">
+                          <div className="col-sm-4">
+                            <button className="btn btn-primary">Save</button>
+
+                          </div>
+                        </div>
                       </Card>
                     </Col>
                     <Col md={6}>
@@ -573,6 +567,8 @@ const TradeSatup = () => {
                             </Button>
                           </div>
                         </Row>
+
+
                       </Card>
                     </Col>
                   </Row>
@@ -607,6 +603,7 @@ const TradeSatup = () => {
                       </Button>
                     </Col>
                   </Row>
+
                 </Form>
               )}
 
@@ -669,26 +666,12 @@ const TradeSatup = () => {
                       <Form.Check label="Make this phase visible to users" />
                     </Col>
                   </Row>
-                  <Row className="mt-2">
-                    <Col />
-                    <Col className="text-end">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => setMarketInsight(empty)}
-                      >
-                        Reset
-                      </Button>
-                      <Button
-                        variant="success"
-                        size="sm"
-                        onClick={handleSavePhase}
-                      >
-                        Save Phase
-                      </Button>
-                    </Col>
-                  </Row>
+                  <div className="row mt-2">
+                    <div className="col-sm-4">
+                      <button className="btn btn-primary">Save</button>
+
+                    </div>
+                  </div>
                 </Form>
               )}
               {/* Place Create VIX button inside VIX card area so it's clear it's for VIX only */}
@@ -754,28 +737,23 @@ const TradeSatup = () => {
                       <Form.Check label="Make this trend visible to users" />
                     </Col>
                   </Row>
-                  <Row className="mt-2">
-                    <Col />
-                    <Col className="text-end">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => setMarketInsight(empty)}
-                      >
-                        Reset
-                      </Button>
-                      <Button
-                        variant="success"
-                        size="sm"
-                        onClick={handleSaveTrend}
-                      >
-                        Save Trend
-                      </Button>
-                    </Col>
-                  </Row>
+                  <div className="row mt-2">
+                    <div className="col-sm-4">
+                      <button className="btn btn-primary">Save</button>
+
+                    </div>
+                  </div>
                 </Form>
               )}
+
+              {/* market satup */}
+ {activeModule === "marketSatup" && (
+  <>
+  <MarketSetupForm/>
+  </>
+ )}
+
+
             </>
           )}
 
@@ -787,18 +765,10 @@ const TradeSatup = () => {
         </Card.Body>
 
         <Card.Footer className="d-flex justify-content-end gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              setMarketInsight(empty);
-              setEditingId(null);
-            }}
-          >
+          <Button variant="secondary" size="sm" >
             Reset
           </Button>
-          {/* Bottom Save Changes intentionally left inert for now per request */}
-          <Button variant="success" size="sm" disabled>
+          <Button variant="success" size="sm">
             <Save size={14} /> Save Changes
           </Button>
         </Card.Footer>
