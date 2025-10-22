@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN = import.meta.env.VITE_ADMIN_TOKEN;
 
 // ✅ Fetch all CRM users
@@ -8,7 +8,7 @@ export const fetchUsers = createAsyncThunk(
   "crmUsers/fetchUsers",
   async (_, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/user-management`, {
+      const res = await fetch(`${API_URL}/api/crm`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${TOKEN}`,
@@ -31,7 +31,7 @@ export const addUser = createAsyncThunk(
   "crmUsers/addUser",
   async (userData, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/user-management`, {
+      const res = await fetch(`${API_URL}/api/crm/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +66,7 @@ export const updateUser = createAsyncThunk(
   "crmUsers/updateUser",
   async ({ id, updatedData }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/user-management/${id}`, {
+      const res = await fetch(`${API_URL}/api/crm/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export const updateUser = createAsyncThunk(
   "crmUsers/updateCRMUser",
   async ({ id, ...updateData }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/user-management/${id}`, {
+      const res = await fetch(`${API_URL}/api/crm/${id}`, {
         method: "PUT", // ✅ important
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +116,7 @@ export const toggleUserStatus = createAsyncThunk(
     try {
       const newStatus = currentStatus === "Active" ? "Suspended" : "Active";
 
-      const res = await fetch(`${API_URL}/api/admin/user-management/${id}`, {
+      const res = await fetch(`${API_URL}/api/crm/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export const deleteUserAsync = createAsyncThunk(
   "crmUsers/deleteUserAsync",
   async (id, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/user-management/${id}`, {
+      const res = await fetch(`${API_URL}/api/crm/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${TOKEN}`,

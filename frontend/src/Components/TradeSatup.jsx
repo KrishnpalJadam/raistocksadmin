@@ -34,6 +34,43 @@ const TradeSatup = () => {
     date: new Date().toISOString().slice(0, 10),
   };
 
+  const handleInlineCreate = () => {
+    // Decide which module to create based on activeModule
+    if (activeModule === "marketInsight") {
+      const payload = { ...marketInsight };
+      if (!payload.sentiment) payload.sentiment = null;
+      dispatch(createMarketInsight(payload))
+        .unwrap()
+        .then(() => {
+          alert("Market Insight created successfully");
+          setMarketInsight(empty);
+        })
+        .catch((err) =>
+          alert("Failed to create Market Insight: " + (err?.message || err))
+        );
+    } else if (activeModule === "marketPhase") {
+      // reuse inline phase creator
+      handleCreateMarketPhaseInline();
+    } else if (activeModule === "marketTrend") {
+      const t = {
+        title: marketInsight.title || "",
+        description: marketInsight.comment || "",
+        date: marketInsight.date,
+      };
+      dispatch(createMarketTrend(t))
+        .unwrap()
+        .then(() => {
+          alert("Market Trend created successfully");
+          setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+          dispatch(fetchMarketTrends());
+          setActiveTab("view");
+        })
+        .catch((err) =>
+          alert("Failed to create Market Trend: " + (err?.message || err))
+        );
+    }
+  };
+
   const [marketInsight, setMarketInsight] = useState(empty);
   const [editingId, setEditingId] = useState(null);
 
@@ -47,9 +84,21 @@ const TradeSatup = () => {
       // ensure sentiment is null if not selected
       const payload = { ...marketInsight };
       if (!payload.sentiment) payload.sentiment = null;
-      if (editingId)
-        dispatch(updateMarketInsight({ id: editingId, data: payload }));
-      else dispatch(createMarketInsight(payload));
+      if (editingId) {
+        dispatch(updateMarketInsight({ id: editingId, data: payload }))
+          .unwrap()
+          .then(() => alert("Market Insight updated successfully"))
+          .catch((err) =>
+            alert("Failed to update Market Insight: " + (err?.message || err))
+          );
+      } else {
+        dispatch(createMarketInsight(payload))
+          .unwrap()
+          .then(() => alert("Market Insight created successfully"))
+          .catch((err) =>
+            alert("Failed to create Market Insight: " + (err?.message || err))
+          );
+      }
     } else if (activeModule === "marketPhase") {
       // marketPhase expects { title, description, date }
       const p = {
@@ -70,6 +119,68 @@ const TradeSatup = () => {
     setEditingId(null);
   };
 
+  const handleCreateVix = () => {
+    if (!marketInsight.vixValue) return alert("Enter VIX value");
+    dispatch(
+      createVix({ vixValue: marketInsight.vixValue, date: marketInsight.date })
+    )
+      .unwrap()
+      .then(() => {
+        alert("VIX created successfully");
+        setMarketInsight((prev) => ({ ...prev, vixValue: "" }));
+      })
+      .catch((err) => {
+        alert("Failed to create VIX: " + (err?.message || err));
+      });
+  };
+
+  const handleCreateMarketPhaseInline = () => {
+    // create market phase using title, comment -> description, date
+    const p = {
+      title: marketInsight.title || "",
+      description: marketInsight.comment || "",
+      date: marketInsight.date,
+    };
+    dispatch(createMarketPhase(p))
+      .unwrap()
+      .then(() => {
+        // refresh phase list so TradeSatupView (view tab) shows the newly created phase
+        dispatch(fetchMarketPhases());
+        alert("Market Phase created successfully");
+        setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+        // switch to view tab so user sees it (optional)
+        setActiveTab("view");
+      })
+      .catch((err) =>
+        alert("Failed to create Market Phase: " + (err?.message || err))
+      );
+  };
+
+  const handleCreateGlobalMarket = () => {
+    const payload = {
+      country: marketInsight.country,
+      currency: marketInsight.currency,
+      value: marketInsight.value,
+      comment: marketInsight.globalcomment,
+      date: marketInsight.date,
+    };
+    dispatch(createGlobalMarket(payload))
+      .unwrap()
+      .then(() => {
+        alert("Global Market created successfully");
+        setMarketInsight((prev) => ({
+          ...prev,
+          country: "",
+          currency: 0,
+          value: "",
+          globalcomment: "",
+        }));
+      })
+      .catch((err) =>
+        alert("Failed to create Global Market: " + (err?.message || err))
+      );
+  };
+
   const handleEdit = (item) => {
     const copy = { ...item };
     if (copy.date) copy.date = new Date(copy.date).toISOString().slice(0, 10);
@@ -84,6 +195,44 @@ const TradeSatup = () => {
   const handleDelete = (id) => {
     if (window.confirm("Delete this market insight?"))
       dispatch(deleteMarketInsight(id));
+  };
+
+  const handleSavePhase = () => {
+    const payload = {
+      title: marketInsight.title || "",
+      description: marketInsight.comment || "",
+      date: marketInsight.date,
+    };
+    dispatch(createMarketPhase(payload))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchMarketPhases());
+        alert("Market Phase created successfully");
+        setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+        setActiveTab("view");
+      })
+      .catch((err) =>
+        alert("Failed to create Market Phase: " + (err?.message || err))
+      );
+  };
+
+  const handleSaveTrend = () => {
+    const payload = {
+      title: marketInsight.title || "",
+      description: marketInsight.comment || "",
+      date: marketInsight.date,
+    };
+    dispatch(createMarketTrend(payload))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchMarketTrends());
+        alert("Market Trend created successfully");
+        setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+        setActiveTab("view");
+      })
+      .catch((err) =>
+        alert("Failed to create Market Trend: " + (err?.message || err))
+      );
   };
 
   return (
@@ -278,6 +427,14 @@ const TradeSatup = () => {
                               </div>
                             </div>
                           </div>
+
+                          <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => handleInlineCreate()}
+                          >
+                            <Save size={14} /> Market Create
+                          </Button>
                         </div>
 
 
@@ -306,7 +463,13 @@ const TradeSatup = () => {
                             </Form.Group>
                           </Col>
                           <Col md={3} className="d-flex align-items-end">
-                            <Button variant="outline-primary" size="sm">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => {
+                                /* fetch action if needed */
+                              }}
+                            >
                               Fetch VIX
                             </Button>
                           </Col>
@@ -393,6 +556,16 @@ const TradeSatup = () => {
                               }
                             />
                           </Form.Group>
+                          <div className="mt-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={handleCreateGlobalMarket}
+                              className="me-2"
+                            >
+                              Create Global Market
+                            </Button>
+                          </div>
                         </Row>
 
 
@@ -424,6 +597,7 @@ const TradeSatup = () => {
                           Delete
                         </Button>
                       )}
+                      {/* MarketInsight submit is the form submit; keep Create/Update but don't wire bottom Save Changes - main form submit handles it */}
                       <Button variant="success" size="sm" type="submit">
                         <Save size={14} /> {editingId ? "Update" : "Create"}
                       </Button>
@@ -440,7 +614,16 @@ const TradeSatup = () => {
                     <Col md={4}>
                       <Form.Group>
                         <Form.Label>Date</Form.Label>
-                        <Form.Control type="date" />
+                        <Form.Control
+                          type="date"
+                          value={marketInsight.date || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
                       </Form.Group>
                     </Col>
                     <Col md={4}>
@@ -491,6 +674,7 @@ const TradeSatup = () => {
                   </div>
                 </Form>
               )}
+              {/* Place Create VIX button inside VIX card area so it's clear it's for VIX only */}
 
               {/* ---------------- Market Trend ---------------- */}
               {activeModule === "marketTrend" && (
@@ -499,7 +683,16 @@ const TradeSatup = () => {
                     <Col md={4}>
                       <Form.Group>
                         <Form.Label>Date</Form.Label>
-                        <Form.Control type="date" />
+                        <Form.Control
+                          type="date"
+                          value={marketInsight.date || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
                       </Form.Group>
                     </Col>
 

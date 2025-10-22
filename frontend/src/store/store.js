@@ -6,6 +6,12 @@ import marketInsightsReducer from "../slices/marketInsightSlice";
 import marketPhasesReducer from "../slices/marketPhaseSlice";
 import marketTrendsReducer from "../slices/marketTrendSlice";
 import researchReportsReducer from "../slices/researchReportSlice";
+import vixReducer from "../slices/vixSlice";
+import globalMarketReducer from "../slices/globalMarketSlice";
+import tradeReducer from "../slices/tradeSlice";
+import tradeActionReducer from "../slices/tradeActionsSlice";
+import supportReducer from "../slices/supportSlice";
+import clientReducer from "../slices/clientSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,5 +21,14 @@ export const store = configureStore({
     marketPhases: marketPhasesReducer,
     marketTrends: marketTrendsReducer,
     researchReports: researchReportsReducer,
+    vix: vixReducer,
+    globalMarket: globalMarketReducer,
+    trades: tradeReducer,
+        tradeActions: tradeActionReducer,
+            support: supportReducer,
+                clients: clientReducer,
+
+
+
   },
 });

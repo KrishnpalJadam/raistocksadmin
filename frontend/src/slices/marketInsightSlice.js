@@ -21,10 +21,19 @@ export const createMarketInsight = createAsyncThunk(
   "marketInsights/create",
   async (payload, { rejectWithValue }) => {
     try {
+      // payload should match updated model: { marketInfo, title, comment, sentiment, date }
+      const bodyPayload = {
+        marketInfo: payload.marketInfo,
+        title: payload.title,
+        comment: payload.comment,
+        sentiment: payload.sentiment === undefined ? null : payload.sentiment,
+        date: payload.date,
+      };
+
       const res = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(bodyPayload),
       });
       const body = await res.json();
       if (!res.ok) return rejectWithValue(body);
