@@ -12,6 +12,7 @@ import {
 import { createMarketPhase } from "../slices/marketPhaseSlice";
 import { createMarketTrend } from "../slices/marketTrendSlice";
 import MarketSetupForm from "./MarketSetupForm";
+import MarketSetupViewTable from "./Marketsatupviewtable";
 
 const TradeSatup = () => {
   const [activeModule, setActiveModule] = useState("marketInsight"); // marketInsight | marketPhase | marketTrend
@@ -262,6 +263,11 @@ const TradeSatup = () => {
             <Nav.Item>
               <Nav.Link eventKey="view" className="fw-semibold text-dark">
                 <Eye size={14} className="me-1" /> View Setup
+              </Nav.Link>
+            </Nav.Item>
+             <Nav.Item>
+              <Nav.Link eventKey="marketSatupview" className="fw-semibold text-dark">
+                <Eye size={14} className="me-1" /> Market Satup View
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -747,11 +753,11 @@ const TradeSatup = () => {
               )}
 
               {/* market satup */}
- {activeModule === "marketSatup" && (
-  <>
-  <MarketSetupForm/>
-  </>
- )}
+              {activeModule === "marketSatup" && (
+                <>
+                  <MarketSetupForm />
+                </>
+              )}
 
 
             </>
@@ -760,6 +766,12 @@ const TradeSatup = () => {
           {activeTab === "view" && (
             <>
               <TradeSatupView />
+            </>
+          )}
+
+           {activeTab === "marketSatupview" && (
+            <>
+              <MarketSetupViewTable />
             </>
           )}
         </Card.Body>
