@@ -7,7 +7,7 @@ import TicketDetailModal from "./TicketDetailModal";
 import { fetchSupportTickets, updateTicketStatus } from "../slices/supportSlice";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/support";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/support`;
 const ITEMS_PER_PAGE = 10;
 
 const getStatusBadge = (status) => {
@@ -50,32 +50,35 @@ const Support = () => {
   };
 
   // ✅ Handle email click
-  const handleSendEmail = async (ticket) => {
-    try {
-      // Get email from backend
-      const res = await axios.get(`${API_URL}/${ticket._id}/email`);
-      const email = res.data.email;
+const handleSendEmail = async (ticket) => {
+  try {
+    // Prepare mailto URL
+    const subject = `Regarding your support ticket #${ticket.ticketId}`;
+    const body = `Hi ${ticket.client},\n\nWe’re reaching out regarding your ticket about "${ticket.subject}".\n\nBest regards,\nSupport Team`;
+    const mailtoUrl = `mailto:${ticket.clientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-      if (!email) {
-        alert("Email not found for this user.");
-        return;
-      }
+    // Open mail client immediately
+    window.open(mailtoUrl, "_blank");
 
-      // Open Gmail compose
-      const subject = `Regarding your support ticket #${ticket.ticketId}`;
-      const body = `Hi ${ticket.client},\n\nWe’re reaching out regarding your ticket about "${ticket.subject}".\n\nBest regards,\nSupport Team`;
-      window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    // ✅ Fetch email from backend (optional, can skip if you already have email)
+    const res = await axios.get(`${API_URL}/${ticket._id}/email`);
+    const email = res.data.email;
 
-      // Mark ticket as resolved in backend
-      await axios.put(`${API_URL}/${ticket._id}/resolve`);
-
-      // Update status in Redux
-      dispatch(updateTicketStatus({ id: ticket._id, status: "Resolved" }));
-    } catch (err) {
-      console.error("Error sending email:", err);
-      alert("Failed to send email or update status.");
+    if (!email) {
+      console.warn("Email not found from backend.");
     }
-  };
+
+    // Mark ticket as resolved in backend
+    await axios.put(`${API_URL}/${ticket._id}/resolve`);
+
+    // Update status in Redux
+    dispatch(updateTicketStatus({ id: ticket._id, status: "Resolved" }));
+  } catch (err) {
+    console.error("Error sending email:", err);
+    alert("Failed to update ticket status.");
+  }
+};
+
 
   // ✅ Filter + search tickets
   const filteredTickets = useMemo(() => {

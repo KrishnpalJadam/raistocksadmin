@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // ✅ Base URL — adjust if needed
-const API_URL = `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/clients`;
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/clients`;
 
 // ✅ Fetch all clients
 export const fetchClients = createAsyncThunk("clients/fetchAll", async (_, thunkAPI) => {
