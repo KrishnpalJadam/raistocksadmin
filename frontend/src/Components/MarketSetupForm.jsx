@@ -98,25 +98,41 @@ const MarketSetupForm = () => {
 
   return (
     <div className="container my-4">
-    
+
       <form onSubmit={handleSubmit}>
         {/* On What */}
-        <div className="mb-3">
-          <label className="form-label">On What</label>
-          <input
-            type="text"
-            className="form-control"
-            name="onWhat"
-            value={formData.onWhat}
-            onChange={handleChange}
-            placeholder="e.g., Bank Nifty"
-          />
+        <div className="mb-3 row">
+          <div className="col-sm-6">
+            <label className="form-label">On What</label>
+            <input
+              type="text"
+              className="form-control"
+              name="onWhat"
+              value={formData.onWhat}
+              onChange={handleChange}
+              placeholder="e.g., Bank Nifty"
+            />
+          </div>
+          <div className="col-sm-6">
+            <label className="form-label">Price</label>
+            <input
+              type="text"
+              className="form-control"
+              name="Price"
+
+              placeholder=""
+            />
+          </div>
+
         </div>
 
         {/* Support */}
         <h5>Support Levels</h5>
+        <div className="row">
+
+       
         {["S1", "S2", "S3"].map((level) => (
-          <div className="mb-2" key={level}>
+          <div className="mb-2 col-sm-4" key={level}>
             <label className="form-label">{level}</label>
             <input
               type="text"
@@ -127,21 +143,16 @@ const MarketSetupForm = () => {
             />
           </div>
         ))}
-        <div className="mb-3">
-          <label className="form-label">Support Comment</label>
-          <input
-            type="text"
-            className="form-control"
-            name="comment"
-            value={formData.support.comment}
-            onChange={(e) => setFormData((prev) => ({ ...prev, support: { ...prev.support, comment: e.target.value } }))}
-          />
-        </div>
+         </div>
+      
 
         {/* Resistance */}
         <h5>Resistance Levels</h5>
+        <div className="row">
+
+  
         {["R1", "R2", "R3"].map((level) => (
-          <div className="mb-2" key={level}>
+          <div className="mb-2 col-sm-4" key={level}>
             <label className="form-label">{level}</label>
             <input
               type="text"
@@ -152,16 +163,17 @@ const MarketSetupForm = () => {
             />
           </div>
         ))}
+              </div>
         <div className="mb-3">
-          <label className="form-label">Resistance Comment</label>
-          <input
+          <label className="form-label">Support / Resistance Comment</label>
+          <textarea
             type="text"
             className="form-control"
             value={formData.resistance.comment}
             onChange={(e) => setFormData((prev) => ({ ...prev, resistance: { ...prev.resistance, comment: e.target.value } }))}
           />
         </div>
-
+<hr />
         {/* Phase */}
         <div className="mb-3">
           <label className="form-label">Phase</label>

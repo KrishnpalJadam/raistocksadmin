@@ -133,18 +133,18 @@ const Support = () => {
                             <tr>
                                 <th>#ID</th>
                                 <th>Client</th>
-                                <th>Subject</th>
+                                <th>Query</th>
                                 <th>Category</th>
                                 <th>Opened</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                {/* <th>Action</th> */}
                             </tr>
                         </thead>
                         <tbody>
                             {paginatedTickets.length > 0 ? (
-                                paginatedTickets.map((ticket) => (
+                                paginatedTickets.map((ticket, index) => (
                                     <tr key={ticket.id}>
-                                        <td><strong>{ticket.id}</strong></td>
+                                        <td><strong>{index+1}</strong></td>
                                         <td>{ticket.client}</td>
                                         <td>
                                             <small>{ticket.subject}</small>
@@ -152,15 +152,15 @@ const Support = () => {
                                         <td><Badge bg="light" text="dark">{ticket.category}</Badge></td>
                                         <td>{ticket.date.substring(0, 10)}</td>
                                         <td>
-                                            <Badge className="badge-subscription" bg={getStatusBadge(ticket.status)}>
+                                            <Badge className="badge-subscription text-dark bg-light" bg={getStatusBadge(ticket.status)}>
                                                 {ticket.status}
                                             </Badge>
                                         </td>
-                                        <td>
+                                        {/* <td>
                                             <Button variant="outline-primary" size="sm" title="View Details" onClick={() => handleOpenModal(ticket)}>
                                                 <Eye className="lucide-icon" />
                                             </Button>
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))
                             ) : (
