@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchLeads,
@@ -49,6 +49,21 @@ const Leads = () => {
   useEffect(() => {
     dispatch(fetchLeads());
   }, [dispatch]);
+  const fileInputRef = useRef(null);
+
+  // jab button click ho
+  const handleButtonClick = () => {
+    fileInputRef.current.click(); // file input open karega
+  };
+
+  // jab file select ho
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log("Selected file:", file.name);
+      // yahan aap CSV import logic likh sakte ho
+    }
+  };
 
   // Filtered leads (search + status)
   const filteredLeads = useMemo(() => {
@@ -192,6 +207,7 @@ const Leads = () => {
     <div className="page-content">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">📈 Leads Management</h2>
+
         <Button variant="primary" onClick={() => setShowModal(true)}>
           <Plus size={18} className="me-2" /> Add Lead
         </Button>
@@ -200,6 +216,23 @@ const Leads = () => {
       <Card className="mt-4">
         <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center">
           <h5 className="mb-0">All Leads</h5>
+          {/* hidden file input */}
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+
+          {/* visible button */}
+          <Button
+            variant="success"
+            className="btn btn-success btn-sm"
+            onClick={handleButtonClick}
+          >
+            <Plus size={18} className="me-1" /> Import CSV
+          </Button>
         </Card.Header>
 
         <Card.Body>
@@ -291,9 +324,8 @@ const Leads = () => {
                             }
                             style={{
                               border: "none",
-                              backgroundColor: `var(--bs-${
-                                currentStatus?.color?.split(" ")[0]
-                              })`,
+                              backgroundColor: `var(--bs-${currentStatus?.color?.split(" ")[0]
+                                })`,
                               color: currentStatus?.color?.includes("text-dark")
                                 ? "#000"
                                 : "#fff",
