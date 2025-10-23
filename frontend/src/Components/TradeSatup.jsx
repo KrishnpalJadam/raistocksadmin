@@ -776,14 +776,7 @@ const TradeSatup = () => {
           )}
         </Card.Body>
 
-        <Card.Footer className="d-flex justify-content-end gap-2">
-          <Button variant="secondary" size="sm" >
-            Reset
-          </Button>
-          <Button variant="success" size="sm">
-            <Save size={14} /> Save Changes
-          </Button>
-        </Card.Footer>
+       
       </Card>
     </div>
   );

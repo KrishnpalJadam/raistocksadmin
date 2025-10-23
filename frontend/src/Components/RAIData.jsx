@@ -253,7 +253,7 @@ const RAIData = () => {
                     >
                       <option>Buy</option>
                       <option>Sell</option>
-                      
+
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -347,6 +347,19 @@ const RAIData = () => {
                       <option>15 Days</option>
                       <option>1 to 2 Months</option>
                       <option>1 to 3 Months</option>
+                      <option>1 to 4 Months</option>
+                      <option>1 to 6 Months</option>
+                      <option>2 to 3 Months</option>
+                      <option>2 to 4 Months</option>
+                      <option>3 to 6 Months</option>
+                      <option>3 Months to 1 Year</option>
+                      <option>3 Months to 2 Years</option>
+                      <option>4 Months to 1 Year</option>
+                      <option>6 Months to 1 Year</option>
+                      <option>6 Months to 2 Years</option>
+                      <option>1 to 2 Years</option>
+                      <option>1 to 3 Years</option>
+
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -430,6 +443,33 @@ const RAIData = () => {
                     </Form.Select>
                   </Form.Group>
                 </Col>
+
+                <Col md={4}>
+                  <Form.Group>
+                    <Form.Label>Risk</Form.Label>
+                    <Form.Select
+
+                    >
+                      <option>Low</option>
+                      <option value="">Low to Moderate</option>
+                      <option value="">Moderate</option>
+                      <option value="">Moderately High</option>
+                      <option value="">High</option>
+                      <option value="">Very High</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+  <Col md={4}>
+                  <Form.Group>
+                    <Form.Label>Brief Rationale</Form.Label>
+                    <Form.Control
+                     
+                      type="text"
+                  
+                    />
+                  </Form.Group>
+                </Col>
+
               </Row>
               <div className="mt-4 text-end">
                 <Button type="submit" variant="success">
@@ -504,9 +544,8 @@ const RAIData = () => {
 
                     <td>
                       <span
-                        className={`badge bg-${
-                          t.status === "Live" ? "info" : "secondary"
-                        }`}
+                        className={`badge bg-${t.status === "Live" ? "info" : "secondary"
+                          }`}
                       >
                         {t.status}
                       </span>
@@ -738,8 +777,8 @@ const RAIData = () => {
                         {Array.isArray(value)
                           ? value.join(", ")
                           : value
-                          ? String(value)
-                          : "-"}{" "}
+                            ? String(value)
+                            : "-"}{" "}
                       </td>{" "}
                     </tr>
                   ))}{" "}
