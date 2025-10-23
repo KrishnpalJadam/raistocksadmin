@@ -46,12 +46,18 @@ export const updateTradeStatus = createAsyncThunk(
       });
       const body = await res.json();
       if (!res.ok) return rejectWithValue(body);
-      return body.trade || body;
+
+      // ✅ Always return normalized data (id + status)
+      return {
+        id: body.trade?._id || id,
+        status: body.trade?.status || status,
+      };
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
+
 
 export const updateTrade = createAsyncThunk(
   "trades/update",
@@ -119,21 +125,16 @@ const slice = createSlice({
         );
         if (idx >= 0) s.items[idx] = a.payload;
       })
-      .addCase(updateTradeStatus.fulfilled, (s, a) => {
-        const updated = a.payload?.trade || a.payload;
-        if (!updated?._id && !updated?.id) return;
+  .addCase(updateTradeStatus.fulfilled, (s, a) => {
+  const { id, status } = a.payload;
+  const idx = s.items.findIndex(
+    (x) => String(x._id) === String(id) || String(x.id) === String(id)
+  );
+  if (idx >= 0) {
+    s.items[idx].status = status;
+  }
+})
 
-        const idx = s.items.findIndex(
-          (x) => x._id === updated._id || x.id === updated.id
-        );
-        if (idx >= 0) {
-          s.items[idx] = {
-            ...s.items[idx],
-            ...updated,
-            status: updated.status || s.items[idx].status,
-          };
-        }
-      })
       .addCase(deleteTrade.fulfilled, (s, a) => {
         s.items = s.items.filter(
           (x) => x._id !== a.payload && x.id !== a.payload

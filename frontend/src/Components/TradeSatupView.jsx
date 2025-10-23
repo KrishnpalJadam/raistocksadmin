@@ -5,6 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketInsights } from "../slices/marketInsightSlice";
 import { fetchMarketPhases } from "../slices/marketPhaseSlice";
 import { fetchMarketTrends } from "../slices/marketTrendSlice";
+import { deleteMarketInsight } from "../slices/marketInsightSlice";
+import { deleteMarketPhase } from "../slices/marketPhaseSlice";
+import { deleteMarketTrend } from "../slices/marketTrendSlice";
 
 const TradeSatupView = () => {
   const [filter, setFilter] = useState("all");
@@ -70,7 +73,17 @@ const TradeSatupView = () => {
     if (str.length <= 20) return str;
     return str.slice(0, 20) + "..";
   };
+  const handleDelete = (item) => {
+    if (!window.confirm(`Delete ${item.module} "${item.title}"?`)) return;
 
+    if (item.module === "Market Insight") {
+      dispatch(deleteMarketInsight(item.id));
+    } else if (item.module === "Market Phase") {
+      dispatch(deleteMarketPhase(item.id));
+    } else if (item.module === "Market Trend") {
+      dispatch(deleteMarketTrend(item.id));
+    }
+  };
   return (
     <div className="trade-setup-view">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -144,6 +157,7 @@ const TradeSatupView = () => {
                     variant="outline-danger"
                     className="me-2"
                     title="Delete"
+                    onClick={() => handleDelete(item)}
                   >
                     <Trash2 size={14} />
                   </Button>

@@ -35,6 +35,20 @@ export const createMarketPhase = createAsyncThunk(
   }
 );
 
+export const deleteMarketPhase = createAsyncThunk(
+  "marketPhases/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${PHASE_API}/${id}`, { method: "DELETE" });
+      const body = await res.json();
+      if (!res.ok) return rejectWithValue(body);
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const slice = createSlice({
   name: "marketPhases",
   initialState: { items: [], status: "idle", error: null },
@@ -54,7 +68,10 @@ const slice = createSlice({
       })
       .addCase(createMarketPhase.fulfilled, (s, a) => {
         s.items.unshift(a.payload);
-      });
+      })
+      .addCase(deleteMarketPhase.fulfilled, (s, a) => {
+  s.items = s.items.filter((i) => i._id !== a.payload);
+});
   },
 });
 

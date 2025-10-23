@@ -17,7 +17,6 @@ export const createTradeAction = createAsyncThunk(
 
       if (!res.ok) throw new Error("Failed to create trade action");
       const data = await res.json();
-      // backend returns { message, action }
       return data.action || data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -25,7 +24,7 @@ export const createTradeAction = createAsyncThunk(
   }
 );
 
-// ✅ Get all trade actions for a trade
+// ✅ Fetch all trade actions for a trade
 export const fetchTradeActions = createAsyncThunk(
   "tradeActions/fetchAll",
   async (tradeId, { rejectWithValue }) => {
@@ -34,6 +33,26 @@ export const fetchTradeActions = createAsyncThunk(
       if (!res.ok) throw new Error("Failed to fetch trade actions");
       const data = await res.json();
       return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ✅ Update trade status (optimistic update)
+export const updateTradeStatus = createAsyncThunk(
+  "tradeActions/updateStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_URL}/api/trades/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update trade status");
+      const data = await res.json();
+      return { id, status: data.status || status }; // return updated info
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -50,7 +69,7 @@ const tradeActionSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch all actions
+      // === Fetch All ===
       .addCase(fetchTradeActions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -60,13 +79,10 @@ const tradeActionSlice = createSlice({
         const tradeId = action.meta?.arg;
         const incoming = (action.payload || []).map((a) => ({
           ...a,
-          type: String(a.type || "")
-            .toLowerCase()
-            .trim(),
+          type: String(a.type || "").toLowerCase().trim(),
           tradeId: String(a.tradeId || tradeId || "").trim(),
         }));
 
-        // Remove existing actions for this tradeId and append incoming
         if (tradeId) {
           state.actions = state.actions.filter(
             (a) => String(a.tradeId) !== String(tradeId)
@@ -78,18 +94,30 @@ const tradeActionSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Create new action
+
+      // === Create Action ===
       .addCase(createTradeAction.fulfilled, (state, action) => {
         const a = action.payload || {};
         const normalized = {
           ...a,
-          type: String(a.type || "")
-            .toLowerCase()
-            .trim(),
+          type: String(a.type || "").toLowerCase().trim(),
           tradeId: String(a.tradeId || "").trim(),
         };
-        // append the created action
         state.actions.push(normalized);
+      })
+
+      // === Update Trade Status (Frontend Sync) ===
+      .addCase(updateTradeStatus.fulfilled, (state, action) => {
+        const { id, status } = action.payload;
+        // Update all actions related to this trade if needed
+        state.actions = state.actions.map((a) =>
+          String(a.tradeId) === String(id)
+            ? { ...a, status }
+            : a
+        );
+      })
+      .addCase(updateTradeStatus.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });

@@ -4,10 +4,10 @@ const tradeSchema = new mongoose.Schema(
   {
     segment: { type: String }, // e.g. Cash, F&O, etc.
     tradeType: { type: String }, // e.g. Swing, Intraday
-    action: { type: String, },
+    action: { type: String },
     on: { type: String }, // e.g. Reliance, Banknifty
     entryPrice: { type: Number },
-    stoploss: { type: String,},
+    stoploss: { type: String },
     target1: { type: Number },
     target2: { type: Number },
     target3: { type: Number },
@@ -17,6 +17,8 @@ const tradeSchema = new mongoose.Schema(
     lotSize: { type: String, default: "Optional" },
     lots: { type: Number, default: 1 },
     recommendationDateTime: { type: Date },
+    risk: { type: String, default: "Low" },
+    brief: { type: String },
     status: {
       type: String,
       default: "Pending",

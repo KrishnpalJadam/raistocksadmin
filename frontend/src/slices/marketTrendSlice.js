@@ -19,21 +19,39 @@ export const fetchMarketTrends = createAsyncThunk(
 
 export const createMarketTrend = createAsyncThunk(
   "marketTrends/create",
-  async (payload, { rejectWithValue }) => {
+  async (formData, { rejectWithValue }) => {
     try {
       const res = await fetch(TREND_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
-      const body = await res.json();
-      if (!res.ok) return rejectWithValue(body);
-      return body.trend || body;
+
+      if (!res.ok) throw new Error("Failed to create trend");
+
+      const data = await res.json();
+      return data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
+
+export const deleteMarketTrend = createAsyncThunk(
+  "marketTrends/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TREND_API}/${id}`, { method: "DELETE" });
+      const body = await res.json();
+      if (!res.ok) return rejectWithValue(body);
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+
 
 const slice = createSlice({
   name: "marketTrends",
@@ -54,7 +72,10 @@ const slice = createSlice({
       })
       .addCase(createMarketTrend.fulfilled, (s, a) => {
         s.items.unshift(a.payload);
-      });
+      })
+      .addCase(deleteMarketTrend.fulfilled, (s, a) => {
+  s.items = s.items.filter((i) => i._id !== a.payload);
+});
   },
 });
 
