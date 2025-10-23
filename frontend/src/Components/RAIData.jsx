@@ -440,6 +440,19 @@ const RAIData = () => {
                       <option>15 Days</option>
                       <option>1 to 2 Months</option>
                       <option>1 to 3 Months</option>
+                      <option>1 to 4 Months</option>
+                      <option>1 to 6 Months</option>
+                      <option>2 to 3 Months</option>
+                      <option>2 to 4 Months</option>
+                      <option>3 to 6 Months</option>
+                      <option>3 Months to 1 Year</option>
+                      <option>3 Months to 2 Years</option>
+                      <option>4 Months to 1 Year</option>
+                      <option>6 Months to 1 Year</option>
+                      <option>6 Months to 2 Years</option>
+                      <option>1 to 2 Years</option>
+                      <option>1 to 3 Years</option>
+
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -804,8 +817,8 @@ const RAIData = () => {
                         {Array.isArray(value)
                           ? value.join(", ")
                           : value
-                          ? String(value)
-                          : "-"}{" "}
+                            ? String(value)
+                            : "-"}{" "}
                       </td>{" "}
                     </tr>
                   ))}{" "}
