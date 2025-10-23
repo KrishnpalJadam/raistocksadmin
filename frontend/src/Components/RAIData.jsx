@@ -11,13 +11,24 @@ import {
 } from "react-bootstrap";
 import { Search, Edit, Plus, Target, Eye, Trash2, User } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTrades, createTrade, deleteTrade } from "../slices/tradeSlice";
-import { createTradeAction } from "../slices/tradeActionsSlice";
+import {
+  fetchTrades,
+  createTrade,
+  deleteTrade,
+  updateTradeStatus,
+} from "../slices/tradeSlice";
+import {
+  createTradeAction,
+  fetchTradeActions,
+} from "../slices/tradeActionsSlice";
 
 const RAIData = () => {
   const dispatch = useDispatch();
   const { items: trades = [], status: tradesStatus = "idle" } = useSelector(
     (s) => s.trades || {}
+  );
+  const { actions: tradeActions = [] } = useSelector(
+    (s) => s.tradeActions || {}
   );
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -48,15 +59,30 @@ const RAIData = () => {
     lotSize: "",
     lots: 1,
     recommendationDateTime: "",
-    status: "Pending",
+    status: "Live", // Set initial status to Live
+    title: "",
   };
   const [form, setForm] = useState(emptyForm);
 
   const ITEMS_PER_PAGE = 10;
 
+  // Derive trades merged with their actions in local memo (do not write back to Redux here)
+  const tradesWithActions = useMemo(() => {
+    if (!trades || trades.length === 0) return [];
+    if (!tradeActions || tradeActions.length === 0) return trades;
+    return trades.map((trade) => ({
+      ...trade,
+      actions: tradeActions.filter((action) => {
+        const aid = String(action.tradeId || "").trim();
+        const tid = String(trade._id || trade.id || "").trim();
+        return aid && tid ? aid === tid : false;
+      }),
+    }));
+  }, [trades, tradeActions]);
+
   const filteredTrades = useMemo(() => {
     const q = (searchTerm || "").toLowerCase();
-    return trades.filter((trade) => {
+    return tradesWithActions.filter((trade) => {
       if (!trade) return false;
       const title = trade.title
         ? String(trade.title)
@@ -71,7 +97,7 @@ const RAIData = () => {
           .includes(q)
       );
     });
-  }, [searchTerm, trades]);
+  }, [searchTerm, tradesWithActions]);
 
   const totalPages = Math.ceil(filteredTrades.length / ITEMS_PER_PAGE);
   const paginatedTrades = useMemo(() => {
@@ -95,10 +121,29 @@ const RAIData = () => {
     setSelectedTrade(trade);
     setShowModal(true);
   };
+  // Function to determine trade status based on actions
+  const getTradeStatus = (trade) => {
+    const tradeActions = trade.actions || [];
+
+    // No actions => Live
+    if (tradeActions.length === 0) return "Live";
+
+    // If any action exists whose type is not 'update', consider trade Closed
+    const hasNonUpdate = tradeActions.some(
+      (a) => String(a.type || "").toLowerCase() !== "update"
+    );
+    if (hasNonUpdate) return "Closed";
+
+    // Otherwise still Live
+    return "Live";
+  };
+
   // Open update modal for a specific trade
   const handleUpdate = (trade) => {
     setSelectedTrade(trade);
     setUpdateModal(true);
+    // Fetch trade actions when opening update modal
+    dispatch(fetchTradeActions(trade._id || trade.id));
   };
 
   // submit handler for trade action (Update / Book Profit / Stoploss Hit)
@@ -121,12 +166,32 @@ const RAIData = () => {
       comment: actionComment || "",
     };
 
+    // Determine the new status based on action type
+    const newStatus = ["book_profit", "stoploss_hit", "exit"].includes(
+      actionType
+    )
+      ? "Closed"
+      : "Live";
+
     dispatch(
       createTradeAction({ tradeId: payload.tradeId, actionData: payload })
     )
       .unwrap()
       .then(() => {
-        alert("Action created");
+        // fetch updated actions for this trade so UI reflects new action
+        return dispatch(fetchTradeActions(payload.tradeId)).unwrap();
+      })
+      .then(() => {
+        // Update the trade status in backend
+        return dispatch(
+          updateTradeStatus({
+            id: payload.tradeId,
+            status: newStatus,
+          })
+        ).unwrap();
+      })
+      .then(() => {
+        alert("Action created and status updated");
         // reset local action form and close modal
         setActionPrice("");
         setActionTitle("");
@@ -152,6 +217,22 @@ const RAIData = () => {
     if (tradesStatus === "idle") dispatch(fetchTrades());
   }, [dispatch, tradesStatus]);
 
+  // Fetch actions for all trades on mount and after any trade update
+  useEffect(() => {
+    if (trades.length > 0) {
+      trades.forEach((trade) => {
+        const tradeId = trade._id || trade.id;
+        if (tradeId) {
+          dispatch(fetchTradeActions(tradeId));
+        }
+      });
+    }
+  }, [dispatch, trades.length]);
+
+  // Note: status updates are performed per-trade in handleActionSubmit after
+  // creating an action. Avoid a global sync effect here to prevent accidental
+  // cross-updates or infinite loops.
+
   const handleFormChange = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
   const handleAddTradeSubmit = (e) => {
@@ -173,7 +254,7 @@ const RAIData = () => {
       lotSize: form.lotSize,
       lots: Number(form.lots) || 1,
       recommendationDateTime: form.recommendationDateTime || undefined,
-      status: form.status || "Pending",
+      title: form.title,
     };
     dispatch(createTrade(payload))
       .unwrap()
@@ -227,6 +308,19 @@ const RAIData = () => {
                 </Col>
                 <Col md={4}>
                   <Form.Group>
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                      value={form.title || ""}
+                      onChange={(e) =>
+                        handleFormChange("title", e.target.value)
+                      }
+                      type="text"
+                      placeholder="Enter trade title"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group>
                     <Form.Label>Trade Type</Form.Label>
                     <Form.Select
                       value={form.tradeType}
@@ -253,7 +347,6 @@ const RAIData = () => {
                     >
                       <option>Buy</option>
                       <option>Sell</option>
-
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -428,48 +521,6 @@ const RAIData = () => {
                     />
                   </Form.Group>
                 </Col>
-                <Col md={4}>
-                  <Form.Group>
-                    <Form.Label>Status</Form.Label>
-                    <Form.Select
-                      value={form.status}
-                      onChange={(e) =>
-                        handleFormChange("status", e.target.value)
-                      }
-                    >
-                      <option>Pending</option>
-                      <option>Live</option>
-                      <option>Closed</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-
-                <Col md={4}>
-                  <Form.Group>
-                    <Form.Label>Risk</Form.Label>
-                    <Form.Select
-
-                    >
-                      <option>Low</option>
-                      <option value="">Low to Moderate</option>
-                      <option value="">Moderate</option>
-                      <option value="">Moderately High</option>
-                      <option value="">High</option>
-                      <option value="">Very High</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-  <Col md={4}>
-                  <Form.Group>
-                    <Form.Label>Brief Rationale</Form.Label>
-                    <Form.Control
-                     
-                      type="text"
-                  
-                    />
-                  </Form.Group>
-                </Col>
-
               </Row>
               <div className="mt-4 text-end">
                 <Button type="submit" variant="success">
@@ -517,7 +568,7 @@ const RAIData = () => {
             <thead>
               <tr>
                 <th>#</th>
-
+                <th>Title</th>
                 <th>Segment</th>
                 <th>Type</th>
                 <th>Action</th>
@@ -535,7 +586,7 @@ const RAIData = () => {
                 paginatedTrades.map((t, idx) => (
                   <tr key={t._id || t.id}>
                     <td>{startIndex + idx + 1}</td>
-
+                    <td>{t.title}</td>
                     <td>{t.segment}</td>
                     <td>{t.tradeType}</td>
                     <td>{t.action}</td>
@@ -544,10 +595,11 @@ const RAIData = () => {
 
                     <td>
                       <span
-                        className={`badge bg-${t.status === "Live" ? "info" : "secondary"
-                          }`}
+                        className={`badge bg-${
+                          getTradeStatus(t) === "Live" ? "info" : "secondary"
+                        }`}
                       >
-                        {t.status}
+                        {getTradeStatus(t)}
                       </span>
                     </td>
                     <td className={getBadgeClass(t.result)}>
@@ -665,18 +717,6 @@ const RAIData = () => {
               </select>
             </div>
 
-            {/* Title Field (optional override) */}
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Title</label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Optional title (defaults to action)"
-                value={actionTitle}
-                onChange={(e) => setActionTitle(e.target.value)}
-              />
-            </div>
-
             {/* Price Field */}
             <div className="mb-3">
               <label className="form-label fw-semibold">Price</label>
@@ -705,7 +745,7 @@ const RAIData = () => {
 
             {/* Translation Field */}
             <div className="mb-3">
-              <label className="form-label fw-semibold">Trade SL Hit</label>
+              <label className="form-label fw-semibold">Trail SL</label>
               <input type="text" className="form-control" placeholder="Enter" />
             </div>
 

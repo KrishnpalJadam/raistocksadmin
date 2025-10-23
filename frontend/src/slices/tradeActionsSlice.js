@@ -17,7 +17,8 @@ export const createTradeAction = createAsyncThunk(
 
       if (!res.ok) throw new Error("Failed to create trade action");
       const data = await res.json();
-      return data;
+      // backend returns { message, action }
+      return data.action || data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -56,7 +57,22 @@ const tradeActionSlice = createSlice({
       })
       .addCase(fetchTradeActions.fulfilled, (state, action) => {
         state.loading = false;
-        state.actions = action.payload;
+        const tradeId = action.meta?.arg;
+        const incoming = (action.payload || []).map((a) => ({
+          ...a,
+          type: String(a.type || "")
+            .toLowerCase()
+            .trim(),
+          tradeId: String(a.tradeId || tradeId || "").trim(),
+        }));
+
+        // Remove existing actions for this tradeId and append incoming
+        if (tradeId) {
+          state.actions = state.actions.filter(
+            (a) => String(a.tradeId) !== String(tradeId)
+          );
+        }
+        state.actions = state.actions.concat(incoming);
       })
       .addCase(fetchTradeActions.rejected, (state, action) => {
         state.loading = false;
@@ -64,7 +80,16 @@ const tradeActionSlice = createSlice({
       })
       // Create new action
       .addCase(createTradeAction.fulfilled, (state, action) => {
-        state.actions.push(action.payload);
+        const a = action.payload || {};
+        const normalized = {
+          ...a,
+          type: String(a.type || "")
+            .toLowerCase()
+            .trim(),
+          tradeId: String(a.tradeId || "").trim(),
+        };
+        // append the created action
+        state.actions.push(normalized);
       });
   },
 });
