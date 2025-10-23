@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 
 const MarketSetupForm = () => {
+  const breakoutOptions = ["Formation", "Neckline Broken", "Neckline Retested", "Breakout", "Breakdown", "Retest", "Confirmation"];
+
   const [formData, setFormData] = useState({
     onWhat: "",
     support: { S1: "", S2: "", S3: "", comment: "" },
@@ -14,10 +16,7 @@ const MarketSetupForm = () => {
     chartPatternComment: "",
     candlePattern: "Bullish Marubozu",
     candlePatternComment: "",
-    breakoutEvents: [
-      { event: "Formation", comment: "" },
-      { event: "Formation", comment: "" },
-    ],
+     breakoutEvents: [{ event: breakoutOptions[0], comment: "" }],
     image: null,
   });
 
@@ -62,8 +61,28 @@ const MarketSetupForm = () => {
 
   const phases = ["Accumulation", "Distribution", "Greed", "Fear"];
   const trends = ["Bullish", "Bearish", "Sideways"];
-  const breakoutOptions = ["Formation", "Neckline Broken", "Neckline Retested", "Breakout", "Breakdown", "Retest", "Confirmation"];
 
+
+ 
+
+
+
+  // Add new event
+  const addBreakoutEvent = () => {
+    setFormData({
+      ...formData,
+      breakoutEvents: [
+        ...formData.breakoutEvents,
+        { event: breakoutOptions[0], comment: "" },
+      ],
+    });
+  };
+
+  // Remove event
+  const removeBreakoutEvent = (index) => {
+    const updatedEvents = formData.breakoutEvents.filter((_, i) => i !== index);
+    setFormData({ ...formData, breakoutEvents: updatedEvents });
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith("S") || name.startsWith("R") || name.endsWith("Comment")) {
@@ -79,11 +98,12 @@ const MarketSetupForm = () => {
     }
   };
 
-  const handleBreakoutChange = (index, key, value) => {
+  // Handle changes in dropdown or input
+  const handleBreakoutChange = (index, field, value) => {
     const updatedEvents = [...formData.breakoutEvents];
-    updatedEvents[index][key] = value;
-    setFormData((prev) => ({ ...prev, breakoutEvents: updatedEvents }));
-  };
+    updatedEvents[index][field] = value;
+    setFormData({ ...formData, breakoutEvents: updatedEvents });
+  };;
 
   const handleImageChange = (e) => {
     setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
@@ -243,27 +263,62 @@ const MarketSetupForm = () => {
         </div>
 
         {/* Breakout / Retest Events */}
-        <h5>Breakout / Retest Events</h5>
-        {formData.breakoutEvents.map((event, index) => (
-          <div className="mb-3" key={index}>
-            <label className="form-label">Event {index + 1}</label>
-            <select className="form-select mb-2" value={event.event} onChange={(e) => handleBreakoutChange(index, "event", e.target.value)}>
-              {breakoutOptions.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Event Comment"
-              value={event.comment}
-              onChange={(e) => handleBreakoutChange(index, "comment", e.target.value)}
-            />
+       
+      <div className="border rounded p-3 mt-4 bg-white shadow-sm">
+      <h5 className="mb-3">Breakout / Retest Events</h5>
+
+      {formData.breakoutEvents.map((event, index) => (
+        <div className="mb-3 border p-3 rounded" key={index}>
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <label className="form-label m-0">
+              Event {index + 1}
+            </label>
+            {formData.breakoutEvents.length > 1 && (
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => removeBreakoutEvent(index)}
+              >
+                ❌ Remove
+              </button>
+            )}
           </div>
-        ))}
+
+          <select
+            className="form-select mb-2"
+            value={event.event}
+            onChange={(e) =>
+              handleBreakoutChange(index, "event", e.target.value)
+            }
+          >
+            {breakoutOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+
+        
+        </div>
+      ))}
+
+      <button
+        type="button"
+        className="btn btn-success btn-sm"
+        onClick={addBreakoutEvent}
+      >
+        ➕ Add Event
+      </button>
+        <input
+            type="text"
+            className="form-control mt-4"
+            placeholder="Event Comment"
+          
+          />
+    </div>
 
         {/* Image Upload */}
-        <div className="mb-4">
+        <div className="mb-4 mt-3">
           <label className="form-label">Upload Image</label>
           <input type="file" className="form-control" onChange={handleImageChange} />
         </div>

@@ -14,7 +14,7 @@ const Sidebar = () => {
         { name: 'Payments & Invoices', icon: CreditCard, path: 'payments', section: 'Main' },
         { name: 'Subscription Plans', icon: FileText, path: 'plans', section: 'Main' },
         { name: 'Emails & Notifications', icon: Mail, path: 'emails', section: 'Main' },
-        { name: 'RAI Dashboard Data', icon: BarChart3, path: 'rai-data', section: 'Admin' },
+        { name: 'Trade Recommendation', icon: BarChart3, path: 'rai-data', section: 'Admin' },
         { name: 'Trade Satup', icon: BarChart3, path: 'tradeSatup', section: 'Admin' },
         { name: 'Support', icon: Ticket, path: 'support', section: 'Admin' },
         { name: 'User Management', icon: User, path: 'user-management', section: 'Admin' },
