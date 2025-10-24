@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import { Modal, Button, Table, Form } from 'react-bootstrap';
 import { X } from 'lucide-react';
 
-
 const PlanClientsModal = ({ show, handleClose, planName, clients }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -13,7 +12,9 @@ const PlanClientsModal = ({ show, handleClose, planName, clients }) => {
         return clients.filter(client =>
             client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            client.contact.toLowerCase().includes(searchQuery.toLowerCase())
+            client.contact.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (client.panCard && client.panCard.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (client.aadhaar && client.aadhaar.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     }, [searchQuery, clients]);
 
@@ -38,7 +39,7 @@ const PlanClientsModal = ({ show, handleClose, planName, clients }) => {
                 <Form className="mb-3 plan-clients-search">
                     <Form.Control
                         type="text"
-                        placeholder="Search by Name, Email, or Contact..."
+                        placeholder="Search by Name, Email, Contact, PAN or Aadhaar..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -52,6 +53,9 @@ const PlanClientsModal = ({ show, handleClose, planName, clients }) => {
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
+                                <th>PAN Card</th>
+                                <th>Aadhaar Number</th>
+                                <th>Date of Birth</th>
                                 <th>Plan</th>
                                 <th>Start Date</th>
                                 <th>Expiry Date</th>
@@ -65,6 +69,9 @@ const PlanClientsModal = ({ show, handleClose, planName, clients }) => {
                                         <td>{client.name}</td>
                                         <td>{client.email}</td>
                                         <td>{client.contact}</td>
+                                        <td>{client.panCard || '-'}</td>
+                                        <td>{client.aadhaar || '-'}</td>
+                                        <td>{client.dob || '-'}</td>
                                         <td>{client.plan}</td>
                                         <td>{client.startDate}</td>
                                         <td>{client.expiryDate}</td>
@@ -72,7 +79,7 @@ const PlanClientsModal = ({ show, handleClose, planName, clients }) => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={7} className="text-center text-muted">
+                                    <td colSpan={10} className="text-center text-muted">
                                         No clients found
                                     </td>
                                 </tr>

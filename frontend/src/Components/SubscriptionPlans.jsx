@@ -1,8 +1,8 @@
 // src/components/Plans/SubscriptionPlans.jsx
 
 import React, { useState } from 'react';
-import { Card, Button, Row, Col, ListGroup } from 'react-bootstrap';
-import { Check, Clock, TrendingUp, DollarSign, Users, RefreshCw } from 'lucide-react';
+import { Card, Button, Row, Col, ListGroup, Modal, Form } from 'react-bootstrap';
+import { Check, Clock, TrendingUp, DollarSign, Users, RefreshCw, Edit3 } from 'lucide-react';
 import SwitchPlanModal from './SwitchPlanModal';
 import PlanClientsModal from './PlanClientsModal';
 
@@ -11,6 +11,10 @@ const planTiers = [
         name: 'Trial',
         badge: 'bg-secondary',
         description: 'Standard limited access.',
+        options: [
+            { period: '15 Days', price: '₹999' },
+
+        ],
         features: [
             // --- Features ---
             "1 – 4 actionable ideas every market day*",
@@ -43,9 +47,9 @@ const planTiers = [
         badge: 'bg-primary',
         description: 'Designed for long-term investors.',
         options: [
-            { period: 'Monthly', price: '₹10,000' },
-            { period: 'Quarterly', price: '₹25,000' },
-            { period: 'Yearly', price: '₹90,000' }
+            { period: 'Monthly', price: '₹2,299' },
+            { period: 'Quarterly', price: '₹4,999' },
+            { period: 'Yearly', price: '₹12,999' }
         ],
         features: [
             "1-4* actionable ideas every market week",
@@ -68,9 +72,9 @@ const planTiers = [
         badge: 'bg-success',
         description: 'Optimized for active daily traders.',
         options: [
-            { period: 'Monthly', price: '₹12,000' },
-            { period: 'Quarterly', price: '₹30,000' },
-            { period: 'Yearly', price: '₹110,000' }
+            { period: 'Monthly', price: '₹4,999' },
+            { period: 'Quarterly', price: '₹11,999' },
+            { period: 'Yearly', price: '₹35,999' }
         ],
         features: [
             "1 – 4 actionable ideas every market day*",
@@ -95,8 +99,9 @@ const planTiers = [
 
 const SubscriptionPlans = () => {
     const [showModal, setShowModal] = useState(false);
-
     const handleOpenModal = () => setShowModal(true);
+    const [plans, setPlans] = useState(planTiers);
+
     const handleCloseModal = () => setShowModal(false);
 
 
@@ -109,6 +114,26 @@ const SubscriptionPlans = () => {
     ]);
 
 
+    const [editModalShow, setEditModalShow] = useState(false);
+    const [editData, setEditData] = useState({});
+
+    const handleEditClick = (plan) => {
+        setEditData(plan);
+        setEditModalShow(true);
+    };
+
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleEditSave = () => {
+        const updatedPlans = plans.map((p) =>
+            p.name === editData.name ? editData : p
+        );
+        setPlans(updatedPlans);
+        setEditModalShow(false);
+    };
 
     // Determine card variant based on plan type
     const getCardVariant = (planName) => {
@@ -120,7 +145,6 @@ const SubscriptionPlans = () => {
     return (
         <div className="page-content">
             <h2 className="mb-4">📑 Subscription Plans Management</h2>
-
             <div className="d-flex justify-content-between align-items-center mb-4">
                 {/* <p className="lead text-muted">View all available plans and manage client subscriptions.</p> */}
                 {/* <Button variant="primary" onClick={handleOpenModal}>
@@ -129,7 +153,7 @@ const SubscriptionPlans = () => {
             </div>
 
             <Row>
-                {planTiers.map((plan, index) => (
+                {plans.map((plan, index) => (
                     <Col lg={3} md={6} sm={12} className="mb-4" key={index}>
                         <Card className={`h-100 shadow-sm ${getCardVariant(plan.name)}`}>
                             <Card.Header className={`text-white p-3 ${plan.badge}`}>
@@ -138,6 +162,7 @@ const SubscriptionPlans = () => {
                                     {plan.name.includes('Trial') ? <Clock size={20} /> : <TrendingUp size={20} />}
                                 </div>
                             </Card.Header>
+
                             <Card.Body className="d-flex flex-column">
                                 <p className="text-muted small mb-3">{plan.description}</p>
 
@@ -154,7 +179,9 @@ const SubscriptionPlans = () => {
                                         </ListGroup>
                                     </>
                                 ) : (
-                                    <h3 className="mb-4"><DollarSign className="lucide-icon me-1 text-success" /> Free</h3>
+                                    <h3 className="mb-4">
+                                        <DollarSign className="lucide-icon me-1 text-success" /> Free
+                                    </h3>
                                 )}
 
                                 <h6 className="text-secondary mb-2">Key Features:</h6>
@@ -165,22 +192,28 @@ const SubscriptionPlans = () => {
                                             <span className="small">{feature}</span>
                                         </ListGroup.Item>
                                     ))}
-                                    <span className='fw-bold'>Services</span>
-                                    {plan.services?.map((service, sIndex) => (
-                                        <ListGroup.Item key={sIndex} className="d-flex align-items-start p-2 border-0">
-                                            <Check size={18} className="text-success me-2 flex-shrink-0" />
-                                            <span className="small">{service}</span>
-                                        </ListGroup.Item>
-                                    ))}
                                 </ListGroup>
-
                             </Card.Body>
+
                             <Card.Footer className="bg-white border-top text-center">
-                                <Button variant="outline-primary" size="sm" onClick={() => {
-                                    setSelectedPlan(plan.name);
-                                    setModalShow(true);
-                                }}>
-                                    <Users className="lucide-icon me-2" /> View Clients on this Plan
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    className="me-2"
+                                    onClick={() => {
+                                        setSelectedPlan(plan.name);
+                                        setModalShow(true);
+                                    }}
+                                >
+                                    <Users className="lucide-icon me-2" /> View Clients
+                                </Button>
+
+                                <Button
+                                    variant="outline-dark"
+                                    size="sm"
+                                    onClick={() => handleEditClick(plan)}
+                                >
+                                    <Edit3 className="lucide-icon me-2" /> Edit
                                 </Button>
                             </Card.Footer>
                         </Card>
@@ -188,6 +221,94 @@ const SubscriptionPlans = () => {
                 ))}
             </Row>
 
+
+
+
+            {/* Edit Plan Modal */}
+            <Modal show={editModalShow} onHide={() => setEditModalShow(false)} centered size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Plan Details</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Plan Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="name"
+                                value={editData.name || ''}
+                                onChange={handleEditChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={2}
+                                name="description"
+                                value={editData.description || ''}
+                                onChange={handleEditChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Features (comma separated)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="features"
+                                value={editData.features?.join(', ') || ''}
+                                onChange={(e) =>
+                                    setEditData((prev) => ({
+                                        ...prev,
+                                        features: e.target.value.split(',').map((f) => f.trim()),
+                                    }))
+                                }
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Pricing Options</Form.Label>
+                            {editData.options?.map((opt, idx) => (
+                                <Row key={idx} className="mb-2">
+                                    <Col>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Period"
+                                            value={opt.period}
+                                            onChange={(e) => {
+                                                const newOptions = [...editData.options];
+                                                newOptions[idx].period = e.target.value;
+                                                setEditData({ ...editData, options: newOptions });
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Price"
+                                            value={opt.price}
+                                            onChange={(e) => {
+                                                const newOptions = [...editData.options];
+                                                newOptions[idx].price = e.target.value;
+                                                setEditData({ ...editData, options: newOptions });
+                                            }}
+                                        />
+                                    </Col>
+                                </Row>
+                            ))}
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setEditModalShow(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleEditSave}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <PlanClientsModal
                 show={modalShow}
                 handleClose={() => setModalShow(false)}
@@ -204,3 +325,9 @@ const SubscriptionPlans = () => {
 };
 
 export default SubscriptionPlans;
+
+
+
+
+
+
