@@ -677,9 +677,7 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={12}>
-                      <Form.Check label="Make this phase visible to users" />
-                    </Col>
+                 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
@@ -752,10 +750,7 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
-
-                    <Col md={12}>
-                      <Form.Check label="Make this trend visible to users" />
-                    </Col>
+ 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">

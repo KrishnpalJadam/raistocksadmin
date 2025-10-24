@@ -169,11 +169,8 @@ const RAIData = () => {
     };
 
     // Determine the new status based on action type
-    const newStatus = ["book_profit", "stoploss_hit", "exit"].includes(
-      actionType
-    )
-      ? "Closed"
-      : "Live";
+    // Only "update" keeps the trade Live, all other actions close it
+    const newStatus = actionType === "update" ? "Live" : "Closed";
 
     dispatch(
       createTradeAction({ tradeId: payload.tradeId, actionData: payload })
@@ -235,15 +232,19 @@ const RAIData = () => {
   // creating an action. Avoid a global sync effect here to prevent accidental
   // cross-updates or infinite loops.
 
-  const handleFormChange = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const handleFormChange = (k, v) => {
+    console.log("Form field changed:", k, "New value:", v);
+    setForm((p) => ({ ...p, [k]: v }));
+  };
 
   const handleAddTradeSubmit = (e) => {
     e.preventDefault();
     // normalize payload to backend schema
+    console.log("Form state before submission:", form);
     const payload = {
       segment: form.segment,
       tradeType: form.tradeType,
-      action: form.action,
+      action: form.action, // Current action value
       on: form.on,
       entryPrice: Number(form.entryPrice) || 0,
       stoploss: form.stoploss || "NA",
@@ -259,7 +260,9 @@ const RAIData = () => {
       title: form.title,
       risk: form.risk,
       brief: form.brief,
+      status: "Live", // Explicitly set status to Live for new trades
     };
+    console.log("Sending payload to backend:", payload);
     dispatch(createTrade(payload))
       .unwrap()
       .then(() => {
@@ -349,8 +352,8 @@ const RAIData = () => {
                         handleFormChange("action", e.target.value)
                       }
                     >
-                      <option>Buy</option>
-                      <option>Sell</option>
+                      <option value="Buy">Buy</option>
+                      <option value="Sell">Sell</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>

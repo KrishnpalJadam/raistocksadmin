@@ -30,6 +30,7 @@ export const createMarketPhase = async (req, res) => {
 export const getMarketPhases = async (req, res) => {
   try {
     const trends = await MarketPhase.find().sort({ date: -1 });
+    console.log("Market Phases:", trends);
     res.json(trends);
   } catch (error) {
     console.error("Get Trends Error:", error.message);

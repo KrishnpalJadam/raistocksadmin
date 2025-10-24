@@ -21,6 +21,7 @@ export const createTrade = createAsyncThunk(
   "trades/create",
   async (payload, { rejectWithValue }) => {
     try {
+      console.log("Creating trade with payload:", payload);
       const res = await fetch(TRADE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -57,7 +58,6 @@ export const updateTradeStatus = createAsyncThunk(
     }
   }
 );
-
 
 export const updateTrade = createAsyncThunk(
   "trades/update",
@@ -112,11 +112,11 @@ const slice = createSlice({
         s.error = a.payload || a.error?.message;
       })
       .addCase(createTrade.fulfilled, (s, a) => {
-        // Ensure new trade has status
+        // Always ensure new trades start with Live status
         const trade = a.payload;
         s.items.unshift({
           ...trade,
-          status: trade.status || "Live",
+          status: "Live", // Force Live status for new trades
         });
       })
       .addCase(updateTrade.fulfilled, (s, a) => {
@@ -125,15 +125,15 @@ const slice = createSlice({
         );
         if (idx >= 0) s.items[idx] = a.payload;
       })
-  .addCase(updateTradeStatus.fulfilled, (s, a) => {
-  const { id, status } = a.payload;
-  const idx = s.items.findIndex(
-    (x) => String(x._id) === String(id) || String(x.id) === String(id)
-  );
-  if (idx >= 0) {
-    s.items[idx].status = status;
-  }
-})
+      .addCase(updateTradeStatus.fulfilled, (s, a) => {
+        const { id, status } = a.payload;
+        const idx = s.items.findIndex(
+          (x) => String(x._id) === String(id) || String(x.id) === String(id)
+        );
+        if (idx >= 0) {
+          s.items[idx].status = status;
+        }
+      })
 
       .addCase(deleteTrade.fulfilled, (s, a) => {
         s.items = s.items.filter(

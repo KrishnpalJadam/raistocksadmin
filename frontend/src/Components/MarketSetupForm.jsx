@@ -24,7 +24,7 @@ const MarketSetupForm = () => {
     chartPatternComment: "",
     candlePattern: "Bullish Marubozu",
     candlePatternComment: "",
-    breakoutEvents: [{ event: breakoutOptions[0], comment: "" }],
+    breakoutEvents: [{ formation: breakoutOptions[0], eventComment: "" }],
     image: null,
   });
 
@@ -75,7 +75,7 @@ const MarketSetupForm = () => {
       ...formData,
       breakoutEvents: [
         ...formData.breakoutEvents,
-        { event: breakoutOptions[0], comment: "" },
+        { formation: breakoutOptions[0], eventComment: "" },
       ],
     });
   };
@@ -122,59 +122,58 @@ const MarketSetupForm = () => {
     setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const data = new FormData();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
 
-  // Convert the individual levels into arrays
-  const supportLevels = [
-    Number(formData.support.S1),
-    Number(formData.support.S2),
-    Number(formData.support.S3),
-  ];
-  const resistanceLevels = [
-    Number(formData.resistance.R1),
-    Number(formData.resistance.R2),
-    Number(formData.resistance.R3),
-  ];
+    // Convert the individual levels into arrays
+    const supportLevels = [
+      Number(formData.support.S1),
+      Number(formData.support.S2),
+      Number(formData.support.S3),
+    ];
+    const resistanceLevels = [
+      Number(formData.resistance.R1),
+      Number(formData.resistance.R2),
+      Number(formData.resistance.R3),
+    ];
 
-  data.append("on", formData.onWhat);
-  data.append("price", formData.price);
-  data.append("supportLevels", JSON.stringify(supportLevels));
-  data.append("resistanceLevels", JSON.stringify(resistanceLevels));
-  data.append("supportResistanceComment", formData.resistance.comment);
-  data.append("phase", formData.phase);
-  data.append("phaseComment", formData.phaseComment);
-  data.append("trend", formData.trend);
-  data.append("trendComment", formData.trendComment);
-  data.append("chartPattern", formData.chartPattern);
-  data.append("chartPatternComment", formData.chartPatternComment);
-  data.append("candlePattern", formData.candlePattern);
-  data.append("candlePatternComment", formData.candlePatternComment);
-  data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
+    data.append("on", formData.onWhat);
+    data.append("price", formData.price);
+    data.append("supportLevels", JSON.stringify(supportLevels));
+    data.append("resistanceLevels", JSON.stringify(resistanceLevels));
+    data.append("supportResistanceComment", formData.resistance.comment);
+    data.append("phase", formData.phase);
+    data.append("phaseComment", formData.phaseComment);
+    data.append("trend", formData.trend);
+    data.append("trendComment", formData.trendComment);
+    data.append("chartPattern", formData.chartPattern);
+    data.append("chartPatternComment", formData.chartPatternComment);
+    data.append("candlePattern", formData.candlePattern);
+    data.append("candlePatternComment", formData.candlePatternComment);
+    data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
 
-  if (formData.image) data.append("image", formData.image);
+    if (formData.image) data.append("image", formData.image);
 
-  try {
-    const res = await fetch("http://localhost:5000/api/marketsetup", {
-      method: "POST",
-      body: data,
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/marketsetup", {
+        method: "POST",
+        body: data,
+      });
 
-    const result = await res.json();
-    if (res.ok) {
-      alert("✅ Market setup submitted successfully!");
-      console.log("Response:", result);
-    } else {
-      alert("❌ Failed to submit. Check console.");
-      console.error(result);
+      const result = await res.json();
+      if (res.ok) {
+        alert("✅ Market setup submitted successfully!");
+        console.log("Response:", result);
+      } else {
+        alert("❌ Failed to submit. Check console.");
+        console.error(result);
+      }
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      alert("Server error. Please try again later.");
     }
-  } catch (err) {
-    console.error("Error submitting form:", err);
-    alert("Server error. Please try again later.");
-  }
-};
-
+  };
 
   return (
     <div className="container my-4">
@@ -388,9 +387,9 @@ const handleSubmit = async (e) => {
 
               <select
                 className="form-select mb-2"
-                value={event.event}
+                value={event.formation}
                 onChange={(e) =>
-                  handleBreakoutChange(index, "event", e.target.value)
+                  handleBreakoutChange(index, "formation", e.target.value)
                 }
               >
                 {breakoutOptions.map((opt) => (
@@ -404,9 +403,9 @@ const handleSubmit = async (e) => {
                 type="text"
                 className="form-control"
                 placeholder="Event Comment"
-                value={event.comment}
+                value={event.eventComment}
                 onChange={(e) =>
-                  handleBreakoutChange(index, "comment", e.target.value)
+                  handleBreakoutChange(index, "eventComment", e.target.value)
                 }
               />
             </div>
