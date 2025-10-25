@@ -9,8 +9,16 @@ import {
   updateMarketInsight,
   deleteMarketInsight,
 } from "../slices/marketInsightSlice";
-import { createMarketPhase } from "../slices/marketPhaseSlice";
-import { createMarketTrend } from "../slices/marketTrendSlice";
+import {
+  createMarketPhase,
+  fetchMarketPhases,
+} from "../slices/marketPhaseSlice";
+import {
+  createMarketTrend,
+  fetchMarketTrends,
+} from "../slices/marketTrendSlice";
+import { createVix } from "../slices/vixSlice";
+import { createGlobalMarket } from "../slices/globalMarketSlice";
 import MarketSetupForm from "./MarketSetupForm";
 import MarketSetupViewTable from "./Marketsatupviewtable";
 
@@ -265,8 +273,11 @@ const TradeSatup = () => {
                 <Eye size={14} className="me-1" /> View Setup
               </Nav.Link>
             </Nav.Item>
-             <Nav.Item>
-              <Nav.Link eventKey="marketSatupview" className="fw-semibold text-dark">
+            <Nav.Item>
+              <Nav.Link
+                eventKey="marketSatupview"
+                className="fw-semibold text-dark"
+              >
                 <Eye size={14} className="me-1" /> Market Satup View
               </Nav.Link>
             </Nav.Item>
@@ -442,8 +453,6 @@ const TradeSatup = () => {
                             <Save size={14} /> Market Create
                           </Button>
                         </div>
-
-
                       </Card>
                     </Col>
 
@@ -479,12 +488,15 @@ const TradeSatup = () => {
                               Fetch VIX
                             </Button>
                           </Col>
-
                         </Row>
                         <div className="row mt-3">
                           <div className="col-sm-4">
-                            <button className="btn btn-primary">Save</button>
-
+                            <button
+                              className="btn btn-primary"
+                              onClick={handleCreateVix}
+                            >
+                              Save
+                            </button>
                           </div>
                         </div>
                       </Card>
@@ -573,8 +585,6 @@ const TradeSatup = () => {
                             </Button>
                           </div>
                         </Row>
-
-
                       </Card>
                     </Col>
                   </Row>
@@ -609,7 +619,6 @@ const TradeSatup = () => {
                       </Button>
                     </Col>
                   </Row>
-
                 </Form>
               )}
 
@@ -668,14 +677,17 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={12}>
-                      <Form.Check label="Make this phase visible to users" />
-                    </Col>
+                 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
-                      <button className="btn btn-primary">Save</button>
-
+                      <button
+                      type="button"
+                        className="btn btn-primary"
+                        onClick={handleSavePhase}
+                      >
+                        Save
+                      </button>
                     </div>
                   </div>
                 </Form>
@@ -738,15 +750,17 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
-
-                    <Col md={12}>
-                      <Form.Check label="Make this trend visible to users" />
-                    </Col>
+ 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
-                      <button className="btn btn-primary">Save</button>
-
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleSaveTrend}
+                      >
+                        Save
+                      </button>
                     </div>
                   </div>
                 </Form>
@@ -758,8 +772,6 @@ const TradeSatup = () => {
                   <MarketSetupForm />
                 </>
               )}
-
-
             </>
           )}
 
@@ -769,14 +781,12 @@ const TradeSatup = () => {
             </>
           )}
 
-           {activeTab === "marketSatupview" && (
+          {activeTab === "marketSatupview" && (
             <>
               <MarketSetupViewTable />
             </>
           )}
         </Card.Body>
-
-       
       </Card>
     </div>
   );
