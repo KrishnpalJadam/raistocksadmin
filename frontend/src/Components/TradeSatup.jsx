@@ -456,23 +456,13 @@ const TradeSatup = () => {
                                     }))
                                   }
                                 />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="neutral"
-                                >
-                                  Neutral
-                                </label>
+                               
                               </div>
                             </div>
-                          </div>
-
-                          <Button
-                            variant="success"
-                            size="sm"
-                            onClick={() => handleInlineCreate()}
-                          >
-                            <Save size={14} /> Market Create
-                          </Button>
+                          </Col>
+                        </Row>
+                          
+<div> 
                         </div>
                       </Card>
                     </Col>
