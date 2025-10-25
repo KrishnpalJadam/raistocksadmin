@@ -41,6 +41,7 @@ const RAIData = () => {
   const [actionPrice, setActionPrice] = useState("");
   const [actionTitle, setActionTitle] = useState("");
   const [actionComment, setActionComment] = useState("");
+  const [actionDateTime, setActionDateTime] = useState("");
   const [AddshowModal, AddsetShowModal] = useState(false);
 
   const emptyForm = {
@@ -166,6 +167,7 @@ const RAIData = () => {
       title: actionTitle || actionType || "update",
       price: Number(actionPrice) || 0,
       comment: actionComment || "",
+      actionDateTime: actionDateTime || new Date().toISOString(),
     };
 
     // Determine the new status based on action type
@@ -256,7 +258,9 @@ const RAIData = () => {
       weightageExtension: form.weightageExtension,
       lotSize: form.lotSize,
       lots: Number(form.lots) || 1,
-      recommendationDateTime: form.recommendationDateTime || undefined,
+      recommendationDateTime: form.recommendationDateTime
+        ? new Date(form.recommendationDateTime)
+        : undefined,
       title: form.title,
       risk: form.risk,
       brief: form.brief,
@@ -780,6 +784,19 @@ const RAIData = () => {
                 value={actionComment}
                 onChange={(e) => setActionComment(e.target.value)}
               ></textarea>
+            </div>
+
+            {/* Date and Time Field */}
+            <div className="mb-3">
+              <label className="form-label fw-semibold">
+                Action Date & Time
+              </label>
+              <input
+                type="datetime-local"
+                className="form-control"
+                value={actionDateTime}
+                onChange={(e) => setActionDateTime(e.target.value)}
+              />
             </div>
 
             {/* Translation Field */}
