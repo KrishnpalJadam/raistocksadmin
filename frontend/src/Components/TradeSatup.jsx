@@ -464,8 +464,16 @@ const TradeSatup = () => {
                                 </label>
                               </div>
                             </div>
-                          </Col>
-                        </Row>
+                          </div>
+
+                          <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => handleInlineCreate()}
+                          >
+                            <Save size={14} /> Market Create
+                          </Button>
+                        </div>
                       </Card>
                     </Col>
 
@@ -502,6 +510,16 @@ const TradeSatup = () => {
                             </Button>
                           </Col>
                         </Row>
+                        <div className="row mt-3">
+                          <div className="col-sm-4">
+                            <button
+                              className="btn btn-primary"
+                              onClick={handleCreateVix}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
                       </Card>
                     </Col>
 
@@ -671,11 +689,12 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
+                 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
                       <button
-                        type="button"
+                      type="button"
                         className="btn btn-primary"
                         onClick={handleSavePhase}
                       >
@@ -743,6 +762,7 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
+ 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
