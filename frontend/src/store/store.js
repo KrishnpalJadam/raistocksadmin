@@ -12,6 +12,7 @@ import tradeReducer from "../slices/tradeSlice";
 import tradeActionReducer from "../slices/tradeActionsSlice";
 import supportReducer from "../slices/supportSlice";
 import clientReducer from "../slices/clientSlice";
+import marketSetupReducer from "../slices/marketSetupSlice";
 
 export const store = configureStore({
   reducer: {
@@ -27,6 +28,9 @@ export const store = configureStore({
         tradeActions: tradeActionReducer,
             support: supportReducer,
                 clients: clientReducer,
+
+                    marketSetup: marketSetupReducer,
+
 
 
 

@@ -21,6 +21,7 @@ export const createTrade = createAsyncThunk(
   "trades/create",
   async (payload, { rejectWithValue }) => {
     try {
+      console.log("Creating trade with payload:", payload);
       const res = await fetch(TRADE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,7 +47,12 @@ export const updateTradeStatus = createAsyncThunk(
       });
       const body = await res.json();
       if (!res.ok) return rejectWithValue(body);
-      return body.trade || body;
+
+      // ✅ Always return normalized data (id + status)
+      return {
+        id: body.trade?._id || id,
+        status: body.trade?.status || status,
+      };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -106,11 +112,11 @@ const slice = createSlice({
         s.error = a.payload || a.error?.message;
       })
       .addCase(createTrade.fulfilled, (s, a) => {
-        // Ensure new trade has status
+        // Always ensure new trades start with Live status
         const trade = a.payload;
         s.items.unshift({
           ...trade,
-          status: trade.status || "Live",
+          status: "Live", // Force Live status for new trades
         });
       })
       .addCase(updateTrade.fulfilled, (s, a) => {
@@ -120,20 +126,15 @@ const slice = createSlice({
         if (idx >= 0) s.items[idx] = a.payload;
       })
       .addCase(updateTradeStatus.fulfilled, (s, a) => {
-        const updated = a.payload?.trade || a.payload;
-        if (!updated?._id && !updated?.id) return;
-
+        const { id, status } = a.payload;
         const idx = s.items.findIndex(
-          (x) => x._id === updated._id || x.id === updated.id
+          (x) => String(x._id) === String(id) || String(x.id) === String(id)
         );
         if (idx >= 0) {
-          s.items[idx] = {
-            ...s.items[idx],
-            ...updated,
-            status: updated.status || s.items[idx].status,
-          };
+          s.items[idx].status = status;
         }
       })
+
       .addCase(deleteTrade.fulfilled, (s, a) => {
         s.items = s.items.filter(
           (x) => x._id !== a.payload && x.id !== a.payload

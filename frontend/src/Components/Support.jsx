@@ -1,10 +1,22 @@
-// src/components/Support/Support.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, Table, Button, Form, Row, Col, Pagination, Badge, Spinner } from "react-bootstrap";
-import { Search, Filter, Eye, Mail } from "lucide-react";
+import {
+  Card,
+  Table,
+  Button,
+  Form,
+  Row,
+  Col,
+  Pagination,
+  Badge,
+  Spinner,
+} from "react-bootstrap";
+import { Search, Filter, Eye } from "lucide-react";
 import TicketDetailModal from "./TicketDetailModal";
-import { fetchSupportTickets, updateTicketStatus } from "../slices/supportSlice";
+import {
+  fetchSupportTickets,
+  updateTicketStatus,
+} from "../slices/supportSlice";
 import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api/support`;
@@ -13,13 +25,11 @@ const ITEMS_PER_PAGE = 10;
 const getStatusBadge = (status) => {
   switch (status) {
     case "Resolved":
-      return "bg-success";
-    case "In-progress":
-      return "bg-primary";
-    case "Open":
-      return "bg-danger";
+      return "success";
+    case "Pending":
+      return "secondary";
     default:
-      return "bg-secondary";
+      return "secondary";
   }
 };
 
@@ -49,36 +59,38 @@ const Support = () => {
     setViewingTicket(null);
   };
 
-  // ✅ Handle email click
-const handleSendEmail = async (ticket) => {
-  try {
-    // Prepare mailto URL
-    const subject = `Regarding your support ticket #${ticket.ticketId}`;
-    const body = `Hi ${ticket.client},\n\nWe’re reaching out regarding your ticket about "${ticket.subject}".\n\nBest regards,\nSupport Team`;
-    const mailtoUrl = `mailto:${ticket.clientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // ✅ Handle status click (send email + resolve)
+  const handleResolveClick = async (ticket) => {
+    if (ticket.status === "Resolved") return;
 
-    // Open mail client immediately
-    window.open(mailtoUrl, "_blank");
+    try {
+      const res = await axios.put(`${API_URL}/${ticket._id}/resolve`);
 
-    // ✅ Fetch email from backend (optional, can skip if you already have email)
-    const res = await axios.get(`${API_URL}/${ticket._id}/email`);
-    const email = res.data.email;
+      if (res.status === 200) {
+        dispatch(updateTicketStatus({ id: ticket._id, status: "Resolved" }));
 
-    if (!email) {
-      console.warn("Email not found from backend.");
+        // ✅ Success toast
+        alert(
+          `✅ Email sent and ticket #${ticket.ticketId} marked as Resolved!`,
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
+      } else {
+        alert("❌ Failed to resolve ticket on server.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (err) {
+      console.error("Error resolving ticket:", err);
+      alert("⚠️ Email sending failed or backend error occurred.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
-
-    // Mark ticket as resolved in backend
-    await axios.put(`${API_URL}/${ticket._id}/resolve`);
-
-    // Update status in Redux
-    dispatch(updateTicketStatus({ id: ticket._id, status: "Resolved" }));
-  } catch (err) {
-    console.error("Error sending email:", err);
-    alert("Failed to update ticket status.");
-  }
-};
-
+  };
 
   // ✅ Filter + search tickets
   const filteredTickets = useMemo(() => {
@@ -88,7 +100,9 @@ const handleSendEmail = async (ticket) => {
         ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ticket.ticketId.toString().includes(searchTerm);
 
-      const statusMatch = filterStatus === "All" || ticket.status === filterStatus;
+      const statusMatch =
+        filterStatus === "All" || ticket.status === filterStatus;
+
       return searchMatch && statusMatch;
     });
   }, [tickets, searchTerm, filterStatus]);
@@ -141,15 +155,18 @@ const handleSendEmail = async (ticket) => {
                   }}
                 >
                   <option value="All">All Statuses</option>
-                  <option value="Open">Open</option>
-                  <option value="In-progress">In-progress</option>
+                  <option value="Pending">Pending</option>
                   <option value="Resolved">Resolved</option>
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={3} className="d-flex align-items-center justify-content-end">
+            <Col
+              md={3}
+              className="d-flex align-items-center justify-content-end"
+            >
               <span className="text-muted small">
-                Showing {paginatedTickets.length} of {filteredTickets.length} tickets
+                Showing {paginatedTickets.length} of {filteredTickets.length}{" "}
+                tickets
               </span>
             </Col>
           </Row>
@@ -172,20 +189,38 @@ const handleSendEmail = async (ticket) => {
                   <th>Opened</th>
                   <th>Status</th>
                   <th>Action</th>
-                  <th>Email</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedTickets.length > 0 ? (
                   paginatedTickets.map((ticket) => (
                     <tr key={ticket._id}>
-                      <td><strong>{ticket.ticketId}</strong></td>
+                      <td>
+                        <strong>{ticket.ticketId}</strong>
+                      </td>
                       <td>{ticket.client}</td>
-                      <td><small>{ticket.subject}</small></td>
-                      <td><Badge bg="light" text="dark">{ticket.category}</Badge></td>
+                      <td>
+                        <small>{ticket.subject}</small>
+                      </td>
+                      <td>
+                        <Badge bg="light" text="dark">
+                          {ticket.category}
+                        </Badge>
+                      </td>
                       <td>{ticket.opened?.substring(0, 10)}</td>
                       <td>
-                        <Badge className="badge-subscription" bg={getStatusBadge(ticket.status)}>
+                        <Badge
+                          bg={getStatusBadge(ticket.status)}
+                          className="badge-subscription"
+                          style={{
+                            cursor:
+                              ticket.status === "Resolved"
+                                ? "not-allowed"
+                                : "pointer",
+                            opacity: ticket.status === "Resolved" ? 0.7 : 1,
+                          }}
+                          onClick={() => handleResolveClick(ticket)}
+                        >
                           {ticket.status}
                         </Badge>
                       </td>
@@ -199,21 +234,11 @@ const handleSendEmail = async (ticket) => {
                           <Eye className="lucide-icon" />
                         </Button>
                       </td>
-                      <td>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          title={`Email ${ticket.client}`}
-                          onClick={() => handleSendEmail(ticket)}
-                        >
-                          <Mail className="lucide-icon" />
-                        </Button>
-                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="text-center text-muted py-4">
+                    <td colSpan="7" className="text-center text-muted py-4">
                       No support tickets found matching your criteria.
                     </td>
                   </tr>
@@ -225,8 +250,14 @@ const handleSendEmail = async (ticket) => {
           {/* ✅ Pagination */}
           <div className="d-flex justify-content-center mt-4">
             <Pagination>
-              <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-              <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+              <Pagination.First
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+              />
+              <Pagination.Prev
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
               {[...Array(totalPages)].map((_, index) => (
                 <Pagination.Item
                   key={index + 1}
@@ -236,8 +267,14 @@ const handleSendEmail = async (ticket) => {
                   {index + 1}
                 </Pagination.Item>
               ))}
-              <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-              <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+              <Pagination.Next
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              />
+              <Pagination.Last
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+              />
             </Pagination>
           </div>
         </Card.Body>
@@ -245,7 +282,11 @@ const handleSendEmail = async (ticket) => {
 
       {/* ✅ Ticket Detail Modal */}
       {viewingTicket && (
-        <TicketDetailModal show={showModal} handleClose={handleCloseModal} ticketData={viewingTicket} />
+        <TicketDetailModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          ticketData={viewingTicket}
+        />
       )}
     </div>
   );

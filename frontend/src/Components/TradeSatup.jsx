@@ -31,16 +31,19 @@ const TradeSatup = () => {
   );
 
   const empty = {
+    // Market Insight core fields
     marketInfo: "",
     title: "",
     comment: "",
     sentiment: null,
+    date: new Date().toISOString().slice(0, 10),
+    // Global Market fields (optional)
     country: "",
     currency: 0,
     value: "",
     globalcomment: "",
+    // VIX field (optional)
     vixValue: "",
-    date: new Date().toISOString().slice(0, 10),
   };
 
   const handleInlineCreate = () => {
@@ -90,32 +93,50 @@ const TradeSatup = () => {
   const handleSubmit = (e) => {
     e?.preventDefault?.();
     if (activeModule === "marketInsight") {
-      // ensure sentiment is null if not selected
-      const payload = { ...marketInsight };
-      if (!payload.sentiment) payload.sentiment = null;
+      // Combine all data into one payload
+      const payload = {
+        marketInfo: marketInsight.marketInfo || "",
+        title: marketInsight.title || "",
+        comment: marketInsight.comment || "",
+        sentiment: marketInsight.sentiment || null, // null means Neutral
+        date: marketInsight.date || new Date().toISOString(),
+        country: marketInsight.country || "",
+        currency: marketInsight.currency || 0,
+        value: marketInsight.value || "",
+        globalcomment: marketInsight.globalcomment || "",
+        vixValue: marketInsight.vixValue || "",
+      };
+
       if (editingId) {
         dispatch(updateMarketInsight({ id: editingId, data: payload }))
           .unwrap()
-          .then(() => alert("Market Insight updated successfully"))
+          .then(() => {
+            alert("Market Insight updated successfully");
+            setMarketInsight(empty);
+            setEditingId(null);
+          })
           .catch((err) =>
             alert("Failed to update Market Insight: " + (err?.message || err))
           );
       } else {
         dispatch(createMarketInsight(payload))
           .unwrap()
-          .then(() => alert("Market Insight created successfully"))
+          .then(() => {
+            alert("Market Insight created successfully");
+            setMarketInsight(empty);
+          })
           .catch((err) =>
             alert("Failed to create Market Insight: " + (err?.message || err))
           );
       }
     } else if (activeModule === "marketPhase") {
-      // marketPhase expects { title, description, date }
       const p = {
         title: marketInsight.title || "",
         description: marketInsight.comment || "",
         date: marketInsight.date,
       };
       dispatch(createMarketPhase(p));
+      setMarketInsight(empty);
     } else if (activeModule === "marketTrend") {
       const t = {
         title: marketInsight.title || "",
@@ -123,24 +144,16 @@ const TradeSatup = () => {
         date: marketInsight.date,
       };
       dispatch(createMarketTrend(t));
+      setMarketInsight(empty);
     }
-    setMarketInsight(empty);
     setEditingId(null);
   };
 
   const handleCreateVix = () => {
+    // Now just updates the form state - actual save happens with main form
     if (!marketInsight.vixValue) return alert("Enter VIX value");
-    dispatch(
-      createVix({ vixValue: marketInsight.vixValue, date: marketInsight.date })
-    )
-      .unwrap()
-      .then(() => {
-        alert("VIX created successfully");
-        setMarketInsight((prev) => ({ ...prev, vixValue: "" }));
-      })
-      .catch((err) => {
-        alert("Failed to create VIX: " + (err?.message || err));
-      });
+    // VIX value will be included in main form submission
+    alert("VIX value added - click Create/Update to save all changes");
   };
 
   const handleCreateMarketPhaseInline = () => {
@@ -166,28 +179,12 @@ const TradeSatup = () => {
   };
 
   const handleCreateGlobalMarket = () => {
-    const payload = {
-      country: marketInsight.country,
-      currency: marketInsight.currency,
-      value: marketInsight.value,
-      comment: marketInsight.globalcomment,
-      date: marketInsight.date,
-    };
-    dispatch(createGlobalMarket(payload))
-      .unwrap()
-      .then(() => {
-        alert("Global Market created successfully");
-        setMarketInsight((prev) => ({
-          ...prev,
-          country: "",
-          currency: 0,
-          value: "",
-          globalcomment: "",
-        }));
-      })
-      .catch((err) =>
-        alert("Failed to create Global Market: " + (err?.message || err))
-      );
+    // Now just validates the data - actual save happens with main form
+    if (!marketInsight.country || !marketInsight.currency) {
+      return alert("Please select country and currency");
+    }
+    // Global market data will be included in main form submission
+    alert("Global market data added - click Create/Update to save all changes");
   };
 
   const handleEdit = (item) => {
@@ -309,7 +306,7 @@ const TradeSatup = () => {
                         <h6 className="mb-2">Select</h6>
                         <Form.Select
                           className="mb-3"
-                          aria-label="Select admin module"
+                          aria-label="Select market info type"
                           style={{ minWidth: 220 }}
                           value={marketInsight.marketInfo || ""}
                           onChange={(e) =>
@@ -345,10 +342,10 @@ const TradeSatup = () => {
                           <option value="Stocks in News">Stocks in News</option>
                           <option value="About Market">About Market</option>
                         </Form.Select>
-                        <hr />
-                        <div className="row">
-                          <div className="col-sm-6">
-                            <Form.Group className="mb-2">
+
+                        <Row className="g-3">
+                          <Col md={6}>
+                            <Form.Group>
                               <Form.Label>Date</Form.Label>
                               <Form.Control
                                 type="date"
@@ -361,9 +358,9 @@ const TradeSatup = () => {
                                 }
                               />
                             </Form.Group>
-                          </div>
-                          <div className="col-sm-6">
-                            <Form.Group className="mb-2">
+                          </Col>
+                          <Col md={6}>
+                            <Form.Group>
                               <Form.Label>Title</Form.Label>
                               <Form.Control
                                 type="text"
@@ -376,22 +373,25 @@ const TradeSatup = () => {
                                 }
                               />
                             </Form.Group>
-                          </div>
-                          <Form.Group>
-                            <Form.Label>Comment</Form.Label>
-                            <Form.Control
-                              as="textarea"
-                              rows={2}
-                              value={marketInsight.comment || ""}
-                              onChange={(e) =>
-                                setMarketInsight((prev) => ({
-                                  ...prev,
-                                  comment: e.target.value,
-                                }))
-                              }
-                            />
-                          </Form.Group>
-                          <div className="mb-3 mt-3">
+                          </Col>
+                          <Col md={12}>
+                            <Form.Group>
+                              <Form.Label>Comment</Form.Label>
+                              <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={marketInsight.comment || ""}
+                                onChange={(e) =>
+                                  setMarketInsight((prev) => ({
+                                    ...prev,
+                                    comment: e.target.value,
+                                  }))
+                                }
+                              />
+                            </Form.Group>
+                          </Col>
+
+                          <Col md={12}>
                             <label className="form-label fw-semibold d-block">
                               Sentiment
                             </label>
@@ -440,6 +440,27 @@ const TradeSatup = () => {
                                   htmlFor="negative"
                                 >
                                   Negative
+                                </label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="sentiment"
+                                  id="neutral"
+                                  checked={marketInsight.sentiment === null}
+                                  onChange={() =>
+                                    setMarketInsight((prev) => ({
+                                      ...prev,
+                                      sentiment: null,
+                                    }))
+                                  }
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="neutral"
+                                >
+                                  Neutral
                                 </label>
                               </div>
                             </div>
@@ -501,15 +522,15 @@ const TradeSatup = () => {
                         </div>
                       </Card>
                     </Col>
+
                     <Col md={6}>
                       <Card className="p-3 mb-3">
                         <h6 className="mb-2">Global Markets</h6>
-                        <Row className="g-2">
-                          <Col md={5}>
+                        <Row className="g-3">
+                          <Col md={6}>
                             <Form.Group>
                               <Form.Label>Country</Form.Label>
                               <Form.Select
-                                className="mb-3"
                                 value={marketInsight.country || ""}
                                 onChange={(e) =>
                                   setMarketInsight((prev) => ({
@@ -527,9 +548,8 @@ const TradeSatup = () => {
                           </Col>
                           <Col md={6}>
                             <Form.Group>
-                              <Form.Label>Currency </Form.Label>
+                              <Form.Label>Currency</Form.Label>
                               <Form.Select
-                                className="mb-3"
                                 value={marketInsight.currency || 0}
                                 onChange={(e) =>
                                   setMarketInsight((prev) => ({
@@ -545,8 +565,8 @@ const TradeSatup = () => {
                               </Form.Select>
                             </Form.Group>
                           </Col>
-                          <div className="col-sm-12">
-                            <Form.Group className="mb-2">
+                          <Col md={12}>
+                            <Form.Group>
                               <Form.Label>Value</Form.Label>
                               <Form.Control
                                 type="text"
@@ -559,63 +579,55 @@ const TradeSatup = () => {
                                 }
                               />
                             </Form.Group>
-                          </div>
-                          <Form.Group>
-                            <Form.Label>Comment</Form.Label>
-                            <Form.Control
-                              as="textarea"
-                              rows={2}
-                              value={marketInsight.globalcomment || ""}
-                              onChange={(e) =>
-                                setMarketInsight((prev) => ({
-                                  ...prev,
-                                  globalcomment: e.target.value,
-                                }))
-                              }
-                            />
-                          </Form.Group>
-                          <div className="mt-2">
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={handleCreateGlobalMarket}
-                              className="me-2"
-                            >
-                              Create Global Market
-                            </Button>
-                          </div>
+                          </Col>
+                          <Col md={12}>
+                            <Form.Group>
+                              <Form.Label>Global Market Comment</Form.Label>
+                              <Form.Control
+                                as="textarea"
+                                rows={2}
+                                value={marketInsight.globalcomment || ""}
+                                onChange={(e) =>
+                                  setMarketInsight((prev) => ({
+                                    ...prev,
+                                    globalcomment: e.target.value,
+                                  }))
+                                }
+                              />
+                            </Form.Group>
+                          </Col>
                         </Row>
                       </Card>
                     </Col>
                   </Row>
 
-                  <Row className="mt-2">
+                  <Row className="mt-4">
                     <Col>
                       <Button
                         variant="secondary"
-                        size="sm"
                         onClick={() => {
                           setMarketInsight(empty);
                           setEditingId(null);
                         }}
                       >
-                        Reset
+                        Reset Form
                       </Button>
                     </Col>
                     <Col className="text-end">
                       {editingId && (
                         <Button
                           variant="danger"
-                          size="sm"
                           className="me-2"
                           onClick={() => handleDelete(editingId)}
                         >
                           Delete
                         </Button>
                       )}
-                      {/* MarketInsight submit is the form submit; keep Create/Update but don't wire bottom Save Changes - main form submit handles it */}
-                      <Button variant="success" size="sm" type="submit">
-                        <Save size={14} /> {editingId ? "Update" : "Create"}
+                      <Button variant="success" type="submit">
+                        <Save size={16} className="me-1" />
+                        {editingId
+                          ? "Update Market Insight"
+                          : "Create Market Insight"}
                       </Button>
                     </Col>
                   </Row>

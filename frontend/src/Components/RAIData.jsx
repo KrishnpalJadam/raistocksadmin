@@ -61,6 +61,8 @@ const RAIData = () => {
     recommendationDateTime: "",
     status: "Live", // Set initial status to Live
     title: "",
+    risk: "Low",
+    brief: "",
   };
   const [form, setForm] = useState(emptyForm);
 
@@ -167,11 +169,8 @@ const RAIData = () => {
     };
 
     // Determine the new status based on action type
-    const newStatus = ["book_profit", "stoploss_hit", "exit"].includes(
-      actionType
-    )
-      ? "Closed"
-      : "Live";
+    // Only "update" keeps the trade Live, all other actions close it
+    const newStatus = actionType === "update" ? "Live" : "Closed";
 
     dispatch(
       createTradeAction({ tradeId: payload.tradeId, actionData: payload })
@@ -233,15 +232,19 @@ const RAIData = () => {
   // creating an action. Avoid a global sync effect here to prevent accidental
   // cross-updates or infinite loops.
 
-  const handleFormChange = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const handleFormChange = (k, v) => {
+    console.log("Form field changed:", k, "New value:", v);
+    setForm((p) => ({ ...p, [k]: v }));
+  };
 
   const handleAddTradeSubmit = (e) => {
     e.preventDefault();
     // normalize payload to backend schema
+    console.log("Form state before submission:", form);
     const payload = {
       segment: form.segment,
       tradeType: form.tradeType,
-      action: form.action,
+      action: form.action, // Current action value
       on: form.on,
       entryPrice: Number(form.entryPrice) || 0,
       stoploss: form.stoploss || "NA",
@@ -255,7 +258,11 @@ const RAIData = () => {
       lots: Number(form.lots) || 1,
       recommendationDateTime: form.recommendationDateTime || undefined,
       title: form.title,
+      risk: form.risk,
+      brief: form.brief,
+      status: "Live", // Explicitly set status to Live for new trades
     };
+    console.log("Sending payload to backend:", payload);
     dispatch(createTrade(payload))
       .unwrap()
       .then(() => {
@@ -345,8 +352,8 @@ const RAIData = () => {
                         handleFormChange("action", e.target.value)
                       }
                     >
-                      <option>Buy</option>
-                      <option>Sell</option>
+                      <option value="Buy">Buy</option>
+                      <option value="Sell">Sell</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -452,7 +459,6 @@ const RAIData = () => {
                       <option>6 Months to 2 Years</option>
                       <option>1 to 2 Years</option>
                       <option>1 to 3 Years</option>
-
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -521,6 +527,37 @@ const RAIData = () => {
                     />
                   </Form.Group>
                 </Col>
+
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Risk</Form.Label>
+                    <Form.Select
+                      value={form.risk}
+                      onChange={(e) => handleFormChange("risk", e.target.value)}
+                    >
+                      <option>Low</option>
+                      <option>Low to Moderate</option>
+                      <option>Moderate</option>
+                      <option>Moderately High</option>
+                      <option>High</option>
+                      <option>Very High</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+
+                <Col md={4}>
+                  <Form.Group>
+                    <Form.Label>Brief Rationale</Form.Label>
+                    <Form.Control
+                      value={form.brief || ""}
+                      onChange={(e) =>
+                        handleFormChange("brief", e.target.value)
+                      }
+                      type="text"
+                      placeholder="Enter Brief Rationale"
+                    />
+                  </Form.Group>
+                </Col>
               </Row>
               <div className="mt-4 text-end">
                 <Button type="submit" variant="success">
@@ -574,7 +611,8 @@ const RAIData = () => {
                 <th>Action</th>
                 <th>On</th>
                 <th>Entry</th>
-
+                <th>Risk</th>
+                <th>Brief</th>
                 <th>Status</th>
                 <th>Result</th>
                 <th>PnL</th>
@@ -592,14 +630,15 @@ const RAIData = () => {
                     <td>{t.action}</td>
                     <td>{t.on}</td>
                     <td>₹{t.entryPrice ?? t.entry}</td>
-
+                    <td>{t.risk}</td>
+                    <td>{t.brief}</td>
                     <td>
                       <span
                         className={`badge bg-${
-                          getTradeStatus(t) === "Live" ? "info" : "secondary"
+                          (t.status || "Live") === "Live" ? "info" : "secondary"
                         }`}
                       >
-                        {getTradeStatus(t)}
+                        {t.status || "Live"}
                       </span>
                     </td>
                     <td className={getBadgeClass(t.result)}>
@@ -640,7 +679,7 @@ const RAIData = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="17" className="text-center text-muted py-4">
+                  <td colSpan="13" className="text-center text-muted py-4">
                     No trades found.
                   </td>
                 </tr>
@@ -789,7 +828,6 @@ const RAIData = () => {
           </Modal.Title>{" "}
         </Modal.Header>{" "}
         <Modal.Body className="p-4">
-          {" "}
           {selectedTrade ? (
             <div className="table-responsive">
               {" "}
@@ -817,8 +855,8 @@ const RAIData = () => {
                         {Array.isArray(value)
                           ? value.join(", ")
                           : value
-                            ? String(value)
-                            : "-"}{" "}
+                          ? String(value)
+                          : "-"}{" "}
                       </td>{" "}
                     </tr>
                   ))}{" "}
@@ -829,7 +867,7 @@ const RAIData = () => {
             <div className="text-center text-muted py-4">
               No trade selected.
             </div>
-          )}{" "}
+          )}
         </Modal.Body>{" "}
         <Modal.Footer className="bg-light border-top">
           {" "}
