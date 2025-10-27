@@ -21,13 +21,18 @@ export const createMarketInsight = createAsyncThunk(
   "marketInsights/create",
   async (payload, { rejectWithValue }) => {
     try {
-      // payload should match updated model: { marketInfo, title, comment, sentiment, date }
+      // Include all fields from payload to match the model
       const bodyPayload = {
         marketInfo: payload.marketInfo,
         title: payload.title,
         comment: payload.comment,
         sentiment: payload.sentiment === undefined ? null : payload.sentiment,
         date: payload.date,
+        country: payload.country,
+        currency: payload.currency,
+        value: payload.value,
+        globalcomment: payload.globalcomment,
+        vixValue: payload.vixValue,
       };
 
       const res = await fetch(API, {

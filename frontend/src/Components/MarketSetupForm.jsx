@@ -122,58 +122,65 @@ const MarketSetupForm = () => {
     setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Convert the individual levels into arrays
-    const supportLevels = [
-      Number(formData.support.S1),
-      Number(formData.support.S2),
-      Number(formData.support.S3),
-    ];
-    const resistanceLevels = [
-      Number(formData.resistance.R1),
-      Number(formData.resistance.R2),
-      Number(formData.resistance.R3),
-    ];
+  // 🔍 Validate Support & Resistance levels before sending
+  const supportLevels = [formData.support.S1, formData.support.S2, formData.support.S3]
+    .map((v) => Number(v))
+    .filter((v) => !isNaN(v));
 
-    data.append("on", formData.onWhat);
-    data.append("price", formData.price);
-    data.append("supportLevels", JSON.stringify(supportLevels));
-    data.append("resistanceLevels", JSON.stringify(resistanceLevels));
-    data.append("supportResistanceComment", formData.resistance.comment);
-    data.append("phase", formData.phase);
-    data.append("phaseComment", formData.phaseComment);
-    data.append("trend", formData.trend);
-    data.append("trendComment", formData.trendComment);
-    data.append("chartPattern", formData.chartPattern);
-    data.append("chartPatternComment", formData.chartPatternComment);
-    data.append("candlePattern", formData.candlePattern);
-    data.append("candlePatternComment", formData.candlePatternComment);
-    data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
+  const resistanceLevels = [formData.resistance.R1, formData.resistance.R2, formData.resistance.R3]
+    .map((v) => Number(v))
+    .filter((v) => !isNaN(v));
 
-    if (formData.image) data.append("image", formData.image);
-const API_BASE = import.meta.env.VITE_API_URL;
-     try {
-      const res = await fetch(`${API_BASE}/api/marketsetup`, {
-        method: "POST",
-        body: data,
-      });
+  if (supportLevels.length !== 3 || resistanceLevels.length !== 3) {
+    alert("❌ Please enter valid numbers for all support and resistance levels!");
+    return;
+  }
 
-      const result = await res.json();
-      if (res.ok) {
-        alert("✅ Market setup submitted successfully!");
-        console.log("Response:", result);
-      } else {
-        alert("❌ Failed to submit. Check console.");
-        console.error(result);
-      }
-    } catch (err) {
-      console.error("Error submitting form:", err);
-      alert("Server error. Please try again later.");
+  // ✅ Now safe to send data
+  const data = new FormData();
+
+  data.append("on", formData.onWhat);
+  data.append("price", formData.price);
+  data.append("supportLevels", JSON.stringify(supportLevels));
+  data.append("resistanceLevels", JSON.stringify(resistanceLevels));
+  data.append("supportResistanceComment", formData.resistance.comment);
+  data.append("phase", formData.phase);
+  data.append("phaseComment", formData.phaseComment);
+  data.append("trend", formData.trend);
+  data.append("trendComment", formData.trendComment);
+  data.append("chartPattern", formData.chartPattern);
+  data.append("chartPatternComment", formData.chartPatternComment);
+  data.append("candlePattern", formData.candlePattern);
+  data.append("candlePatternComment", formData.candlePatternComment);
+  data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
+
+  if (formData.image) data.append("image", formData.image);
+
+  const API_BASE = import.meta.env.VITE_API_URL;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/marketsetup`, {
+      method: "POST",
+      body: data,
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      alert("✅ Market setup submitted successfully!");
+      console.log("Response:", result);
+    } else {
+      alert("❌ Failed to submit. Check console.");
+      console.error(result);
     }
-  };
+  } catch (err) {
+    console.error("Error submitting form:", err);
+    alert("Server error. Please try again later.");
+  }
+};
+
 
   return (
     <div className="container my-4">

@@ -442,26 +442,10 @@ const TradeSatup = () => {
                                   Negative
                                 </label>
                               </div>
-                              <div className="form-check">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="sentiment"
-                                  id="neutral"
-                                  checked={marketInsight.sentiment === null}
-                                  onChange={() =>
-                                    setMarketInsight((prev) => ({
-                                      ...prev,
-                                      sentiment: null,
-                                    }))
-                                  }
-                                />
-                               
-                              </div>
+                         
                             </div>
                           </Col>
                         </Row>
-                          
 <div> 
                         </div>
                       </Card>
@@ -774,6 +758,8 @@ const TradeSatup = () => {
                   <MarketSetupForm />
                 </>
               )}
+
+              {/* - */}
             </>
           )}
 
