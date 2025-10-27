@@ -494,28 +494,9 @@ const TradeSatup = () => {
                               />
                             </Form.Group>
                           </Col>
-                          <Col md={3} className="d-flex align-items-end">
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
-                              onClick={() => {
-                                /* fetch action if needed */
-                              }}
-                            >
-                              Fetch VIX
-                            </Button>
-                          </Col>
+                   
                         </Row>
-                        <div className="row mt-3">
-                          <div className="col-sm-4">
-                            <button
-                              className="btn btn-primary"
-                              onClick={handleCreateVix}
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </div>
+                      
                       </Card>
                     </Col>
 
@@ -792,24 +773,19 @@ const TradeSatup = () => {
                       </Form.Group>
                     </Col>
                     <Col md={4}>
-                      <Form.Group>
-                        <Form.Label>Title</Form.Label>
-                        <Form.Select
-                          value={marketInsight.title || ""}
-                          onChange={(e) =>
-                            setMarketInsight((prev) => ({
-                              ...prev,
-                              title: e.target.value,
-                            }))
-                          }
-                        >
-                          <option value="">Select strategy</option>
-                          <option value="Accumulation">Accumulation</option>
-                          <option value="Distribution">Distribution</option>
-                          <option value="Greed">Greed</option>
-                          <option value="Fear">Fear</option>
-                        </Form.Select>
-                      </Form.Group>
+                              <Form.Group>
+                              <Form.Label>Title</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={marketInsight.title || ""}
+                                onChange={(e) =>
+                                  setMarketInsight((prev) => ({
+                                    ...prev,
+                                    title: e.target.value,
+                                  }))
+                                }
+                              />
+                            </Form.Group>
                     </Col>
                     <Col md={12}>
                       <Form.Group>
