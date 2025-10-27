@@ -42,6 +42,7 @@ const Support = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [resolvingTickets, setResolvingTickets] = useState(new Set());
 
   // ✅ Fetch all tickets on mount
   useEffect(() => {
@@ -61,10 +62,15 @@ const Support = () => {
 
   // ✅ Handle status click (send email + resolve)
   const handleResolveClick = async (ticket) => {
-    if (ticket.status === "Resolved") return;
+    if (ticket.status === "Resolved" || resolvingTickets.has(ticket._id))
+      return;
+
+    setResolvingTickets((prev) => new Set(prev).add(ticket._id));
 
     try {
-      const res = await axios.put(`${API_URL}/${ticket._id}/resolve`);
+      const res = await axios.put(`${API_URL}/${ticket._id}/resolve`, {
+        status: "Resolved",
+      });
 
       if (res.status === 200) {
         dispatch(updateTicketStatus({ id: ticket._id, status: "Resolved" }));
@@ -88,6 +94,12 @@ const Support = () => {
       alert("⚠️ Email sending failed or backend error occurred.", {
         position: "top-right",
         autoClose: 3000,
+      });
+    } finally {
+      setResolvingTickets((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(ticket._id);
+        return newSet;
       });
     }
   };
@@ -209,20 +221,24 @@ const Support = () => {
                       </td>
                       <td>{ticket.opened?.substring(0, 10)}</td>
                       <td>
-                        <Badge
-                          bg={getStatusBadge(ticket.status)}
-                          className="badge-subscription"
-                          style={{
-                            cursor:
-                              ticket.status === "Resolved"
-                                ? "not-allowed"
-                                : "pointer",
-                            opacity: ticket.status === "Resolved" ? 0.7 : 1,
-                          }}
-                          onClick={() => handleResolveClick(ticket)}
-                        >
-                          {ticket.status}
-                        </Badge>
+                        {resolvingTickets.has(ticket._id) ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : (
+                          <Badge
+                            bg={getStatusBadge(ticket.status)}
+                            className="badge-subscription"
+                            style={{
+                              cursor:
+                                ticket.status === "Resolved"
+                                  ? "not-allowed"
+                                  : "pointer",
+                              opacity: ticket.status === "Resolved" ? 0.7 : 1,
+                            }}
+                            onClick={() => handleResolveClick(ticket)}
+                          >
+                            {ticket.status}
+                          </Badge>
+                        )}
                       </td>
                       <td>
                         <Button

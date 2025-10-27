@@ -13,7 +13,7 @@ const MarketSetupForm = () => {
 
   const [formData, setFormData] = useState({
     onWhat: "",
-    price: "",
+    price: 0,
     support: { S1: "", S2: "", S3: "", comment: "" },
     resistance: { R1: "", R2: "", R3: "", comment: "" },
     phase: "Accumulation",
@@ -154,9 +154,9 @@ const MarketSetupForm = () => {
     data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
 
     if (formData.image) data.append("image", formData.image);
-
-    try {
-      const res = await fetch("http://localhost:5000/api/marketsetup", {
+const API_BASE = import.meta.env.VITE_API_URL;
+     try {
+      const res = await fetch(`${API_BASE}/api/marketsetup`, {
         method: "POST",
         body: data,
       });
@@ -194,7 +194,7 @@ const MarketSetupForm = () => {
           <div className="col-sm-6">
             <label className="form-label">Price</label>
             <input
-              type="text"
+              type="number"
               className="form-control"
               name="price"
               value={formData.price}
