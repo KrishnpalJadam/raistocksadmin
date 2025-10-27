@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketInsights } from "../slices/marketInsightSlice";
 import { fetchMarketPhases } from "../slices/marketPhaseSlice";
 import { fetchMarketTrends } from "../slices/marketTrendSlice";
+import { fetchTradeStrategies } from "../slices/tradeStrategySlice";
 import { deleteMarketInsight } from "../slices/marketInsightSlice";
 import { deleteMarketPhase } from "../slices/marketPhaseSlice";
 import { deleteMarketTrend } from "../slices/marketTrendSlice";
+import { deleteTradeStrategy } from "../slices/tradeStrategySlice";
 
 const TradeSatupView = () => {
   const [filter, setFilter] = useState("all");
@@ -16,11 +18,15 @@ const TradeSatupView = () => {
   const { items: insights = [] } = useSelector((s) => s.marketInsights || {});
   const { items: phases = [] } = useSelector((s) => s.marketPhases || {});
   const { items: trends = [] } = useSelector((s) => s.marketTrends || {});
+  const { items: strategies = [] } = useSelector(
+    (s) => s.tradeStrategies || {}
+  );
 
   useEffect(() => {
     dispatch(fetchMarketInsights());
     dispatch(fetchMarketPhases());
     dispatch(fetchMarketTrends());
+    dispatch(fetchTradeStrategies());
   }, [dispatch]);
 
   const combined = useMemo(() => {
@@ -51,10 +57,19 @@ const TradeSatupView = () => {
       date: t.date,
     }));
 
-    return [...ins, ...phs, ...trs].sort(
+    const strs = strategies.map((s) => ({
+      id: s._id,
+      module: "Trade Strategy",
+      title: s.title,
+      comment: s.description || null,
+      sentiment: null,
+      date: s.date,
+    }));
+
+    return [...ins, ...phs, ...trs, ...strs].sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
-  }, [insights, phases, trends]);
+  }, [insights, phases, trends, strategies]);
 
   const list = useMemo(() => {
     if (filter === "all") return combined;
@@ -64,6 +79,8 @@ const TradeSatupView = () => {
       return combined.filter((c) => c.module === "Market Phase");
     if (filter === "marketTrend")
       return combined.filter((c) => c.module === "Market Trend");
+    if (filter === "tradeStrategy")
+      return combined.filter((c) => c.module === "Trade Strategy");
     return combined;
   }, [combined, filter]);
 
@@ -82,6 +99,8 @@ const TradeSatupView = () => {
       dispatch(deleteMarketPhase(item.id));
     } else if (item.module === "Market Trend") {
       dispatch(deleteMarketTrend(item.id));
+    } else if (item.module === "Trade Strategy") {
+      dispatch(deleteTradeStrategy(item.id));
     }
   };
   return (
@@ -98,6 +117,7 @@ const TradeSatupView = () => {
           <option value="marketInsight">Market Insight</option>
           <option value="marketPhase">Market Phase</option>
           <option value="marketTrend">Market Trend</option>
+          <option value="tradeStrategy">Trade Strategy</option>
         </Form.Select>
       </div>
 

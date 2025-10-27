@@ -19,6 +19,10 @@ import {
 } from "../slices/marketTrendSlice";
 import { createVix } from "../slices/vixSlice";
 import { createGlobalMarket } from "../slices/globalMarketSlice";
+import {
+  createTradeStrategy,
+  fetchTradeStrategies,
+} from "../slices/tradeStrategySlice";
 import MarketSetupForm from "./MarketSetupForm";
 import MarketSetupViewTable from "./Marketsatupviewtable";
 
@@ -241,6 +245,25 @@ const TradeSatup = () => {
       );
   };
 
+  const handleSaveStrategy = () => {
+    const payload = {
+      title: marketInsight.title || "",
+      description: marketInsight.comment || "",
+      date: marketInsight.date,
+    };
+    dispatch(createTradeStrategy(payload))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchTradeStrategies());
+        alert("Trade Strategy created successfully");
+        setMarketInsight((prev) => ({ ...prev, title: "", comment: "" }));
+        setActiveTab("view");
+      })
+      .catch((err) =>
+        alert("Failed to create Trade Strategy: " + (err?.message || err))
+      );
+  };
+
   return (
     <div className="trade-setup-admin">
       <Card className="mb-4 shadow-sm">
@@ -294,6 +317,7 @@ const TradeSatup = () => {
                 <option value="marketInsight">Market Insight</option>
                 <option value="marketPhase">Market Phase</option>
                 <option value="marketTrend">Market Trend</option>
+                <option value="tradeStrategy">Trade Strategy</option>
                 <option value="marketSatup">Market Satup</option>
               </Form.Select>
 
@@ -442,12 +466,10 @@ const TradeSatup = () => {
                                   Negative
                                 </label>
                               </div>
-                         
                             </div>
                           </Col>
                         </Row>
-<div> 
-                        </div>
+                        <div></div>
                       </Card>
                     </Col>
 
@@ -663,12 +685,11 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
-                 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
                       <button
-                      type="button"
+                        type="button"
                         className="btn btn-primary"
                         onClick={handleSavePhase}
                       >
@@ -736,7 +757,6 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
- 
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
@@ -744,6 +764,76 @@ const TradeSatup = () => {
                         type="button"
                         className="btn btn-primary"
                         onClick={handleSaveTrend}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </Form>
+              )}
+
+              {/* ---------------- Trade Strategy ---------------- */}
+              {activeModule === "tradeStrategy" && (
+                <Form>
+                  <Row className="g-3">
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={marketInsight.date || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Title</Form.Label>
+                        <Form.Select
+                          value={marketInsight.title || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              title: e.target.value,
+                            }))
+                          }
+                        >
+                          <option value="">Select strategy</option>
+                          <option value="Accumulation">Accumulation</option>
+                          <option value="Distribution">Distribution</option>
+                          <option value="Greed">Greed</option>
+                          <option value="Fear">Fear</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={12}>
+                      <Form.Group>
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          value={marketInsight.comment || ""}
+                          onChange={(e) =>
+                            setMarketInsight((prev) => ({
+                              ...prev,
+                              comment: e.target.value,
+                            }))
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="row mt-2">
+                    <div className="col-sm-4">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleSaveStrategy}
                       >
                         Save
                       </button>

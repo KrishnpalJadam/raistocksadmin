@@ -9,12 +9,13 @@ import leadRoutes from "./routes/leadRoutes.js";
 import crmRoutes from "./routes/crmRoutes.js";
 import connectDB from "./config/db.js";
 import marketInsightRoutes from "./routes/marketInsightRoutes.js";
- import researchReportRoutes from "./routes/researchReportRoutes.js"; 
- import globalMarketRoutes from "./routes/globalMarketRoutes.js";
- import vixRoutes from "./routes/vixRoutes.js"
- import tradeRoutes from "./routes/tradeRoutes.js"
- import tradeActionsRoutes from "./routes/tradeActionsRoutes.js";
-
+import researchReportRoutes from "./routes/researchReportRoutes.js";
+import globalMarketRoutes from "./routes/globalMarketRoutes.js";
+import vixRoutes from "./routes/vixRoutes.js";
+import tradeRoutes from "./routes/tradeRoutes.js";
+import tradeActionsRoutes from "./routes/tradeActionsRoutes.js";
+import tradeStrategyRoutes from "./routes/tradeStrategyRoutes.js";
+import marketSetupRoutes from "./routes/marketSetupRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -37,13 +38,14 @@ const corsOptions = {
     return callback(new Error("Not allowed by CORS"));
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-// ✅ Parse JSON bodies
+// ✅ Parse JSON bodies and form data
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ✅ Your routes
 app.use("/api/users", userRoutes);
@@ -58,10 +60,8 @@ app.use("/api/globalmarket", globalMarketRoutes);
 app.use("/api/vix", vixRoutes);
 app.use("/api/trades", tradeRoutes);
 app.use("/api/trade-actions", tradeActionsRoutes);
-
-
- 
-
+app.use("/api/trade-strategies", tradeStrategyRoutes);
+app.use("/api/marketsetup", marketSetupRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
