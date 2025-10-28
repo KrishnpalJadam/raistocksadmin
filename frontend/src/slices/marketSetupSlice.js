@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/marketsetup"; // ✅ Update if different
+const API_URL = "https://tradingapi-production-a52b.up.railway.app/api/marketsetup"; // ✅ Update if different
 
 // Fetch All Market Setups
 export const fetchMarketSetups = createAsyncThunk(

@@ -74,6 +74,7 @@ const TradeSatupView = () => {
     return str.slice(0, 20) + "..";
   };
   const handleDelete = (item) => {
+    console.log("cponmsple",item)
     if (!window.confirm(`Delete ${item.module} "${item.title}"?`)) return;
 
     if (item.module === "Market Insight") {
@@ -83,6 +84,7 @@ const TradeSatupView = () => {
     } else if (item.module === "Market Trend") {
       dispatch(deleteMarketTrend(item.id));
     }
+    
   };
   return (
     <div className="trade-setup-view">
@@ -144,14 +146,14 @@ const TradeSatupView = () => {
                   )}
                 </td>
                 <td className="text-end">
-                  <Button
+                  {/* <Button
                     size="sm"
                     variant="outline-primary"
                     className="me-2"
                     title="Edit"
                   >
                     <Pencil size={14} />
-                  </Button>
+                  </Button> */}
                   <Button
                     size="sm"
                     variant="outline-danger"
@@ -161,9 +163,9 @@ const TradeSatupView = () => {
                   >
                     <Trash2 size={14} />
                   </Button>
-                  <Button size="sm" variant="outline-secondary" title="View">
+                  {/* <Button size="sm" variant="outline-secondary" title="View">
                     <Eye size={14} />
-                  </Button>
+                  </Button> */}
                 </td>
               </tr>
             ))}
