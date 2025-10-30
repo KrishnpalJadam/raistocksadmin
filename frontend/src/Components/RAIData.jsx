@@ -71,17 +71,21 @@ const RAIData = () => {
 
   // Derive trades merged with their actions in local memo (do not write back to Redux here)
   const tradesWithActions = useMemo(() => {
-    if (!trades || trades.length === 0) return [];
-    if (!tradeActions || tradeActions.length === 0) return trades;
-    return trades.map((trade) => ({
-      ...trade,
-      actions: tradeActions.filter((action) => {
-        const aid = String(action.tradeId || "").trim();
-        const tid = String(trade._id || trade.id || "").trim();
-        return aid && tid ? aid === tid : false;
-      }),
-    }));
-  }, [trades, tradeActions]);
+  if (!Array.isArray(trades)) return [];
+
+  if (!Array.isArray(tradeActions) || tradeActions.length === 0)
+    return [...trades];
+
+  return  (Array.isArray(trades) ? trades : []).map((trade) => ({
+    ...trade,
+    actions: tradeActions.filter((action) => {
+      const aid = String(action.tradeId || "").trim();
+      const tid = String(trade._id || trade.id || "").trim();
+      return aid && tid ? aid === tid : false;
+    }),
+  }));
+}, [trades, tradeActions]);
+
 
   const filteredTrades = useMemo(() => {
     const q = (searchTerm || "").toLowerCase();
@@ -756,6 +760,7 @@ const RAIData = () => {
                 <option value="update">Update</option>
                 <option value="book_profit">Book Profit</option>
                 <option value="stoploss_hit">Stoploss Hit</option>
+                <option value="stoploss_hit">Trail SL Hit</option>
                 <option value="exit">Exit</option>
               </select>
             </div>

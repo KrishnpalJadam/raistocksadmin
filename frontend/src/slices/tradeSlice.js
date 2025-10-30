@@ -1,64 +1,47 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const TRADE_API = `${API_BASE}/api/trades`;
 
+/* ================= Fetch Trades ================= */
 export const fetchTrades = createAsyncThunk(
   "trades/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetch(TRADE_API);
       const body = await res.json();
+
       if (!res.ok) return rejectWithValue(body);
-      return body || [];
+
+      return body.trades || []; // ✅ Always return array
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
+/* ================= Create Trade ================= */
 export const createTrade = createAsyncThunk(
   "trades/create",
   async (payload, { rejectWithValue }) => {
     try {
-      console.log("Creating trade with payload:", payload);
       const res = await fetch(TRADE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       const body = await res.json();
       if (!res.ok) return rejectWithValue(body);
-      return body.trade || body;
+
+      return body.trade;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-export const updateTradeStatus = createAsyncThunk(
-  "trades/updateStatus",
-  async ({ id, status }, { rejectWithValue }) => {
-    try {
-      const res = await fetch(`${TRADE_API}/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      const body = await res.json();
-      if (!res.ok) return rejectWithValue(body);
-
-      // ✅ Always return normalized data (id + status)
-      return {
-        id: body.trade?._id || id,
-        status: body.trade?.status || status,
-      };
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
-
+/* ================= Update Trade ================= */
 export const updateTrade = createAsyncThunk(
   "trades/update",
   async ({ id, data }, { rejectWithValue }) => {
@@ -68,22 +51,69 @@ export const updateTrade = createAsyncThunk(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+
       const body = await res.json();
       if (!res.ok) return rejectWithValue(body);
-      return body.trade || body;
+
+      return body.trade;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
+/* ================= Update Status ================= */
+export const updateTradeStatus = createAsyncThunk(
+  "trades/updateStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TRADE_API}/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) return rejectWithValue(body);
+
+      return { id, status: body.trade.status };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+/* ================= Update Trail SL ================= */
+export const updateTrailSl = createAsyncThunk(
+  "trades/updateTrailSl",
+  async ({ id, trailSl }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TRADE_API}/${id}/trail-sl`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trailSl }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) return rejectWithValue(body);
+
+      return body.trade;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+/* ================= Delete Trade ================= */
 export const deleteTrade = createAsyncThunk(
   "trades/delete",
   async (id, { rejectWithValue }) => {
     try {
       const res = await fetch(`${TRADE_API}/${id}`, { method: "DELETE" });
       const body = await res.json();
+
       if (!res.ok) return rejectWithValue(body);
+
       return id;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -91,54 +121,66 @@ export const deleteTrade = createAsyncThunk(
   }
 );
 
+/* ================= Slice ================= */
 const slice = createSlice({
   name: "trades",
-  initialState: { items: [], status: "idle", error: null },
+  initialState: {
+    items: [],
+    status: "idle",
+    error: null,
+  },
   reducers: {
     updateWithActions: (state, action) => {
-      state.items = action.payload;
+      state.items = Array.isArray(action.payload) ? action.payload : [];
     },
   },
-  extraReducers: (b) => {
-    b.addCase(fetchTrades.pending, (s) => {
-      s.status = "loading";
-    })
-      .addCase(fetchTrades.fulfilled, (s, a) => {
-        s.status = "succeeded";
-        s.items = a.payload;
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTrades.pending, (state) => {
+        state.status = "loading";
       })
-      .addCase(fetchTrades.rejected, (s, a) => {
-        s.status = "failed";
-        s.error = a.payload || a.error?.message;
+      .addCase(fetchTrades.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = Array.isArray(action.payload) ? action.payload : []; // ✅ Safety
       })
-      .addCase(createTrade.fulfilled, (s, a) => {
-        // Always ensure new trades start with Live status
-        const trade = a.payload;
-        s.items.unshift({
-          ...trade,
-          status: "Live", // Force Live status for new trades
-        });
-      })
-      .addCase(updateTrade.fulfilled, (s, a) => {
-        const idx = s.items.findIndex(
-          (x) => x._id === a.payload._id || x.id === a.payload.id
-        );
-        if (idx >= 0) s.items[idx] = a.payload;
-      })
-      .addCase(updateTradeStatus.fulfilled, (s, a) => {
-        const { id, status } = a.payload;
-        const idx = s.items.findIndex(
-          (x) => String(x._id) === String(id) || String(x.id) === String(id)
-        );
-        if (idx >= 0) {
-          s.items[idx].status = status;
-        }
+      .addCase(fetchTrades.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || action.error?.message;
       })
 
-      .addCase(deleteTrade.fulfilled, (s, a) => {
-        s.items = s.items.filter(
-          (x) => x._id !== a.payload && x.id !== a.payload
-        );
+      /* CREATE */
+      .addCase(createTrade.fulfilled, (state, action) => {
+        if (action.payload)
+          state.items.unshift({ ...action.payload, status: "Live" });
+      })
+
+      /* UPDATE */
+      .addCase(updateTrade.fulfilled, (state, action) => {
+        const trade = action.payload;
+        const id = trade?._id || trade?.id;
+        const idx = state.items.findIndex((x) => String(x._id) === String(id));
+        if (idx >= 0) state.items[idx] = trade;
+      })
+
+      /* UPDATE STATUS */
+      .addCase(updateTradeStatus.fulfilled, (state, action) => {
+        const { id, status } = action.payload;
+        const idx = state.items.findIndex((x) => String(x._id) === String(id));
+        if (idx >= 0) state.items[idx].status = status;
+      })
+
+      /* UPDATE TRAIL SL */
+      .addCase(updateTrailSl.fulfilled, (state, action) => {
+        const trade = action.payload;
+        const id = trade?._id || trade?.id;
+        const idx = state.items.findIndex((x) => String(x._id) === String(id));
+        if (idx >= 0) state.items[idx] = { ...state.items[idx], ...trade };
+      })
+
+      /* DELETE */
+      .addCase(deleteTrade.fulfilled, (state, action) => {
+        const id = action.payload;
+        state.items = state.items.filter((x) => String(x._id) !== String(id));
       });
   },
 });
