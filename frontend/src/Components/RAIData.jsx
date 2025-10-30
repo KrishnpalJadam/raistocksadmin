@@ -758,9 +758,9 @@ const RAIData = () => {
                 className="form-select"
               >
                 <option value="update">Update</option>
-                <option value="book_profit">Book Profit</option>
-                <option value="stoploss_hit">Stoploss Hit</option>
-                <option value="stoploss_hit">Trail SL Hit</option>
+                <option value="book profit">Book Profit</option>
+                <option value="stop loss hit">Stoploss Hit</option>
+                <option value="trail sl hit">Trail SL Hit</option>
                 <option value="exit">Exit</option>
               </select>
             </div>
