@@ -16,6 +16,7 @@ import {
   createTrade,
   deleteTrade,
   updateTradeStatus,
+  updateTrailSl
 } from "../slices/tradeSlice";
 import {
   createTradeAction,
@@ -43,6 +44,8 @@ const RAIData = () => {
   const [actionComment, setActionComment] = useState("");
   const [actionDateTime, setActionDateTime] = useState("");
   const [AddshowModal, AddsetShowModal] = useState(false);
+  const [trailSlValue, setTrailSlValue] = useState("");
+
 
   const emptyForm = {
     segment: "Cash",
@@ -280,6 +283,21 @@ const RAIData = () => {
       })
       .catch((err) => alert("Failed to add trade: " + (err?.message || err)));
   };
+  const handleTrailSlUpdate = () => {
+  if (!selectedTrade) return alert("No trade selected");
+  const id = selectedTrade._id || selectedTrade.id;
+  if (!trailSlValue.trim()) return alert("Please enter a Trail SL value");
+
+  dispatch(updateTrailSl({ id, trailSl: trailSlValue }))
+    .unwrap()
+    .then(() => {
+      alert("Trail SL updated successfully!");
+      setTrailSlValue("");
+      dispatch(fetchTrades());
+    })
+    .catch((err) => alert("Failed to update Trail SL: " + err));
+};
+
 
   return (
     <div className="page-content">
@@ -759,7 +777,7 @@ const RAIData = () => {
               >
                 <option value="update">Update</option>
                 <option value="book profit">Book Profit</option>
-                <option value="stop loss hit">Stoploss Hit</option>
+                <option value="stoploss hit">Stoploss Hit</option>
                 <option value="trail sl hit">Trail SL Hit</option>
                 <option value="exit">Exit</option>
               </select>
@@ -804,11 +822,7 @@ const RAIData = () => {
               />
             </div>
 
-            {/* Translation Field */}
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Trail SL</label>
-              <input type="text" className="form-control" placeholder="Enter" />
-            </div>
+           
 
             {/* this is where we will submit our actions.. */}
             {/* Update Button */}
@@ -818,6 +832,25 @@ const RAIData = () => {
               </Button>
             </div>
           </form>
+          <div>
+             {/* Translation Field */}
+            <div className="border-top pt-3">
+  <label className="form-label fw-semibold">Trail SL</label>
+  <div className="d-flex gap-2">
+    <input
+      type="text"
+      className="form-control"
+      placeholder="Enter Trail SL"
+      value={trailSlValue}
+      onChange={(e) => setTrailSlValue(e.target.value)}
+    />
+    <Button variant="success" onClick={handleTrailSlUpdate}>
+      Update Trail SL
+    </Button>
+  </div>
+</div>
+
+          </div>
         </Modal.Body>
 
         <Modal.Footer className="bg-light border-top">
