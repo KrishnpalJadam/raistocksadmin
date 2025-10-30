@@ -156,7 +156,7 @@ const MarketSetupForm = () => {
     if (formData.image) data.append("image", formData.image);
 
     try {
-      const res = await fetch("http://localhost:5000/api/marketsetup", {
+      const res = await fetch("https://tradingapi-production-a52b.up.railway.app/api/marketsetup", {
         method: "POST",
         body: data,
       });
