@@ -682,6 +682,7 @@ const RAIData = () => {
                         <Button
                           className="btn-sm"
                           onClick={() => handleUpdate(t)}
+                          disabled={t.status === "Closed"}
                         >
                           Update
                         </Button>
