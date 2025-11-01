@@ -380,6 +380,8 @@ const RAIData = () => {
                     >
                       <option value="Buy">Buy</option>
                       <option value="Sell">Sell</option>
+                      <option value="Long">Long</option>
+                      <option value="Short">Short</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
