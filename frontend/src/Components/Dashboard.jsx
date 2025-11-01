@@ -37,29 +37,7 @@ const Dashboard = () => {
     ],
   };
 
-  // Subscription Split (Investor, Trader, Trial)
-  const subscriptionData = {
-    labels: ["Investors", "Traders", "Trial Users"],
-    datasets: [
-      {
-        label: "Subscriptions",
-        data: [400, 320, 156],
-        backgroundColor: ["#1cc88a", "#4e73df", "#f6c23e"],
-      },
-    ],
-  };
 
-  // KYC Status Split
-  const kycData = {
-    labels: ["Verified", "Pending", "Rejected"],
-    datasets: [
-      {
-        label: "KYC Status",
-        data: [900, 250, 100],
-        backgroundColor: ["#36b9cc", "#f6c23e", "#e74a3b"],
-      },
-    ],
-  };
 
   return (
     <div className="dashboard-page container-fluid">
@@ -93,32 +71,30 @@ const Dashboard = () => {
 
       {/* Graph Section */}
       <div className="row mt-4">
-        <div className="col-lg-6 mb-4">
+        <div className="col-lg-12 mb-4">
+
           <Card className="dashboard-graph shadow-sm border-0 h-100">
-            <Card.Header className="bg-white fw-bold">Revenue Overview</Card.Header>
+            <div className="d-flex justify-content-between">
+              <div>
+
+                <Card.Header className="bg-white fw-bold">Sales Overview</Card.Header>
+              </div>
+              <div className="">
+
+                <button className="btn btn-outline-primary btn-sm me-2">Daily</button>
+                <button className="btn btn-outline-primary btn-sm me-2">Weekly </button>
+                <button className="btn btn-outline-primary btn-sm">Monthly </button>
+              </div>
+
+            </div>
+
             <Card.Body>
               <Line data={revenueData} />
             </Card.Body>
           </Card>
         </div>
 
-        <div className="col-lg-3 mb-4">
-          <Card className="dashboard-graph shadow-sm border-0 h-100">
-            <Card.Header className="bg-white fw-bold">Subscription Types</Card.Header>
-            <Card.Body>
-              <Doughnut data={subscriptionData} />
-            </Card.Body>
-          </Card>
-        </div>
 
-        <div className="col-lg-3 mb-4">
-          <Card className="dashboard-graph shadow-sm border-0 h-100">
-            <Card.Header className="bg-white fw-bold">KYC Status</Card.Header>
-            <Card.Body>
-              <Doughnut data={kycData} />
-            </Card.Body>
-          </Card>
-        </div>
       </div>
 
       {/* Quick Links Section */}
