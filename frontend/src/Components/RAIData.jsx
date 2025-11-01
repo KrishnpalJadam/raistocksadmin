@@ -174,7 +174,7 @@ const RAIData = () => {
       title: actionTitle || actionType || "update",
       price: Number(actionPrice) || 0,
       comment: actionComment || "",
-      actionDateTime: actionDateTime || new Date().toISOString(),
+      actionDateTime: actionDateTime  ,
     };
 
     // Determine the new status based on action type
