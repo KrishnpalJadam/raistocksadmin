@@ -8,8 +8,11 @@ import './App.css'
 import Login from "./Auth/Login";
 import Dashboard from "./Components/Dashboard";
 import MainLayout from "./Layout/MainLayout";
-import Clients from "./Components/Clients";
+
 import Payments from "./Components/Payments";
+import Clients from "./Components/ClientJourny/Clients";
+import ClientAllDetails from "./Components/ClientJourny/ClientAllDetails";
+
 import SubscriptionPlans from "./Components/SubscriptionPlans";
 import Emails from "./Components/Emails";
 import RAIData from "./Components/RAIData";
@@ -28,7 +31,9 @@ function App() {
        {/* Admin Panel */}
         <Route path="/admin/*" element={<MainLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="clients" element={<Clients />} />
+       {/* === Clients Management === */}
+  <Route path="clients" element={<Clients />} />
+  <Route path="clientsDetails" element={<ClientAllDetails />} />
           <Route path="payments" element={<Payments />} />
           <Route path="plans" element={<SubscriptionPlans />} />
           <Route path="emails" element={<Emails />} />
