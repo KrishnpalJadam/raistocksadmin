@@ -209,13 +209,13 @@ const Clients = ({ onViewDetails }) => {
                     {/* <td className="d-none d-sm-table-cell">{getStatusBadge(client.status)}</td> */}
                     <td className="text-center">
                       <div className="d-flex justify-content-center">
-                      <button
-  className="btn btn-outline-info btn-sm crm-action-btn me-2"
-  title="View Details"
-  onClick={() => navigate('/admin/clientsDetails')}
->
-  <Eye size={16} />
-</button>
+                        <button
+                          className="btn btn-outline-info btn-sm crm-action-btn me-2"
+                          title="View Details"
+                          onClick={() => navigate('/admin/clientsDetails')}
+                        >
+                          <Eye size={16} />
+                        </button>
 
                         <button className="btn btn-outline-primary btn-sm crm-action-btn me-2" title="Edit Client">
                           <Edit size={16} />
