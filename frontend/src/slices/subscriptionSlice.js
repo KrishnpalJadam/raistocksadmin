@@ -1,14 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { toast } from "react-toastify";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const TRADE_API = `${API_BASE}/api/trades`;
 
+import { toast } from "react-toastify";
 // ✅ Fetch all subscription plans
 export const fetchPlansAsync = createAsyncThunk(
   "subscriptions/fetchPlans",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/plan-subscriptions"
+        `${API_BASE}/api/plan-subscriptions`
       );
       return response.data.data; // API wraps plans in `data`
     } catch (error) {
@@ -23,7 +25,7 @@ export const createSubscriptionAsync = createAsyncThunk(
   async (subscriptionData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/plan-subscriptions",
+         `${API_BASE}/api/plan-subscriptions`,
         subscriptionData
       );
       return response.data.data; // return the created plan
@@ -39,7 +41,7 @@ export const deleteSubscriptionAsync = createAsyncThunk(
   async (planId, { rejectWithValue }) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/plan-subscriptions/${planId}`
+         `${API_BASE}/api/plan-subscriptions/${planId}`
       );
       return planId; // return the deleted plan's id
     } catch (error) {
@@ -53,7 +55,7 @@ export const updateSubscriptionAsync = createAsyncThunk(
   async ({ id, planData }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/plan-subscriptions/${id}`,
+         `${API_BASE}/api/plan-subscriptions/${id}`,
         planData
       );
       toast.success("Subscription updated successfully!");
