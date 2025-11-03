@@ -168,14 +168,26 @@ const RAIData = () => {
       );
     }
 
-    const payload = {
-      tradeId: trade._id || trade.id,
-      type: actionType || "update",
-      title: actionTitle || actionType || "update",
-      price: Number(actionPrice) || 0,
-      comment: actionComment || "",
-      actionDateTime: actionDateTime  ,
-    };
+    // const payload = {
+    //   tradeId: trade._id || trade.id,
+    //   type: actionType || "update",
+    //   title: actionTitle || actionType || "update",
+    //   price: Number(actionPrice) || 0,
+    //   comment: actionComment || "",
+    //   actionDateTime: actionDateTime  ,
+    // };
+    // Convert local datetime string (from input) → ISO format with timezone correction
+ const payload = {
+  tradeId: trade._id || trade.id,
+  type: actionType || "update",
+  title: actionTitle || actionType || "update",
+  price: Number(actionPrice) || 0,
+  comment: actionComment || "",
+  // datetime-local gives a local wall-clock string; new Date(...) will create a local Date.
+  // toISOString() gives the matching UTC ISO and includes the trailing "Z".
+  actionDateTime: actionDateTime ? new Date(actionDateTime).toISOString() : undefined,
+};
+
 
     // Determine the new status based on action type
     // Only "update" keeps the trade Live, all other actions close it
