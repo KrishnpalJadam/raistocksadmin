@@ -399,15 +399,7 @@ const MarketSetupForm = () => {
                 ))}
               </select>
 
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Event Comment"
-                value={event.eventComment}
-                onChange={(e) =>
-                  handleBreakoutChange(index, "eventComment", e.target.value)
-                }
-              />
+
             </div>
           ))}
 
@@ -418,6 +410,15 @@ const MarketSetupForm = () => {
           >
             ➕ Add Event
           </button>
+          <textarea
+            type="text"
+            className="form-control mt-4"
+            placeholder="Event Comment"
+            value={event.eventComment}
+            onChange={(e) =>
+              handleBreakoutChange(index, "eventComment", e.target.value)
+            }
+          />
         </div>
 
         {/* Image Upload */}
