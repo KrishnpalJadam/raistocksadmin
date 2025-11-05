@@ -6,7 +6,7 @@ import { RefreshCw, User, Mail, MessageSquare, Clock, XCircle, CheckCircle, Send
 
 const mockReplies = [
     { id: 1, sender: 'Admin User', content: 'Thank you for reaching out. We are investigating the issue with your dashboard access now.', date: '2025-10-01 10:00' },
-    { id: 2, sender: 'Client: Ravi Sharma', content: 'It seems to be an issue with my login credentials after the recent subscription change.', date: '2025-10-01 09:30' },
+  
 ];
 
 const getStatusColor = (status) => {
@@ -55,7 +55,7 @@ const TicketDetailModal = ({ show, handleClose, ticketData }) => {
             <Modal.Body>
                 <Row>
                     {/* Ticket Details Column */}
-                    <Col lg={12} className="mb-4">
+                    <Col lg={4} className="mb-4">
                         <Card className="shadow-sm border-0">
                             <Card.Body>
                                 <h5>Ticket Information</h5>
@@ -87,7 +87,42 @@ const TicketDetailModal = ({ show, handleClose, ticketData }) => {
                     </Col>
 
                     {/* Thread/Reply Column */}
-                   
+                    <Col lg={8}>
+                        <h5>Ticket Thread</h5>
+                        <div className="ticket-thread border p-3 rounded" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                            {mockReplies.slice().reverse().map((reply, index) => (
+                                <div key={index} className={`mb-3 p-3 rounded ${reply.sender.includes('Admin') ? 'bg-light border' : 'bg-white border border-primary border-opacity-25'}`}>
+                                    <p className="mb-1">
+                                        <small className="text-muted float-end">{reply.date}</small>
+                                        <strong>{reply.sender}</strong>
+                                    </p>
+                                    <p className="mb-0">{reply.content}</p>
+                                </div>
+                            ))}
+                          
+                        </div>
+
+                        {/* Admin Reply Form */}
+                        <Card className="mt-3">
+                            <Card.Body>
+                                <h6>Reply</h6>
+                                <Form.Group className="mb-3">
+                                    <Form.Control 
+                                        as="textarea" 
+                                        rows={3} 
+                                        placeholder="Type your response to the client..."
+                                        value={newReply}
+                                        onChange={(e) => setNewReply(e.target.value)}
+                                    />
+                                </Form.Group>
+                                <div className="d-flex justify-content-end">
+                                    <Button variant="primary" onClick={handleSendReply} disabled={newReply.trim() === ''}>
+                                        <Send className="lucide-icon me-2" /> Send Update
+                                    </Button>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
             </Modal.Body>
             <Modal.Footer>
