@@ -1,93 +1,32 @@
-import React, { useState } from 'react';
-import {
-  Search,
-  ChevronDown,
-  Edit,
-  Eye,
-  FileText,
-  DollarSign,
-  Briefcase,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import "./clint.css"
-// --- STATIC DUMMY DATA ---
-const DUMMY_CLIENTS = [
-  {
-    id: "RAI25OCT120001",
-    name: 'Rajesh Kumar',
-    email: 'rajesh.kumar@corp.com',
-    contact: '+91 98765 43210',
-    whatsApp: '+91 98765 43210',
-    aadhaar: 'XXXX XXXX 1234',
-    pan: 'ABCDE1234F',
-    subscription: 'Trader Premium',
-    plan: '3 Months',
-    status: 'Active',
-    kycStatus: 'Approved',
-    periodFrom: '15/07/2024',
-    periodTo: '15/10/2024',
-    daysLeft: 35,
-  },
-  {
-    id: "RAI25OCT120002",
-    name: 'Deepa Patel',
-    email: 'deepa.p@inbox.in',
-    contact: '+91 90123 45678',
-    whatsApp: '+91 90123 45678',
-    aadhaar: 'XXXX XXXX 5678',
-    pan: 'FGHIJ5678G',
-    subscription: 'Trial',
-    plan: '7 Days',
-    status: 'Inactive',
-    kycStatus: 'Pending',
-    periodFrom: '01/10/2024',
-    periodTo: '08/10/2024',
-    daysLeft: 0,
-  },
-  {
-    id: "RAI25OCT120003",
-    name: 'Amit Singh',
-    email: 'amit.s@investor.co',
-    contact: '+91 88888 77777',
-    whatsApp: '+91 88888 77777',
-    aadhaar: 'XXXX XXXX 9012',
-    pan: 'KLMNO9012H',
-    subscription: 'Investor',
-    plan: '1 Year',
-    status: 'Active',
-    kycStatus: 'Rejected',
-    periodFrom: '01/01/2024',
-    periodTo: '01/01/2025',
-    daysLeft: 5,
-  },
-  {
-    id: "RAI25OCT120004",
-    name: 'Priya Rao',
-    email: 'priya.rao@support.org',
-    contact: '+91 70000 66666',
-    whatsApp: '+91 70000 66666',
-    aadhaar: 'XXXX XXXX 3456',
-    pan: 'PQRST3456I',
-    subscription: 'Extended Trial',
-    plan: '30 Days',
-    status: 'Active',
-    kycStatus: 'Approved',
-    periodFrom: '10/09/2024',
-    periodTo: '10/10/2024',
-    daysLeft: 15,
-  },
-];
+import React, { useState, useEffect } from "react";
+import { Search, ChevronDown, Edit, Eye, FileText } from "lucide-react";
+import { Card, Pagination, Table } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPayments } from "../../slices/paymentSlice";
+import "./clint.css";
+import { useMemo } from "react";
 
-// --- BADGE UTILITIES ---
 const getSubscriptionBadge = (sub) => {
   let color;
   switch (sub) {
-    case 'Trial': color = 'secondary'; break;
-    case 'Extended Trial': color = 'warning'; break;
-    case 'Investor': color = 'info'; break;
-    case 'Trader': color = 'primary'; break;
-    case 'Trader Premium': color = 'success'; break;
-    default: color = 'light';
+    case "Trial":
+      color = "secondary";
+      break;
+    case "Extended Trial":
+      color = "warning";
+      break;
+    case "Investor":
+      color = "info";
+      break;
+    case "Trader":
+      color = "primary";
+      break;
+    case "Trader Premium":
+      color = "success";
+      break;
+    default:
+      color = "light";
   }
   return <span className={`badge bg-${color} rounded-pill`}>{sub}</span>;
 };
@@ -95,54 +34,106 @@ const getSubscriptionBadge = (sub) => {
 const getKycBadge = (status) => {
   let color;
   switch (status) {
-    case 'Pending': color = 'warning'; break;
-    case 'Approved': color = 'success'; break;
-    case 'Rejected': color = 'danger'; break;
-    default: color = 'light';
+    case "Pending":
+      color = "warning";
+      break;
+    case "Approved":
+      color = "success";
+      break;
+    case "Rejected":
+      color = "danger";
+      break;
+    default:
+      color = "light";
   }
   return <span className={`badge bg-${color} rounded-pill`}>{status}</span>;
 };
 
 const getDaysLeftBadge = (days) => {
-  let color = 'success';
-  if (days === 0) { color = 'danger'; }
-  else if (days < 10) { color = 'warning'; }
+  let color = "success";
+  if (days === 0) color = "danger";
+  else if (days < 10) color = "warning";
   return <span className={`badge bg-${color} rounded-pill`}>{days} Days</span>;
 };
 
-const getStatusBadge = (status) => {
-  const color = status === 'Active' ? 'primary' : 'secondary';
-  return <span className={`badge bg-opacity-10 text-${color} border border-${color} rounded-pill`}>{status}</span>;
-};
+const Clients = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {
+    list: clients,
+    loading,
+    error,
+  } = useSelector((state) => state.payments);
 
-// --- CLIENTS COMPONENT ---
-const Clients = ({ onViewDetails }) => {
-  // Simple state for UI controls (static data doesn't require actual filtering logic)
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('All Subscriptions');
-  const navigate = useNavigate()
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("All Subscriptions");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const clientsToDisplay = DUMMY_CLIENTS.length;
-  const totalClients = DUMMY_CLIENTS.length;
+  useEffect(() => {
+    dispatch(fetchPayments());
+  }, [dispatch]);
+
+  // Filter + Search
+
+  const ITEMS_PER_PAGE = 6;
+
+  const filteredClients = useMemo(() => {
+    return clients.filter((trx) => {
+      const searchMatch =
+        trx.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trx.clientId?.toLowerCase().includes(searchTerm.toLowerCase());
+      // const statusMatch = filterStatus === "All" || trx.status === filterStatus;
+      return searchMatch;
+    });
+  }, [clients, searchTerm]);
+
+  // --- Pagination
+  const totalPages = Math.ceil(filteredClients.length / ITEMS_PER_PAGE);
+
+  const paginatedClients = filteredClients.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
+  };
+
+  if (loading) return <p className="text-center py-5">Loading clients...</p>;
+  if (error)
+    return (
+      <p className="text-center text-danger py-5">
+        Failed to load clients: {error}
+      </p>
+    );
 
   return (
     <div className="crm-container">
-      {/* Top Section: Title & Controls */}
+      {/* Top Section */}
       <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded-3 border-start border-4 border-primary crm-header-card">
         <h2 className="mb-0 fs-4 text-dark-emphasis">Clients Management</h2>
 
         <div className="d-flex align-items-center flex-grow-1 flex-md-grow-0 ms-md-5 mt-2 mt-md-0">
-          <div className="input-group input-group-sm me-3" style={{ maxWidth: '300px' }}>
-            <span className="input-group-text bg-white border-end-0 text-muted"><Search size={16} /></span>
+          <div
+            className="input-group input-group-sm me-3"
+            style={{ maxWidth: "300px" }}
+          >
+            <span className="input-group-text bg-white border-end-0 text-muted">
+              <Search size={16} />
+            </span>
             <input
               type="text"
               className="form-control border-start-0"
-              placeholder="Search by name or email"
+              placeholder="Search by name or clientId"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // reset page on search
+              }}
             />
           </div>
-          <div className="dropdown">
+
+          {/* <div className="dropdown">
             <button
               className="btn btn-outline-secondary btn-sm dropdown-toggle text-start"
               type="button"
@@ -153,88 +144,160 @@ const Clients = ({ onViewDetails }) => {
               {filter}
             </button>
             <ul className="dropdown-menu">
-              {['All Subscriptions', 'Trial', 'Extended Trial', 'Investor', 'Trader', 'Trader Premium'].map(item => (
-                <li key={item}><a className="dropdown-item" href="#" onClick={() => setFilter(item)}>{item}</a></li>
+              {[
+                "All Subscriptions",
+                "Trial",
+                "Extended Trial",
+                "Investor",
+                "Trader",
+                "Trader Premium",
+              ].map((item) => (
+                <li key={item}>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => {
+                      setFilter(item);
+                      setCurrentPage(1); // reset page on filter
+                    }}
+                  >
+                    {item}
+                  </a>
+                </li>
               ))}
             </ul>
-          </div>
+          </div> */}
         </div>
 
         <p className="mb-0 ms-auto text-muted small mt-2 mt-md-0">
-          Showing <strong className="text-dark">{clientsToDisplay}</strong> of <strong className="text-dark">{totalClients}</strong> results
+          Showing{" "}
+          <strong className="text-dark">{paginatedClients.length}</strong> of{" "}
+          <strong className="text-dark">{filteredClients.length}</strong>{" "}
+          filtered results
         </p>
       </div>
 
-      {/* Clients Table Card */}
-      <div className="card shadow-sm rounded-3 border-0">
-        <div className="card-body p-0">
+      {/* Table */}
+      <Card className=" shadow-sm rounded-3 border-0">
+        <Card.Body className=" p-0">
           <div className="table-responsive">
-            <table className="table table-striped table-hover align-middle mb-0 crm-table">
+            <Table className="table table-striped table-hover align-middle mb-0 crm-table">
               <thead className="table-light">
                 <tr>
-                  <th scope="col" className="text-uppercase small fw-bold">#ID</th>
-                  <th scope="col" className="text-uppercase small fw-bold">Client Name</th>
-                  <th scope="col" className="text-uppercase small fw-bold">Email</th>
-                  <th scope="col" className="text-uppercase small fw-bold d-none d-lg-table-cell">Contact No</th>
-                  <th scope="col" className="text-uppercase small fw-bold d-none d-xl-table-cell">WhatsApp</th>
-                  <th scope="col" className="text-uppercase small fw-bold d-none d-xl-table-cell">Aadhaar / PAN</th>
-                  <th scope="col" className="text-uppercase small fw-bold">Subscription</th>
-                  <th scope="col" className="text-uppercase small fw-bold d-none d-md-table-cell">Validity (From - To)</th>
-                  <th scope="col" className="text-uppercase small fw-bold">Days Left</th>
-                  <th scope="col" className="text-uppercase small fw-bold d-none d-md-table-cell">Plan</th>
-                  <th scope="col" className="text-uppercase small fw-bold">KYC Status</th>
-                  {/* <th scope="col" className="text-uppercase small fw-bold d-none d-sm-table-cell">Status</th> */}
-                  <th scope="col" className="text-uppercase small fw-bold text-center">Actions</th>
+                  <th>#ID</th>
+                  <th>Client Name</th>
+                  <th>Email</th>
+                  <th className="d-none d-lg-table-cell">Contact No</th>
+                  <th className="d-none d-xl-table-cell">WhatsApp</th>
+                  <th className="d-none d-xl-table-cell">Aadhaar / PAN</th>
+                  <th>Subscription</th>
+                  <th className="d-none d-md-table-cell">
+                    Validity (From - To)
+                  </th>
+                  <th>Days Left</th>
+                  <th className="d-none d-md-table-cell">Plan</th>
+                  <th>KYC Status</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {DUMMY_CLIENTS.map((client) => (
-                  <tr key={client.id}>
-                    <td className="fw-bold text-primary small">#{client.id}</td>
+                {paginatedClients.map((client) => (
+                  <tr key={client.clientId}>
+                    <td className="fw-bold text-primary small">
+                      #{client.clientId}
+                    </td>
                     <td>{client.name}</td>
-                    <td><span className="small text-muted">{client.email}</span></td>
-                    <td className="d-none d-lg-table-cell">{client.contact}</td>
-                    <td className="d-none d-xl-table-cell">{client.whatsApp}</td>
+                    <td>
+                      <span className="small text-muted">{client.email}</span>
+                    </td>
+                    <td className="d-none d-lg-table-cell">{client.phone}</td>
+                    <td className="d-none d-xl-table-cell">{client.phone}</td>
                     <td className="d-none d-xl-table-cell small text-muted">
-                      <span className="d-block text-nowrap">Aadhaar: {client.aadhaar}</span>
-                      <span className="d-block text-nowrap">PAN: {client.pan}</span>
+                      <span className="d-block text-nowrap">
+                        Aadhaar: {client.pan}
+                      </span>
+                      <span className="d-block text-nowrap">
+                        PAN: {client.pan}
+                      </span>
                     </td>
                     <td>{getSubscriptionBadge(client.subscription)}</td>
                     <td className="small text-muted d-none d-md-table-cell text-nowrap">
-                      {client.periodFrom} - {client.periodTo}
+                      {(() => {
+                        const from = new Date(client.createdAt);
+                        const to = new Date(from);
+                        to.setDate(to.getDate() + client.duration);
+                        return `${from.toLocaleDateString(
+                          "en-GB"
+                        )} - ${to.toLocaleDateString("en-GB")}`;
+                      })()}
                     </td>
                     <td>{getDaysLeftBadge(client.daysLeft)}</td>
-                    <td className="d-none d-md-table-cell small text-nowrap">{client.plan}</td>
-                    <td>{getKycBadge(client.kycStatus)}</td>
-                    {/* <td className="d-none d-sm-table-cell">{getStatusBadge(client.status)}</td> */}
+                    <td className="d-none d-md-table-cell small text-nowrap">
+                      {client.planType}
+                    </td>
+                    <td>{getKycBadge(client.kyc)}</td>
                     <td className="text-center">
                       <div className="d-flex justify-content-center">
-                      <button
-  className="btn btn-outline-info btn-sm crm-action-btn me-2"
-  title="View Details"
-  onClick={() => navigate('/admin/clientsDetails')}
->
-  <Eye size={16} />
-</button>
-
-                        <button className="btn btn-outline-primary btn-sm crm-action-btn me-2" title="Edit Client">
+                        <button
+                          className="btn btn-outline-info btn-sm crm-action-btn me-2"
+                          title="View Details"
+                          onClick={() =>
+                            navigate(`/admin/clientsDetails/${client.clientId}`)
+                          }
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          className="btn btn-outline-primary btn-sm crm-action-btn me-2"
+                          title="Edit Client"
+                        >
                           <Edit size={16} />
                         </button>
-                        <button className="btn btn-outline-secondary btn-sm crm-action-btn me-2 d-none d-sm-block" title="Generate Invoice">
+                        <button
+                          className="btn btn-outline-secondary btn-sm crm-action-btn me-2 d-none d-sm-block"
+                          title="Generate Invoice"
+                        >
                           <FileText size={16} />
                         </button>
-                        {/* <button className="btn btn-outline-success btn-sm crm-action-btn d-none d-sm-block" title="Process Payment">
-                          <DollarSign size={16} />
-                        </button> */}
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
+
+            <div className="d-flex justify-content-center mt-4">
+              <Pagination>
+                <Pagination.First
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                />
+                <Pagination.Prev
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                />
+                {[...Array(totalPages)].map((_, index) => (
+                  <Pagination.Item
+                    key={index + 1}
+                    active={index + 1 === currentPage}
+                    onClick={() => handlePageChange(index + 1)}
+                  >
+                    {index + 1}
+                  </Pagination.Item>
+                ))}
+                <Pagination.Next
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                />
+                <Pagination.Last
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                />
+              </Pagination>
+            </div>
           </div>
-        </div>
-      </div>
+        </Card.Body>
+      </Card>
     </div>
   );
 };

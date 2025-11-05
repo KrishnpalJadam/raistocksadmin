@@ -61,12 +61,23 @@ const AddSubscriptionModal = ({
   }, [mode, planData]);
 
   // General change for top-level fields
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: type === "checkbox" ? checked : value,
+  //   }));
+  // };
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    if (name === "isFree" && !checked) {
+      setFormData((prev) => ({ ...prev, isFree: false, duration: "" }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   // Pricing option changes
@@ -178,18 +189,31 @@ const AddSubscriptionModal = ({
       }));
 
       if (mode === "add") {
+        // await dispatch(
+        //   createSubscriptionAsync({
+        //     ...formData,
+        //     pricingOptions: formattedPricingOptions,
+        //   })
+        // ).unwrap();
         await dispatch(
           createSubscriptionAsync({
             ...formData,
+            duration: formData.duration ? `${formData.duration} Days` : "", // 👈 convert number → string
             pricingOptions: formattedPricingOptions,
           })
         ).unwrap();
+
         toast.success("Subscription Plan Added Successfully! 🎉");
       } else if (mode === "edit" && planData?._id) {
         await dispatch(
           updateSubscriptionAsync({
             id: planData._id,
-            planData: { ...formData, pricingOptions: formattedPricingOptions },
+            // planData: { ...formData, pricingOptions: formattedPricingOptions },
+            planData: {
+              ...formData,
+              duration: formData.duration ? `${formData.duration} Days` : "",
+              pricingOptions: formattedPricingOptions,
+            },
           })
         ).unwrap();
       }
@@ -215,12 +239,24 @@ const AddSubscriptionModal = ({
           <Row className="mb-3">
             <Col>
               <Form.Label>Plan Name</Form.Label>
-              <Form.Control
+              {/* <Form.Control
                 type="text"
                 name="planName"
                 value={formData.planName}
                 onChange={handleChange}
-              />
+              /> */}
+
+              <Form.Select
+                name="planName"
+                value={formData.planName}
+                onChange={handleChange}
+              >
+                <option value="">Select Plan</option>
+                <option value="Trial">Trial</option>
+                <option value="Trader">Trader</option>
+                <option value="Investor">Investor</option>
+                <option value="Extended Trial">Extended Trial</option>
+              </Form.Select>
             </Col>
             <Col>
               <Form.Label>Description</Form.Label>
