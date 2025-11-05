@@ -14,6 +14,7 @@ import supportReducer from "../slices/supportSlice";
 import clientReducer from "../slices/clientSlice";
 import marketSetupReducer from "../slices/marketSetupSlice";
 import subscriptionReducer from "../slices/subscriptionSlice";
+import userReducer from "../slices/userSlice";
 
 export const store = configureStore({
   reducer: {
@@ -31,5 +32,6 @@ export const store = configureStore({
     clients: clientReducer,
     marketSetup: marketSetupReducer,
     subscriptions: subscriptionReducer,
+        user : userReducer
   },
 });
