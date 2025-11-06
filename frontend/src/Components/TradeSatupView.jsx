@@ -8,6 +8,7 @@ import { fetchMarketTrends } from "../slices/marketTrendSlice";
 import { deleteMarketInsight } from "../slices/marketInsightSlice";
 import { deleteMarketPhase } from "../slices/marketPhaseSlice";
 import { deleteMarketTrend } from "../slices/marketTrendSlice";
+import TradeStrategyView from "./TradeStrategyView";
 
 const TradeSatupView = () => {
   const [filter, setFilter] = useState("all");
@@ -172,6 +173,7 @@ const TradeSatupView = () => {
           </tbody>
         </Table>
       </Card>
+      {/* <TradeStrategyView/> */}
     </div>
   );
 };

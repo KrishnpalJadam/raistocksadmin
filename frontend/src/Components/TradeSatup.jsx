@@ -4,11 +4,15 @@ import { Save, RefreshCw, Plus, Eye } from "lucide-react";
 import TradeSatupView from "./TradeSatupView";
 import { useDispatch, useSelector } from "react-redux";
 import {
+
   fetchMarketInsights,
   createMarketInsight,
   updateMarketInsight,
   deleteMarketInsight,
+
 } from "../slices/marketInsightSlice";
+
+
 import {
   createMarketPhase,
   fetchMarketPhases,
@@ -17,6 +21,12 @@ import {
   createMarketTrend,
   fetchMarketTrends,
 } from "../slices/marketTrendSlice";
+import {
+  createTradeStrategy,
+  fetchTradeStrategies,
+
+} from "../slices/tradeStrategySlice";
+
 import { createVix } from "../slices/vixSlice";
 import { createGlobalMarket } from "../slices/globalMarketSlice";
 import MarketSetupForm from "./MarketSetupForm";
@@ -29,6 +39,42 @@ const TradeSatup = () => {
   const { items: insights = [], status = "idle" } = useSelector(
     (s) => s.marketInsights || {}
   );
+  const { items: strategies = [], status: strategyStatus } = useSelector(
+    (s) => s.tradeStrategies || {}
+  );
+  const [tradeStrategy, setTradeStrategy] = useState({
+    date: "",
+    title: "",
+    comment: "",
+  });
+
+  useEffect(() => {
+    if (strategyStatus === "idle") dispatch(fetchTradeStrategies());
+  }, [dispatch, strategyStatus]);
+
+
+  const handleSaveTradeStrategy = () => {
+    if (!tradeStrategy.title || !tradeStrategy.comment) {
+      alert("Please fill all fields");
+      return;
+    }
+   const payload = {
+  title: tradeStrategy.title,
+  description: tradeStrategy.comment,
+  date: tradeStrategy.date,
+};
+dispatch(createTradeStrategy(payload))
+  .unwrap()
+  .then(() => {
+    alert("Trade Strategy saved successfully");
+    setTradeStrategy({ date: "", title: "", comment: "" });
+    dispatch(fetchTradeStrategies());
+  })
+  .catch((err) => alert("Failed: " + err));
+
+      
+  };
+
 
   const empty = {
     // Market Insight core fields
@@ -295,7 +341,77 @@ const TradeSatup = () => {
                 <option value="marketPhase">Market Phase</option>
                 <option value="marketTrend">Market Trend</option>
                 <option value="marketSatup">Market Satup</option>
+                <option value="tradeStrategy">Trade Strategy</option>
               </Form.Select>
+              {/* ---------------- tradeStrategy ---------------- */}
+              {activeModule === "tradeStrategy" && (
+                <Form>
+                  <Row className="g-3">
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={tradeStrategy.date || ""}
+                          onChange={(e) =>
+                            setTradeStrategy((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter title"
+                          value={tradeStrategy.title || ""}
+                          onChange={(e) =>
+                            setTradeStrategy((prev) => ({
+                              ...prev,
+                              title: e.target.value,
+                            }))
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+
+                    <Col md={12}>
+                      <Form.Group>
+                        <Form.Label>Comment</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          placeholder="Enter your notes or summary..."
+                          value={tradeStrategy.comment || ""}
+                          onChange={(e) =>
+                            setTradeStrategy((prev) => ({
+                              ...prev,
+                              comment: e.target.value,
+                            }))
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <div className="row mt-3">
+                    <div className="col-sm-4">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleSaveTradeStrategy}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </Form>
+              )}
 
               {/* ---------------- Market Insight ---------------- */}
               {activeModule === "marketInsight" && (
@@ -456,13 +572,13 @@ const TradeSatup = () => {
                                     }))
                                   }
                                 />
-                               
+
                               </div>
                             </div>
                           </Col>
                         </Row>
-                          
-<div> 
+
+                        <div>
                         </div>
                       </Card>
                     </Col>
@@ -679,12 +795,12 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
-                 
+
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
                       <button
-                      type="button"
+                        type="button"
                         className="btn btn-primary"
                         onClick={handleSavePhase}
                       >
@@ -752,7 +868,7 @@ const TradeSatup = () => {
                         />
                       </Form.Group>
                     </Col>
- 
+
                   </Row>
                   <div className="row mt-2">
                     <div className="col-sm-4">
