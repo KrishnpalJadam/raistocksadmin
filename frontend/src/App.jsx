@@ -31,7 +31,10 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           {/* === Clients Management === */}
           <Route path="clients" element={<Clients />} />
-          <Route path="clientsDetails" element={<ClientAllDetails />} />
+          <Route
+            path="clientsDetails/:clientId"
+            element={<ClientAllDetails />}
+          />
           <Route path="payments" element={<Payments />} />
           <Route path="plans" element={<SubscriptionPlans />} />
           <Route path="emails" element={<Emails />} />
