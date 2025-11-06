@@ -14,6 +14,7 @@ import supportReducer from "../slices/supportSlice";
 import clientReducer from "../slices/clientSlice";
 import marketSetupReducer from "../slices/marketSetupSlice";
 import subscriptionReducer from "../slices/subscriptionSlice";
+import tradeStrategyReducer from "../slices/tradeStrategySlice";
 import paymentReducer from "../slices/paymentSlice";
 
 export const store = configureStore({
@@ -33,5 +34,6 @@ export const store = configureStore({
     marketSetup: marketSetupReducer,
     subscriptions: subscriptionReducer,
     payments: paymentReducer,
+     tradeStrategies: tradeStrategyReducer,
   },
 });
