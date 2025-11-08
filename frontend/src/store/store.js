@@ -16,6 +16,7 @@ import marketSetupReducer from "../slices/marketSetupSlice";
 import subscriptionReducer from "../slices/subscriptionSlice";
 import tradeStrategyReducer from "../slices/tradeStrategySlice";
 import paymentReducer from "../slices/paymentSlice";
+import dashboardReducer from "../slices/dashboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -35,5 +36,6 @@ export const store = configureStore({
     subscriptions: subscriptionReducer,
     payments: paymentReducer,
      tradeStrategies: tradeStrategyReducer,
+    dashboard: dashboardReducer,
   },
 });

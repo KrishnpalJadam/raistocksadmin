@@ -12,15 +12,28 @@ import {
 import { Card } from "react-bootstrap";
 import { Line, Doughnut } from "react-chartjs-2";
 import "chart.js/auto";
-
+import { fetchDashboardStats } from "../slices/dashboardSlice";
+import { useDispatch, useSelector } from "react-redux";  
 const Dashboard = () => {
   // KPI Data - As per CRM Requirements
+const dispatch = useDispatch();
+  const { stats, loading, error } = useSelector((state) => state.dashboard);
+
+  React.useEffect(() => {
+    dispatch(fetchDashboardStats());
+  }, [dispatch]);
+
+console.log("Dashboard stats:", stats, "Loading:", loading, "Error:", error);
+
+
+
+
   const kpis = [
-    { title: "Total Clients", value: "1,250", icon: <Users size={28} />, color: "#4e73df" },
-    { title: "KYC Pending", value: "145", icon: <FileText size={28} />, color: "#1cc88a" },
-    { title: "Active Subscriptions", value: "876", icon: <ShoppingBag size={28} />, color: "#36b9cc" },
-    { title: "Payments Received", value: "₹12,50,000", icon: <CreditCard size={28} />, color: "#f6c23e" },
-    { title: "Support Tickets", value: "52 Open", icon: <MessageSquare size={28} />, color: "#e74a3b" },
+    { title: "Total Clients", value: stats?.totalClients, icon: <Users size={28} />, color: "#4e73df" },
+    { title: "KYC Pending", value: stats?.kycPending, icon: <FileText size={28} />, color: "#1cc88a" },
+    { title: "Active Subscriptions", value: stats?.activeSubscriptions, icon: <ShoppingBag size={28} />, color: "#36b9cc" },
+    { title: "Payments Received", value: stats?.totalRevenue, icon: <CreditCard size={28} />, color: "#f6c23e" },
+    { title: "Support Tickets", value: stats?.openTickets  , icon: <MessageSquare size={28} />, color: "#e74a3b" },
   ];
 
   // Sales / Revenue Chart Data
@@ -36,9 +49,7 @@ const Dashboard = () => {
       },
     ],
   };
-
-
-
+ 
   return (
     <div className="dashboard-page container-fluid">
       {/* Page Title */}
