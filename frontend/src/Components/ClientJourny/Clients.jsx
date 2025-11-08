@@ -94,6 +94,7 @@ const Clients = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+console.log("Current page:", currentPage, "Clients displayed:", paginatedClients.map(c => c.name));
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
@@ -202,7 +203,7 @@ const Clients = () => {
               </thead>
               <tbody>
                 {paginatedClients.map((client) => (
-                  <tr key={client.clientId}>
+                  <tr key={client._id}>
                     <td className="fw-bold text-primary small">
                       #{client.clientId}
                     </td>

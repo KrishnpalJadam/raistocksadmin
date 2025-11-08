@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPayments } from "../slices/paymentSlice";
 import InvoiceModal from "./InvoiceModal";
 import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // --- Helper to get status badge class
 const getStatusBadge = (status) => {
@@ -62,7 +63,7 @@ const Payments = () => {
   const handleOpenInvoiceModal = async (clientId) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/invoice/${clientId}`
+        `${API_URL}/api/invoice/${clientId}`
       );
       setInvoiceData(data);
       setShowInvoiceModal(true);
