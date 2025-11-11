@@ -1,4 +1,4 @@
-npm // controllers/tradeAction.controller.ts
+// controllers/tradeAction.controller.ts
 import Trade from "../models/tradeModel.js";
 import TradeAction from "../models/tradeActionsModel.js";
 
