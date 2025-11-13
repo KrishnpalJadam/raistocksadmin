@@ -395,6 +395,8 @@ import {
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMdCall } from "react-icons/io";
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // --- BADGE UTILITIES ---
 const getSubscriptionBadge = (sub) => {
@@ -510,8 +512,8 @@ const ClientAllDetails = () => {
     const fetchDetails = async () => {
       try {
         const [clientRes, invoiceRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/clients/${clientId}`),
-          axios.get(`http://localhost:5000/api/invoice/${clientId}`),
+          axios.get(`${API_URL}/api/clients/${clientId}`),
+          axios.get(`${API_URL}/api/invoice/${clientId}`),
         ]);
         setClientData(clientRes.data);
         setInvoiceData(invoiceRes.data);
@@ -520,7 +522,7 @@ const ClientAllDetails = () => {
         const panNumber = clientRes.data.pan;
         if (panNumber) {
           const kycRes = await axios.get(
-            `http://localhost:5000/api/kyc/pan/${panNumber}`
+            `${API_URL}/api/kyc/pan/${panNumber}`
           );
           console.log("KYC Data:", kycRes.data);
           setKycData(kycRes.data.data);
