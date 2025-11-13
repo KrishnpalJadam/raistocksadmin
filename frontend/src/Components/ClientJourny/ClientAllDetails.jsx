@@ -519,10 +519,10 @@ const ClientAllDetails = () => {
         setInvoiceData(invoiceRes.data);
 
         // --- Fetch KYC by PAN ---
-        const panNumber = clientRes.data.pan;
-        if (panNumber) {
+        const email = clientRes.data.email;
+        if (email) {
           const kycRes = await axios.get(
-            `${API_URL}/api/kyc/pan/${panNumber}`
+            `${API_URL}/api/kyc/email/${email}`
           );
           console.log("KYC Data:", kycRes.data);
           setKycData(kycRes.data.data);
