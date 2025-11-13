@@ -17,12 +17,12 @@ const Header = () => {
             {/* Right - Icons and Profile */}
             <div className="d-flex align-items-center">
                 {/* Notifications */}
-                <button className="btn btn-light me-4 position-relative rounded-circle p-2">
+                {/* <button className="btn btn-light me-4 position-relative rounded-circle p-2">
                     <Bell className="lucide-icon" />
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         3 <span className="visually-hidden">unread messages</span>
                     </span>
-                </button>
+                </button> */}
               
 
                     <Dropdown.Item className="text-danger">

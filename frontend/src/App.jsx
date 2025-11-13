@@ -20,6 +20,7 @@ import Leads from "./Components/Leads";
 import Settings from "./Components/Settings";
 import TradeSatup from "./Components/TradeSatup";
 import ResearchReportAdd from "./Components/ResearchReportAdd";
+import CreateCouponCode from "./Components/CreateCouponCode";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="tradeSatup" element={<TradeSatup />} />
           <Route path="addResearchReport" element={<ResearchReportAdd />} />
+          <Route path="CreateCouponCode" element={<CreateCouponCode />} />
         </Route>
       </Routes>
 
