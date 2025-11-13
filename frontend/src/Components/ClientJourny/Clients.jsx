@@ -254,12 +254,12 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                         >
                           <Edit size={16} />
                         </button>
-                        <button
+                        {/* <button
                           className="btn btn-outline-secondary btn-sm crm-action-btn me-2 d-none d-sm-block"
                           title="Generate Invoice"
                         >
                           <FileText size={16} />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
