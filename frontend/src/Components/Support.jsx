@@ -18,6 +18,7 @@ import {
   updateTicketStatus,
 } from "../slices/supportSlice";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api/support`;
 const ITEMS_PER_PAGE = 10;
@@ -70,25 +71,15 @@ const Support = () => {
         dispatch(updateTicketStatus({ id: ticket._id, status: "Resolved" }));
 
         // ✅ Success toast
-        alert(
-          `✅ Email sent and ticket #${ticket.ticketId} marked as Resolved!`,
-          {
-            position: "top-right",
-            autoClose: 3000,
-          }
+        toast.success(
+          `✅ Email sent and ticket #${ticket.ticketId} marked as Resolved!`
         );
       } else {
-        alert("❌ Failed to resolve ticket on server.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        toast.error("❌ Failed to resolve ticket on server.");
       }
     } catch (err) {
       console.error("Error resolving ticket:", err);
-      alert("⚠️ Email sending failed or backend error occurred.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error("⚠️ Email sending failed or backend error occurred.");
     }
   };
 
