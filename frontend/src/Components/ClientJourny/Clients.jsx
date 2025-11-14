@@ -3,9 +3,10 @@ import { Search, ChevronDown, Edit, Eye, FileText } from "lucide-react";
 import { Card, Pagination, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPayments } from "../../slices/paymentSlice";
+// import { fetchPayments } from "../../slices/paymentSlice";
 import "./clint.css";
 import { useMemo } from "react";
+import { updateKycStatus,fetchClients } from "../../slices/clientSlice";
 
 const getSubscriptionBadge = (sub) => {
   let color;
@@ -59,18 +60,23 @@ const getDaysLeftBadge = (days) => {
 const Clients = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    list: clients,
-    loading,
-    error,
-  } = useSelector((state) => state.payments);
+  // const {
+  //   list: clients,
+  //   loading,
+  //   error,
+  // } = useSelector((state) => state.payments);
+  const {clients , loading,error}= useSelector((state) => state?.clients
 
+);
+
+  console.log("Clients data:", clients);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All Subscriptions");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchPayments());
+    // dispatch(fetchPayments());
+    dispatch(fetchClients());
   }, [dispatch]);
 
   // Filter + Search
@@ -100,7 +106,7 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
     if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
   };
 
-  if (loading) return <p className="text-center py-5">Loading clients...</p>;
+  // if (loading) return <p className="text-center py-5">Loading clients...</p>;
   if (error)
     return (
       <p className="text-center text-danger py-5">
@@ -190,7 +196,7 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                   <th>Email</th>
                   <th className="d-none d-lg-table-cell">Contact No</th>
                   <th className="d-none d-xl-table-cell">WhatsApp</th>
-                  <th className="d-none d-xl-table-cell">Aadhaar / PAN</th>
+                  <th className="d-none d-xl-table-cell">PAN</th>
                   <th>Subscription</th>
                   <th className="d-none d-md-table-cell">
                     Validity (From - To)
@@ -214,11 +220,11 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                     <td className="d-none d-lg-table-cell">{client.phone}</td>
                     <td className="d-none d-xl-table-cell">{client.phone}</td>
                     <td className="d-none d-xl-table-cell small text-muted">
-                      <span className="d-block text-nowrap">
+                      {/* <span className="d-block text-nowrap">
                         Aadhaar: {client.pan}
-                      </span>
+                      </span> */}
                       <span className="d-block text-nowrap">
-                        PAN: {client.pan}
+                        {client.pan}
                       </span>
                     </td>
                     <td>{getSubscriptionBadge(client.subscription)}</td>
@@ -236,7 +242,22 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                     <td className="d-none d-md-table-cell small text-nowrap">
                       {client.planType}
                     </td>
-                    <td>{getKycBadge(client.kyc)}</td>
+                     <td
+  onClick={async () => {
+    const newStatus = client.kyc === "Approved" ? "Pending" : "Approved";
+
+    await dispatch(
+      updateKycStatus({
+        clientId: client.clientId,
+        kyc: newStatus,
+      })
+    );
+  }}
+  style={{ cursor: "pointer" }}
+  title="Click to update KYC status"
+>
+  {getKycBadge(client.kyc)}
+</td>
                     <td className="text-center">
                       <div className="d-flex justify-content-center">
                         <button
