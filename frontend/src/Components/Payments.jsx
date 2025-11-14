@@ -248,7 +248,7 @@ const Payments = () => {
                         {trx.subscription} ({trx.planType})
                       </span>
                     </td>
-                    <td>₹{trx.amount?.toLocaleString("en-IN")}</td>
+                    <td>₹{trx?.amount}</td>
                     <td>{formatDate(trx.updatedAt)}</td>
                     <td>{trx.method}</td>
                     <td>

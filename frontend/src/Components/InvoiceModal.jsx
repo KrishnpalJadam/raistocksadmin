@@ -191,7 +191,7 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
                     <td>IGST:</td>
                     <td className="text-end text-success">
                       ₹
-                      {invoiceData.gstBreakup?.igst.toLocaleString("en-IN", {
+                      {invoiceData.gstBreakup?.igst?.toLocaleString("en-IN", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
