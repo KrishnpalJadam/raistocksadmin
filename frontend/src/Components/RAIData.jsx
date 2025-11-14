@@ -57,6 +57,7 @@ const RAIData = () => {
     target1: "",
     target2: "",
     target3: "",
+    target4: "",
     timeDuration: "Today",
     weightageValue: 0,
     weightageExtension: "% of your capital",
@@ -272,6 +273,7 @@ const RAIData = () => {
       target1: form.target1 ? Number(form.target1) : undefined,
       target2: form.target2 ? Number(form.target2) : undefined,
       target3: form.target3 ? Number(form.target3) : undefined,
+      target4: form.target4 ? Number(form.target4) : undefined,
       timeDuration: form.timeDuration,
       weightageValue: Number(form.weightageValue) || 0,
       weightageExtension: form.weightageExtension,
@@ -443,7 +445,7 @@ const RAIData = () => {
                         handleFormChange("target1", e.target.value)
                       }
                       type="number"
-                      placeholder="344"
+                      placeholder="Target 1"
                     />
                   </Form.Group>
                 </Col>
@@ -456,7 +458,7 @@ const RAIData = () => {
                         handleFormChange("target2", e.target.value)
                       }
                       type="number"
-                      placeholder="384"
+                      placeholder="Target 2"
                     />
                   </Form.Group>
                 </Col>
@@ -469,7 +471,20 @@ const RAIData = () => {
                         handleFormChange("target3", e.target.value)
                       }
                       type="number"
-                      placeholder="436"
+                      placeholder="Target 3"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group>
+                    <Form.Label>Target 4</Form.Label>
+                    <Form.Control
+                      value={form.target4}
+                      onChange={(e) =>
+                        handleFormChange("target4", e.target.value)
+                      }
+                      type="number"
+                      placeholder="Target 4"
                     />
                   </Form.Group>
                 </Col>
