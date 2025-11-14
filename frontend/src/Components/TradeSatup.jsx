@@ -457,6 +457,9 @@ dispatch(createTradeStrategy(payload))
                           </option>
                           <option value="Stocks in News">Stocks in News</option>
                           <option value="About Market">About Market</option>
+                          <option value="India VIX">India VIX</option>
+                          <option value="Global Markets">Global Markets</option>
+
                         </Form.Select>
 
                         <Row className="g-3">
@@ -584,7 +587,7 @@ dispatch(createTradeStrategy(payload))
                     </Col>
 
                     {/* India VIX (fetchable) */}
-                    <Col md={6}>
+                    {/* <Col md={6}>
                       <Card className="p-3 mb-3">
                         <h6 className="mb-2">India VIX (Previous Close)</h6>
                         <Row className="g-2">
@@ -609,7 +612,6 @@ dispatch(createTradeStrategy(payload))
                               variant="outline-primary"
                               size="sm"
                               onClick={() => {
-                                /* fetch action if needed */
                               }}
                             >
                               Fetch VIX
@@ -627,9 +629,9 @@ dispatch(createTradeStrategy(payload))
                           </div>
                         </div>
                       </Card>
-                    </Col>
+                    </Col> */}
 
-                    <Col md={6}>
+                    {/* <Col md={6}>
                       <Card className="p-3 mb-3">
                         <h6 className="mb-2">Global Markets</h6>
                         <Row className="g-3">
@@ -704,7 +706,7 @@ dispatch(createTradeStrategy(payload))
                           </Col>
                         </Row>
                       </Card>
-                    </Col>
+                    </Col> */}
                   </Row>
 
                   <Row className="mt-4">
