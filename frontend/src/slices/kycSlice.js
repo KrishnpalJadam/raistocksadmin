@@ -90,14 +90,14 @@ export const getKycByEmail = createAsyncThunk(
 );
 
 // Upload agreement later
-export const uploadAgreementThunk = createAsyncThunk(
+export const uploadAgreement = createAsyncThunk(
   "kyc/uploadAgreement",
   async ({ id, agreementFile }, { rejectWithValue }) => {
     try {
       const formData = new FormData();
       formData.append("agreement", agreementFile);
 
-      const res = await fetch(`${API}/upload-agreement/${id}`, {
+      const res = await fetch(`${API}/uploadAgreement/${id}`, {
         method: "PUT",
         body: formData,
       });
@@ -159,7 +159,7 @@ const kycSlice = createSlice({
       })
 
       // Upload agreement
-      .addCase(uploadAgreementThunk.fulfilled, (state, action) => {
+      .addCase(uploadAgreement.fulfilled, (state, action) => {
         const idx = state.items.findIndex((i) => i._id === action.payload._id);
         if (idx !== -1) state.items[idx] = action.payload;
         if (state.selectedKyc?._id === action.payload._id) {
