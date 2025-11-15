@@ -51,7 +51,7 @@ export const createCoupon = createAsyncThunk("coupons/createCoupon", async (coup
 // ✅ Delete coupon
 export const deleteCoupon = createAsyncThunk("coupons/deleteCoupon", async (id, thunkAPI) => {
   try {
-    const response = await fetch(`${API_URL}/api/coupos/delete/${id}`, {
+    const response = await fetch(`${API_URL}/api/coupons/delete/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${ADMIN_TOKEN}`,
