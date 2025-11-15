@@ -173,7 +173,7 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
             </tbody>
           </Table>
 
-          <Row className="justify-content-end">
+          {/* <Row className="justify-content-end">
             <Col md={5}>
               <Table borderless size="sm">
                 <tbody>
@@ -209,6 +209,105 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
                       )}
                     </td>
                   </tr>
+                  <tr className="border-top border-2">
+                    <td>
+                      <strong>Total Amount Due:</strong>
+                    </td>
+                    <td className="text-end">
+                      <strong>
+                        ₹
+                        {invoiceData.totalAmount.toLocaleString("en-IN", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Col>
+          </Row> */}
+
+          <Row className="justify-content-end">
+            <Col md={5}>
+              <Table borderless size="sm">
+                <tbody>
+                  <tr>
+                    <td>Sub Total:</td>
+                    <td className="text-end">
+                      ₹
+                      {subtotal.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </td>
+                  </tr>
+
+                  {/* DYNAMIC TAX HANDLING */}
+                  {invoiceData.gstBreakup?.type === "IGST" ? (
+                    <>
+                      <tr>
+                        <td>IGST ({invoiceData.gstBreakup.igstRate}):</td>
+                        <td className="text-end text-success">
+                          ₹
+                          {invoiceData.gstBreakup.igstAmount.toLocaleString(
+                            "en-IN",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
+                        </td>
+                      </tr>
+                    </>
+                  ) : (
+                    <>
+                      <tr>
+                        <td>CGST ({invoiceData.gstBreakup.cgstRate}):</td>
+                        <td className="text-end text-success">
+                          ₹
+                          {invoiceData.gstBreakup.cgstAmount.toLocaleString(
+                            "en-IN",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>SGST ({invoiceData.gstBreakup.sgstRate}):</td>
+                        <td className="text-end text-success">
+                          ₹
+                          {invoiceData.gstBreakup.sgstAmount.toLocaleString(
+                            "en-IN",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
+                        </td>
+                      </tr>
+                    </>
+                  )}
+
+                  <tr>
+                    <td>
+                      Total Tax ({(invoiceData.taxRate * 100).toFixed(0)}%):
+                    </td>
+                    <td className="text-end text-success">
+                      ₹
+                      {invoiceData.gstBreakup?.totalTax.toLocaleString(
+                        "en-IN",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}
+                    </td>
+                  </tr>
+
                   <tr className="border-top border-2">
                     <td>
                       <strong>Total Amount Due:</strong>

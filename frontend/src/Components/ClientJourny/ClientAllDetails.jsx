@@ -14,7 +14,6 @@ import { FaWhatsapp } from "react-icons/fa";
 import { IoMdCall } from "react-icons/io";
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 // --- BADGE UTILITIES ---
 const getSubscriptionBadge = (sub) => {
   let color;
@@ -138,9 +137,7 @@ const ClientAllDetails = () => {
         // --- Fetch KYC by PAN ---
         const email = clientRes.data.email;
         if (email) {
-          const kycRes = await axios.get(
-            `${API_URL}/api/kyc/email/${email}`
-          );
+          const kycRes = await axios.get(`${API_URL}/api/kyc/email/${email}`);
           console.log("KYC Data:", kycRes.data);
           setKycData(kycRes.data.data);
         }
@@ -275,7 +272,7 @@ const ClientAllDetails = () => {
         </div>
 
         {/* Totals */}
-        <div className="row justify-content-end">
+        {/* <div className="row justify-content-end">
           <div className="col-12 col-md-6 col-lg-4">
             <table className="table table-sm table-borderless text-end">
               <tbody>
@@ -291,6 +288,95 @@ const ClientAllDetails = () => {
                     ₹ {invoiceData.gstBreakup.totalTax.toLocaleString("en-IN")}
                   </td>
                 </tr>
+                <tr className="table-light">
+                  <td className="fw-bold fs-5 text-primary">Grand Total:</td>
+                  <td className="fw-bolder fs-5 text-primary">
+                    ₹ {invoiceData.totalAmount.toLocaleString("en-IN")}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> */}
+
+        {/* Totals */}
+        <div className="row justify-content-end">
+          <div className="col-12 col-md-6 col-lg-4">
+            <table className="table table-sm table-borderless text-end">
+              <tbody>
+                <tr>
+                  <td className="fw-normal">Sub Total:</td>
+                  <td className="fw-semibold">
+                    ₹ {item.amount.toLocaleString("en-IN")}
+                  </td>
+                </tr>
+
+                {/* ----- DYNAMIC GST HANDLING ------ */}
+                {invoiceData.gstBreakup.type === "IGST" ? (
+                  <tr>
+                    <td className="fw-normal">
+                      IGST ({invoiceData.gstBreakup.igstRate}):
+                    </td>
+                    <td className="fw-semibold text-success">
+                      ₹{" "}
+                      {invoiceData.gstBreakup.igstAmount.toLocaleString(
+                        "en-IN",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}
+                    </td>
+                  </tr>
+                ) : (
+                  <>
+                    <tr>
+                      <td className="fw-normal">
+                        CGST ({invoiceData.gstBreakup.cgstRate}):
+                      </td>
+                      <td className="fw-semibold text-success">
+                        ₹{" "}
+                        {invoiceData.gstBreakup.cgstAmount.toLocaleString(
+                          "en-IN",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td className="fw-normal">
+                        SGST ({invoiceData.gstBreakup.sgstRate}):
+                      </td>
+                      <td className="fw-semibold text-success">
+                        ₹{" "}
+                        {invoiceData.gstBreakup.sgstAmount.toLocaleString(
+                          "en-IN",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </td>
+                    </tr>
+                  </>
+                )}
+
+                <tr>
+                  <td className="fw-normal">
+                    Total Tax ({invoiceData.taxRate * 100}%):
+                  </td>
+                  <td className="fw-semibold text-success">
+                    ₹{" "}
+                    {invoiceData.gstBreakup.totalTax.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                </tr>
+
                 <tr className="table-light">
                   <td className="fw-bold fs-5 text-primary">Grand Total:</td>
                   <td className="fw-bolder fs-5 text-primary">
