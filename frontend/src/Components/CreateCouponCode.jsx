@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+ import React, { useState, useEffect, useMemo } from "react";
 import {
   Card,
   Table,
@@ -7,10 +7,11 @@ import {
   Row,
   Col,
   Pagination,
-  Badge,
   Modal,
 } from "react-bootstrap";
 import { PlusCircle, Search, Trash2, X } from "lucide-react";
+import { fetchCoupons, createCoupon, deleteCoupon } from "../slices/couponSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 // Function to generate unique coupon codes
 const generateCouponCode = () => {
@@ -21,22 +22,24 @@ const generateCouponCode = () => {
 const ITEMS_PER_PAGE = 5;
 
 const CreateCouponCode = () => {
-  const [coupons, setCoupons] = useState([
-    {
-      code: "RAISTOCK-A12XK9",
-      discount: "10%",
-      validTill: "2025-12-31",
-      used: false,
-    },
-    {
-      code: "RAISTOCK-ZP91LQ",
-      discount: "20%",
-      validTill: "2025-11-30",
-      used: true,
-    },
-  ]);
+  const dispatch = useDispatch();
+  
+  // Redux State
+
+  // console.log("Coupons:", coupons);
+  // Fetch Coupons on Mount
+  useEffect(() => {
+    dispatch(fetchCoupons());
+  }, [dispatch]);
+   const { coupons, loading } = useSelector((state) => state.coupons);
+  //  const { coupons, loading } = useSelector((state) => state.coupon);
+
+  const coupons1 = useSelector((state) => state);
+  console.log("Coupons1:", coupons1);
+  // const loading = useSelector((state) => state.coupons.loading);
 
   const [showModal, setShowModal] = useState(false);
+
   const [newCoupon, setNewCoupon] = useState({
     code: generateCouponCode(),
     discount: "",
@@ -46,24 +49,35 @@ const CreateCouponCode = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filtered data
+  // Filtered coupons
   const filteredCoupons = useMemo(() => {
-    return coupons.filter((coupon) =>
-      coupon.code.toLowerCase().includes(searchTerm.toLowerCase())
+    return coupons?.filter((coupon) =>
+      coupon?.code?.toLowerCase()?.includes(searchTerm?.toLowerCase())
     );
   }, [coupons, searchTerm]);
 
-  // Pagination logic
+  // Pagination
   const totalPages = Math.ceil(filteredCoupons.length / ITEMS_PER_PAGE);
   const paginatedCoupons = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredCoupons.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredCoupons, currentPage]);
 
-  // Handle Create Coupon
-  const handleAddCoupon = () => {
+  // Create coupon
+  const handleAddCoupon = async () => {
     if (!newCoupon.discount || !newCoupon.validTill) return;
-    setCoupons([...coupons, { ...newCoupon, used: false }]);
+
+    await dispatch(
+      createCoupon({
+        code: newCoupon.code,
+        discount: Number(newCoupon.discount), // your backend expects NUMBER
+        validTill: newCoupon.validTill,
+      })
+    );
+
+    // Refetch coupons
+    dispatch(fetchCoupons());
+
     setShowModal(false);
     setNewCoupon({
       code: generateCouponCode(),
@@ -72,9 +86,10 @@ const CreateCouponCode = () => {
     });
   };
 
-  // Handle Delete
-  const handleDelete = (code) => {
-    setCoupons(coupons.filter((c) => c.code !== code));
+  // Delete coupon
+  const handleDelete = async (id) => {
+    await dispatch(deleteCoupon(id));
+    dispatch(fetchCoupons());
   };
 
   return (
@@ -120,30 +135,25 @@ const CreateCouponCode = () => {
                 <th>Coupon Code</th>
                 <th>Discount</th>
                 <th>Valid Till</th>
-                {/* <th>Status</th> */}
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedCoupons.length > 0 ? (
+              {!loading && paginatedCoupons.length > 0 ? (
                 paginatedCoupons.map((coupon, index) => (
-                  <tr key={coupon.code}>
+                  <tr key={coupon._id}>
                     <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                     <td>
                       <strong>{coupon.code}</strong>
                     </td>
-                    <td>{coupon.discount}</td>
-                    <td>{coupon.validTill}</td>
-                    {/* <td>
-                      <Badge bg={coupon.used ? "secondary" : "success"}>
-                        {coupon.used ? "Used" : "Not Used"}
-                      </Badge>
-                    </td> */}
+                    <td>{coupon.discount}%</td>
+                    <td>{new Date(coupon.validTill).toLocaleString()}</td>
+
                     <td>
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleDelete(coupon.code)}
+                        onClick={() => handleDelete(coupon._id)}
                       >
                         <Trash2 size={16} />
                       </Button>
@@ -152,8 +162,8 @@ const CreateCouponCode = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center text-muted py-4">
-                    No coupons found.
+                  <td colSpan="5" className="text-center text-muted py-4">
+                    {loading ? "Loading..." : "No coupons found."}
                   </td>
                 </tr>
               )}
@@ -169,9 +179,7 @@ const CreateCouponCode = () => {
                   disabled={currentPage === 1}
                 />
                 <Pagination.Prev
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                 />
                 {[...Array(totalPages)].map((_, i) => (
@@ -216,10 +224,10 @@ const CreateCouponCode = () => {
               <Form.Control
                 type="number"
                 placeholder="Enter discount percentage"
-              // value={newCoupon.discount}
-              // onChange={(e) =>
-              //   setNewCoupon({ ...newCoupon, discount: e.target.value + "%" })
-              // }
+                value={newCoupon.discount}
+                onChange={(e) =>
+                  setNewCoupon({ ...newCoupon, discount: e.target.value })
+                }
               />
             </Form.Group>
 
@@ -235,6 +243,7 @@ const CreateCouponCode = () => {
             </Form.Group>
           </Form>
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             <X size={16} className="me-1" /> Cancel

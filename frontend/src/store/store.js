@@ -18,6 +18,7 @@ import tradeStrategyReducer from "../slices/tradeStrategySlice";
 import paymentReducer from "../slices/paymentSlice";
 import dashboardReducer from "../slices/dashboardSlice";
 import kycReducer from "../slices/kycSlice";
+import couponReducer from "../slices/couponSlice";
 
 export const store = configureStore({
   reducer: {
@@ -39,5 +40,6 @@ export const store = configureStore({
      tradeStrategies: tradeStrategyReducer,
     dashboard: dashboardReducer,
     kyc: kycReducer,
+    coupons: couponReducer,
   },
 });
