@@ -381,6 +381,11 @@
 
 // export default ClientAllDetails;
 
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -394,7 +399,10 @@ import {
   Download,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import InvoiceModal from "./InvoiceModal";
 import { IoMdCall } from "react-icons/io";
+
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 
@@ -507,6 +515,7 @@ const ClientAllDetails = () => {
   const [kycData, setKycData] = useState(null); // <-- added KYC state
   const [activeTab, setActiveTab] = useState("Payment");
   const [loading, setLoading] = useState(true);
+const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -587,104 +596,21 @@ const ClientAllDetails = () => {
 
     const item = invoiceData.items[0];
     return (
-      <div className="p-4 p-md-5 bg-white border rounded-3 shadow-sm invoice-layout-card">
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
-          <div>
-            <img
-              src="https://raistocks.com/wp-content/uploads/2025/05/RAI_logo_180x120-without-background-1.png"
-              alt="Company Logo"
-              style={{ height: 60 }}
-              className="mb-2"
-            />
-            <h4 className="fw-bold mb-0 text-primary">Raistocks.com</h4>
-            <p className="small mb-0 text-muted">
-              GSTIN: <strong>{invoiceData.gstin}</strong>
-            </p>
-            <p className="small text-muted mb-0">
-              Email: info@raistocks.com | Website: www.raistocks.com
-            </p>
-          </div>
-          <div className="text-end">
-            <h1 className="text-uppercase text-primary fw-bolder mb-1">
-              Invoice
-            </h1>
-            <p className="mb-0">
-              Invoice No: <strong>{invoiceData.id}</strong>
-            </p>
-            <p className="mb-0">
-              Date: <strong>{invoiceData.date}</strong>
-            </p>
-          </div>
-        </div>
+   <div className="text-center">
+    <button
+      className="btn btn-primary"
+      onClick={() => setShowInvoiceModal(true)}
+    >
+      View Invoice
+    </button>
 
-        {/* Client Info */}
-        <div className="mb-5">
-          <h6 className="text-uppercase text-muted small mb-3">Billed To:</h6>
-          <p className="fw-semibold mb-1">{invoiceData.clientName}</p>
-          <p className="small text-muted mb-1">Email: {invoiceData.email}</p>
-          <p className="small text-muted mb-1">Contact: {invoiceData.phone}</p>
-          <p className="small text-muted mb-1">
-            State: <strong>{invoiceData.state}</strong>
-          </p>
-        </div>
-
-        {/* Invoice Table */}
-        <div className="table-responsive mb-5">
-          <table className="table table-bordered table-striped mb-0">
-            <thead className="table-primary">
-              <tr>
-                <th>Description</th>
-                <th className="text-end">Amount</th>
-                <th>GST Type</th>
-                <th>GST %</th>
-                <th className="text-end">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{item.description}</td>
-                <td className="text-end">
-                  ₹ {item.amount.toLocaleString("en-IN")}
-                </td>
-                <td>{invoiceData.gstBreakup.type}</td>
-                <td>{invoiceData.taxRate * 100}%</td>
-                <td className="text-end fw-semibold">
-                  ₹ {invoiceData.totalAmount.toLocaleString("en-IN")}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Totals */}
-        <div className="row justify-content-end">
-          <div className="col-12 col-md-6 col-lg-4">
-            <table className="table table-sm table-borderless text-end">
-              <tbody>
-                <tr>
-                  <td className="fw-normal">Sub Total:</td>
-                  <td className="fw-semibold">
-                    ₹ {item.amount.toLocaleString("en-IN")}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="fw-normal">{invoiceData.gstBreakup.type}:</td>
-                  <td className="fw-semibold">
-                    ₹ {invoiceData.gstBreakup.totalTax.toLocaleString("en-IN")}
-                  </td>
-                </tr>
-                <tr className="table-light">
-                  <td className="fw-bold fs-5 text-primary">Grand Total:</td>
-                  <td className="fw-bolder fs-5 text-primary">
-                    ₹ {invoiceData.totalAmount.toLocaleString("en-IN")}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    {/* Modal Render */}
+    <InvoiceModal
+      show={showInvoiceModal}
+      handleClose={() => setShowInvoiceModal(false)}
+      invoiceData={invoiceData}
+    />
+  </div>
     );
   };
 

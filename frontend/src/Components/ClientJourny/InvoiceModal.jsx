@@ -106,10 +106,14 @@
 
 // export default InvoiceModal;
 
+
+
+
+
 import React from "react";
 import { Modal, Button, Table, Row, Col } from "react-bootstrap";
-import { Download, Printer } from "lucide-react";
-
+import { Download, LucideMoveDiagonal2, Printer } from "lucide-react";
+import logo2 from "../../assets/image/logo2.png"
 const InvoiceModal = ({ show, handleClose, invoiceData }) => {
   if (!invoiceData) return null;
 
@@ -121,15 +125,16 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
       <Modal.Header closeButton className="bg-light">
-        <Modal.Title>📑 GST Invoice: {invoiceData.id}</Modal.Title>
+        <Modal.Title>GST Invoice: {invoiceData.id}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="p-3 border rounded">
           <Row className="mb-4">
             <Col>
-              <h4 className="text-primary">CRM Financials</h4>
+              <img src={logo2} width={100} alt="" />
+              <h4 className="text-primary">Raistocks.com</h4>
               <p className="mb-0">{invoiceData.companyAddress}</p>
-              <p className="mb-0">GSTIN: {invoiceData.gstin}</p>
+              <p className="mb-0">GSTIN : 22FNBPS4078F1ZY</p>
             </Col>
             <Col className="text-end">
               <h5 className="mb-0">Invoice No: {invoiceData.id}</h5>
@@ -174,6 +179,9 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
           </Table>
 
           <Row className="justify-content-end">
+            <div>
+              <span className="hsnnumber ms-2">HSN/SAC: 998371</span>
+            </div>
             <Col md={5}>
               <Table borderless size="sm">
                 <tbody>
@@ -225,8 +233,10 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
                   </tr>
                 </tbody>
               </Table>
+
             </Col>
           </Row>
+
         </div>
       </Modal.Body>
       <Modal.Footer>

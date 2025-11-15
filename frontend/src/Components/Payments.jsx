@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPayments } from "../slices/paymentSlice";
-import InvoiceModal from "./InvoiceModal";
+import InvoiceModal from "../Components/ClientJourny/InvoiceModal";
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
