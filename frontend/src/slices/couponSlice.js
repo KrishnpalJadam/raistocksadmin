@@ -21,7 +21,7 @@ export const fetchCoupons = createAsyncThunk("coupons/fetchCoupons", async (_, t
     if (!response.ok) throw new Error("Failed to fetch coupons");
 
     const data = await response.json();
-    return data.data;
+    return data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
   }
