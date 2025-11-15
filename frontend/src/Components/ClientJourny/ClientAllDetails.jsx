@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMdCall } from "react-icons/io";
+import { uploadAgreement } from "../../slices/kycSlice";
+import { useDispatch ,useSelector } from "react-redux";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // --- BADGE UTILITIES ---
@@ -66,6 +68,7 @@ const getDaysLeftBadge = (days) => {
 
 // --- CLIENT DOCUMENTS TAB ---
 const ClientDocumentsTab = ({ kycData }) => {
+  const dispatch = useDispatch();
   const documents = [
     { name: "Aadhaar Front", url: kycData?.aadhaar_front_url, icon: User },
     { name: "Aadhaar Back", url: kycData?.aadhaar_back_url, icon: User },
@@ -73,7 +76,36 @@ const ClientDocumentsTab = ({ kycData }) => {
     { name: "Photo", url: kycData?.your_photo_url, icon: File },
     { name: "Signature", url: kycData?.your_signature_url, icon: Edit },
   ];
+const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(kycData?.agreement_url || null);
+  const [uploading, setUploading] = useState(false);
 
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file)); // Temporary preview
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return alert("Please select a file to upload!");
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("agreement", selectedFile);
+
+      await dispatch(
+        uploadAgreement({ id: kycData._id, agreementFile: selectedFile })
+      ).unwrap();
+
+      alert("Agreement uploaded successfully!");
+      setSelectedFile(null);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload agreement");
+    } finally {
+      setUploading(false);
+    }
+  };
   return (
     <div className="row g-4">
       {documents.map((doc, index) => (
@@ -112,6 +144,97 @@ const ClientDocumentsTab = ({ kycData }) => {
     </div>
   );
 };
+
+// --- AGREEMENT TAB ---
+// --- AGREEMENT TAB (UI ONLY) ---
+const AgrementTab = ({ kycData }) => {
+    const dispatch = useDispatch();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(kycData?.agreement_url || null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file)); // Temporary preview
+  };
+  const handleUpload = async () => {
+    if (!selectedFile) return alert("Please select a file to upload!");
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("agreement", selectedFile);
+
+      await dispatch(
+        uploadAgreement({ id: kycData._id, agreementFile: selectedFile })
+      ).unwrap();
+
+      alert("Agreement uploaded successfully!");
+      setSelectedFile(null);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload agreement");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="row g-4">
+      <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div className="card h-100 shadow-sm border-0 document-card">
+          <div className="card-body d-flex flex-column align-items-start">
+            <FileText className="text-primary mb-2" size={32} />
+            <h6 className="card-title mb-3 fw-bold">Agreement Document</h6>
+
+            {/* FILE INPUT */}
+            <input
+              type="file"
+              accept="application/pdf,image/*"
+              className="form-control mb-3"
+              onChange={(e) => handleFileSelect(e.target.files[0])}
+            />
+
+            {/* VIEW + DOWNLOAD BUTTONS */}
+            <div className="d-flex mb-3">
+              {previewUrl ? (
+                <>
+                  <a
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-sm btn-outline-info me-2"
+                  >
+                    <Eye size={16} className="me-1" /> View
+                  </a>
+                  <a
+                    href={previewUrl}
+                    download={selectedFile?.name || "agreement"}
+                    className="btn btn-sm btn-outline-success"
+                  >
+                    <Download size={16} className="me-1" /> Download
+                  </a>
+                </>
+              ) : (
+                <span className="text-muted small">No Agreement Uploaded</span>
+              )}
+            </div>
+
+            {/* UPLOAD BUTTON */}
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={handleUpload}
+              disabled={uploading}
+            >
+              {uploading ? "Uploading..." : "Upload Agreement"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 // --- MAIN COMPONENT ---
 const ClientAllDetails = () => {
@@ -181,9 +304,8 @@ const ClientAllDetails = () => {
             <td>{clientData.method}</td>
             <td>
               <span
-                className={`badge rounded-pill bg-${
-                  clientData.status === "Success" ? "success" : "danger"
-                }`}
+                className={`badge rounded-pill bg-${clientData.status === "Success" ? "success" : "danger"
+                  }`}
               >
                 {clientData.status}
               </span>
@@ -399,6 +521,8 @@ const ClientAllDetails = () => {
         return <InvoiceTab />;
       case "Client Documents":
         return <ClientDocumentsTab kycData={kycData} />;
+      case "Agrement Upload":
+        return <AgrementTab kycData={kycData} />;
       default:
         return null;
     }
@@ -474,7 +598,7 @@ const ClientAllDetails = () => {
       <div className="card shadow-sm rounded-3 border-0">
         <div className="card-header p-0 bg-white">
           <ul className="nav nav-tabs crm-nav-tabs" role="tablist">
-            {["Payment", "Invoice", "Client Documents"].map((tab) => (
+            {["Payment", "Invoice", "Client Documents", "Agrement Upload"].map((tab) => (
               <li className="nav-item" key={tab}>
                 <a
                   className={`nav-link ${activeTab === tab ? "active" : ""}`}

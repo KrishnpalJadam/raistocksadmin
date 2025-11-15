@@ -120,7 +120,7 @@ const CreateCouponCode = () => {
                 <th>Coupon Code</th>
                 <th>Discount</th>
                 <th>Valid Till</th>
-                <th>Status</th>
+                {/* <th>Status</th> */}
                 <th>Action</th>
               </tr>
             </thead>
@@ -134,11 +134,11 @@ const CreateCouponCode = () => {
                     </td>
                     <td>{coupon.discount}</td>
                     <td>{coupon.validTill}</td>
-                    <td>
+                    {/* <td>
                       <Badge bg={coupon.used ? "secondary" : "success"}>
                         {coupon.used ? "Used" : "Not Used"}
                       </Badge>
-                    </td>
+                    </td> */}
                     <td>
                       <Button
                         variant="outline-danger"
@@ -216,17 +216,17 @@ const CreateCouponCode = () => {
               <Form.Control
                 type="number"
                 placeholder="Enter discount percentage"
-                // value={newCoupon.discount}
-                // onChange={(e) =>
-                //   setNewCoupon({ ...newCoupon, discount: e.target.value + "%" })
-                // }
+              // value={newCoupon.discount}
+              // onChange={(e) =>
+              //   setNewCoupon({ ...newCoupon, discount: e.target.value + "%" })
+              // }
               />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Valid Till</Form.Label>
               <Form.Control
-                type="date"
+                type="datetime-local"
                 value={newCoupon.validTill}
                 onChange={(e) =>
                   setNewCoupon({ ...newCoupon, validTill: e.target.value })
