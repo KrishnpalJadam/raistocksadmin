@@ -114,6 +114,74 @@ const ClientDocumentsTab = ({ kycData }) => {
   );
 };
 
+// --- AGREEMENT TAB ---
+// --- AGREEMENT TAB (UI ONLY) ---
+const AgrementTab = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file)); // TEMP URL FOR PREVIEW
+  };
+
+  return (
+    <div className="row g-4">
+      <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div className="card h-100 shadow-sm border-0 document-card">
+          <div className="card-body d-flex flex-column align-items-start">
+
+            {/* ICON */}
+            <FileText className="text-primary mb-2" size={32} />
+
+            {/* TITLE */}
+            <h6 className="card-title mb-3 fw-bold">Agreement Document</h6>
+
+            {/* FILE INPUT */}
+            <input
+              type="file"
+              accept="application/pdf,image/*"
+              className="form-control mb-3"
+              onChange={(e) => handleFileSelect(e.target.files[0])}
+            />
+
+            {/* VIEW + DOWNLOAD BUTTONS */}
+            <div className="d-flex mt-auto">
+              {previewUrl ? (
+                <>
+                  <a
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-sm btn-outline-info me-2"
+                  >
+                    <Eye size={16} className="me-1" /> View
+                  </a>
+
+                  <a
+                    href={previewUrl}
+                    download={selectedFile?.name || "agreement"}
+                    className="btn btn-sm btn-outline-success"
+                  >
+                    <Download size={16} className="me-1" /> Download
+                  </a>
+                </>
+              ) : (
+                <span className="text-muted small">
+                  No Agreement Uploaded
+                </span>
+              )}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 // --- MAIN COMPONENT ---
 const ClientAllDetails = () => {
   const { clientId } = useParams();
@@ -184,9 +252,8 @@ const ClientAllDetails = () => {
             <td>{clientData.method}</td>
             <td>
               <span
-                className={`badge rounded-pill bg-${
-                  clientData.status === "Success" ? "success" : "danger"
-                }`}
+                className={`badge rounded-pill bg-${clientData.status === "Success" ? "success" : "danger"
+                  }`}
               >
                 {clientData.status}
               </span>
@@ -313,6 +380,8 @@ const ClientAllDetails = () => {
         return <InvoiceTab />;
       case "Client Documents":
         return <ClientDocumentsTab kycData={kycData} />;
+      case "Agrement Upload":
+        return <AgrementTab />;
       default:
         return null;
     }
@@ -388,7 +457,7 @@ const ClientAllDetails = () => {
       <div className="card shadow-sm rounded-3 border-0">
         <div className="card-header p-0 bg-white">
           <ul className="nav nav-tabs crm-nav-tabs" role="tablist">
-            {["Payment", "Invoice", "Client Documents"].map((tab) => (
+            {["Payment", "Invoice", "Client Documents", "Agrement Upload"].map((tab) => (
               <li className="nav-item" key={tab}>
                 <a
                   className={`nav-link ${activeTab === tab ? "active" : ""}`}
