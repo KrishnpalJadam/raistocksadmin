@@ -226,7 +226,7 @@ const CreateCouponCode = () => {
             <Form.Group className="mb-3">
               <Form.Label>Valid Till</Form.Label>
               <Form.Control
-                type="date"
+                type="datetime-local"
                 value={newCoupon.validTill}
                 onChange={(e) =>
                   setNewCoupon({ ...newCoupon, validTill: e.target.value })
