@@ -232,6 +232,7 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
           </Row> */}
 
           <Row className="justify-content-end">
+            <span className="">HSN/SAC: 998371</span>
             <Col md={5}>
               <Table borderless size="sm">
                 <tbody>
