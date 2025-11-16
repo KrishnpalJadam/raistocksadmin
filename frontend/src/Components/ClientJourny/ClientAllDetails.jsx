@@ -696,6 +696,7 @@ const ClientDocumentsTab = ({ kycData }) => {
     { name: "PAN Card", url: kycData?.pan_image_url, icon: FileText },
     { name: "Photo", url: kycData?.your_photo_url, icon: File },
     { name: "Signature", url: kycData?.your_signature_url, icon: Edit },
+    { name: "Agreement", url: kycData?.agreement_url, icon: Edit },
   ];
 
   return (
