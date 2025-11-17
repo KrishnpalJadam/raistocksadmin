@@ -203,6 +203,7 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                   </th>
                   <th>Days Left</th>
                   <th className="d-none d-md-table-cell">Plan</th>
+                  <th className="d-none d-md-table-cell">GST No.</th>
                   <th>KYC Status</th>
                   <th className="text-center">Actions</th>
                 </tr>
@@ -241,6 +242,9 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                     <td>{getDaysLeftBadge(client.daysLeft)}</td>
                     <td className="d-none d-md-table-cell small text-nowrap">
                       {client.planType}
+                    </td>
+                      <td className="d-none d-md-table-cell small text-nowrap">
+                      {client.clientGST}
                     </td>
                      <td
   onClick={async () => {

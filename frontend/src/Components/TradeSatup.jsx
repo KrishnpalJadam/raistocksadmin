@@ -321,7 +321,7 @@ dispatch(createTradeStrategy(payload))
                 eventKey="marketSatupview"
                 className="fw-semibold text-dark"
               >
-                <Eye size={14} className="me-1" /> Market Satup View
+                <Eye size={14} className="me-1" /> Market Setup View
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -340,7 +340,7 @@ dispatch(createTradeStrategy(payload))
                 <option value="marketInsight">Market Insight</option>
                 <option value="marketPhase">Market Phase</option>
                 <option value="marketTrend">Market Trend</option>
-                <option value="marketSatup">Market Satup</option>
+                <option value="marketSatup">Market Setup</option>
                 <option value="tradeStrategy">Trade Strategy</option>
               </Form.Select>
               {/* ---------------- tradeStrategy ---------------- */}

@@ -39,7 +39,7 @@ export default defineConfig({
   // 👇 optional server config (used only when testing locally)
   server: {
     host: true,
-    port: 5174,
+    port: 5175,
     open: true,
   },
 })

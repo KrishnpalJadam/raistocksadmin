@@ -1,10 +1,8 @@
-// src/components/UserManagement/AccessControl.jsx
+import React, { useState } from 'react';
+import { Card, Row, Col, ListGroup } from 'react-bootstrap';
+import { Zap, Shield, Briefcase, Headset } from 'lucide-react';
 
-import React from 'react';
-import {Button, Card, Row, Col, ListGroup, Badge } from 'react-bootstrap';
-import { Zap, Shield, Briefcase, Headset, Check, X } from 'lucide-react';
-
-const roleAccessData = [
+const initialRoleAccessData = [
     {
         role: 'Admin',
         color: 'danger',
@@ -45,16 +43,27 @@ const moduleNames = [
 ];
 
 const AccessControl = () => {
+    const [roles, setRoles] = useState(initialRoleAccessData);
+
+    // 🔄 Handle checkbox toggle
+    const handleToggle = (roleIndex, key) => {
+        const updatedRoles = [...roles];
+        updatedRoles[roleIndex].access[key] = !updatedRoles[roleIndex].access[key];
+        setRoles(updatedRoles);
+    };
+
     return (
         <Card className="shadow-sm mt-4">
             <Card.Header className="bg-white border-bottom">
                 <h5 className="mb-0">Define User Hierarchy & Access Control</h5>
-                <p className="text-muted small mb-0">Quick overview of module access by role.</p>
+                <p className="text-muted small mb-0">Manage which roles can access what.</p>
             </Card.Header>
+
             <Card.Body>
                 <Row>
-                    {roleAccessData.map((roleData) => {
+                    {roles.map((roleData, index) => {
                         const Icon = roleData.icon;
+
                         return (
                             <Col lg={3} md={6} className="mb-4" key={roleData.role}>
                                 <Card className={`h-100 border border-${roleData.color}`}>
@@ -62,15 +71,21 @@ const AccessControl = () => {
                                         <Icon className="lucide-icon me-2" />
                                         <strong className="h6 mb-0">{roleData.role}</strong>
                                     </Card.Header>
+
                                     <ListGroup variant="flush">
-                                        {moduleNames.map(mod => (
-                                            <ListGroup.Item key={mod.key} className="d-flex justify-content-between align-items-center p-2 small">
-                                                {mod.name}
-                                                {roleData.access[mod.key] ? (
-                                                    <Badge bg="success" className="d-flex align-items-center"><Check size={14} /></Badge>
-                                                ) : (
-                                                    <Badge bg="secondary" className="d-flex align-items-center"><X size={14} /></Badge>
-                                                )}
+                                        {moduleNames.map((mod) => (
+                                            <ListGroup.Item
+                                                key={mod.key}
+                                                className="d-flex justify-content-between align-items-center p-2 small"
+                                            >
+                                                <span>{mod.name}</span>
+
+                                                <input
+                                                    type="checkbox"
+                                                    checked={roleData.access[mod.key]}
+                                                    onChange={() => handleToggle(index, mod.key)}
+                                                    style={{ width: "16px", height: "16px" }}
+                                                />
                                             </ListGroup.Item>
                                         ))}
                                     </ListGroup>
@@ -79,14 +94,10 @@ const AccessControl = () => {
                         );
                     })}
                 </Row>
-                {/* <div className="text-center mt-3">
-                    <Button variant="outline-primary" size="sm">
-                        Edit Detailed Role Permissions
-                    </Button>
-                </div> */}
             </Card.Body>
         </Card>
     );
 };
 
 export default AccessControl;
+ 
