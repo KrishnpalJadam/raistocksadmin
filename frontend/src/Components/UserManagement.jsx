@@ -198,14 +198,14 @@ const handleEditUser = (updatedUserData) => {
                         >
                           <Trash className="lucide-icon" />
                         </Button>
-                        <Button
+                        {/* <Button
                           variant={user.status === "Active" ? "outline-warning" : "outline-success"}
                           size="sm"
                           title="Suspend / Activate"
                           onClick={() => handleToggleStatus(user)}
                         >
                           <Lock className="lucide-icon" />
-                        </Button>
+                        </Button> */}
                       </td>
                     </tr>
                   ))
