@@ -17,10 +17,13 @@ const moduleNames = [
     { key: "payments", name: "Payments & Invoices" },
     { key: "plans", name: "Subscription Plans" },
     { key: "emails", name: "Emails & Notifications" },
-    { key: "rai", name: "RAI Data" },
+    { key: "rai", name: "Trade Recommendation" },
+    { key: "tradeSetup", name: "Trade setup" },
     { key: "support", name: "Support" },
     { key: "users", name: "User Management" },
     { key: "leads", name: "Leads" },
+    {key: "coupon", name: "Coupon" },
+    { key: "reSearch", name: "Research report" },
     { key: "settings", name: "Settings" },
 ];
 

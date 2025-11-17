@@ -31,6 +31,7 @@ const MainLogin = () => {
       // Save token and user info in localStorage for other components (Settings reads login_details.token)
       localStorage.setItem("login_details", JSON.stringify({ token, user }));
       localStorage.setItem("user_id", user?.id || user?._id || "");
+      localStorage.setItem("user_role", user?.role || "");
 
       toast.success("Login successful 🎉");
       setTimeout(() => navigate("/admin/dashboard"), 800);

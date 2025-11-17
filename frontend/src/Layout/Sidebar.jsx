@@ -7,6 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 const Sidebar = () => {
     const location = useLocation();
     const activePage = location.pathname.split('/')[2]; // /admin/leads -> leads
+    const  userRole = localStorage.getItem("user_role") || "";
 
     const menuItems = [
         { name: 'Dashboard', icon: Home, path: 'dashboard', section: 'Main' },
