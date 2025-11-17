@@ -14,7 +14,7 @@ const MainLogin = () => {
     setLoading(true);
     try {
       const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const res = await fetch(`${API}/api/users/login`, {
+      const res = await fetch(`${API}/api/crm/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
