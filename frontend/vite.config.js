@@ -17,6 +17,7 @@ export default defineConfig({
 //   // 👇 ensures all paths work correctly when hosted on a subdomain root
 //   base: '/',
 
+<<<<<<< HEAD
 //   // 👇 optional — cleaner imports (e.g. import x from '@/components/x')
 //   resolve: {
 //     alias: {
@@ -43,3 +44,12 @@ export default defineConfig({
 //     open: true,
 //   },
 // })
+=======
+  // 👇 optional server config (used only when testing locally)
+  server: {
+    host: true,
+    port: 5175,
+    open: true,
+  },
+})
+>>>>>>> krishna16

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
  import React, { useEffect, useState } from "react";
 import { Card, Row, Col, ListGroup } from "react-bootstrap";
 import { Zap, Shield, Briefcase, Headset } from "lucide-react";
@@ -10,6 +11,38 @@ const iconMap = {
     "Sales Executive": Briefcase,
     "Support Agent": Headset,
 };
+=======
+import React, { useState } from 'react';
+import { Card, Row, Col, ListGroup } from 'react-bootstrap';
+import { Zap, Shield, Briefcase, Headset } from 'lucide-react';
+
+const initialRoleAccessData = [
+    {
+        role: 'Admin',
+        color: 'danger',
+        icon: Zap,
+        access: { dashboard: true, clients: true, payments: true, plans: true, emails: true, rai: true, support: true, users: true, leads: true, settings: true },
+    },
+    {
+        role: 'Manager',
+        color: 'primary',
+        icon: Shield,
+        access: { dashboard: true, clients: true, payments: true, plans: true, emails: true, rai: true, support: true, users: false, leads: true, settings: false },
+    },
+    {
+        role: 'Sales Executive',
+        color: 'success',
+        icon: Briefcase,
+        access: { dashboard: true, clients: true, payments: true, plans: false, emails: false, rai: false, support: false, users: false, leads: true, settings: false },
+    },
+    {
+        role: 'Support Agent',
+        color: 'info',
+        icon: Headset,
+        access: { dashboard: true, clients: true, payments: false, plans: false, emails: true, rai: false, support: true, users: false, leads: false, settings: false },
+    },
+];
+>>>>>>> krishna16
 
 const moduleNames = [
     { key: "dashboard", name: "Dashboard" },
@@ -28,6 +61,7 @@ const moduleNames = [
 ];
 
 const AccessControl = () => {
+<<<<<<< HEAD
     const dispatch = useDispatch();
     // const { roles } = useSelector((state) => state.rolePermission || { roles: [] });
      const roles = useSelector((state) => state?.rolesPermission?.roles || []);
@@ -46,6 +80,15 @@ const AccessControl = () => {
                 access: updatedAccess,
             })
         );
+=======
+    const [roles, setRoles] = useState(initialRoleAccessData);
+
+    // 🔄 Handle checkbox toggle
+    const handleToggle = (roleIndex, key) => {
+        const updatedRoles = [...roles];
+        updatedRoles[roleIndex].access[key] = !updatedRoles[roleIndex].access[key];
+        setRoles(updatedRoles);
+>>>>>>> krishna16
     };
 
     return (
@@ -57,8 +100,13 @@ const AccessControl = () => {
 
             <Card.Body>
                 <Row>
+<<<<<<< HEAD
                     {roles.map((roleData) => {
                         const Icon = iconMap[roleData.role] || Zap;
+=======
+                    {roles.map((roleData, index) => {
+                        const Icon = roleData.icon;
+>>>>>>> krishna16
 
                         return (
                             <Col lg={3} md={6} className="mb-4" key={roleData.role}>
@@ -79,7 +127,11 @@ const AccessControl = () => {
                                                 <input
                                                     type="checkbox"
                                                     checked={roleData.access[mod.key]}
+<<<<<<< HEAD
                                                     onChange={() => handleToggle(roleData, mod.key)}
+=======
+                                                    onChange={() => handleToggle(index, mod.key)}
+>>>>>>> krishna16
                                                     style={{ width: "16px", height: "16px" }}
                                                 />
                                             </ListGroup.Item>
@@ -96,3 +148,7 @@ const AccessControl = () => {
 };
 
 export default AccessControl;
+<<<<<<< HEAD
+=======
+ 
+>>>>>>> krishna16
