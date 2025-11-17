@@ -195,7 +195,7 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                   <th>Client Name</th>
                   <th>Email</th>
                   <th className="d-none d-lg-table-cell">Contact No</th>
-                  <th className="d-none d-xl-table-cell">WhatsApp</th>
+                  {/* <th className="d-none d-xl-table-cell">WhatsApp</th> */}
                   <th className="d-none d-xl-table-cell">PAN</th>
                   <th>Subscription</th>
                   <th className="d-none d-md-table-cell">
@@ -218,7 +218,7 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                       <span className="small text-muted">{client.email}</span>
                     </td>
                     <td className="d-none d-lg-table-cell">{client.phone}</td>
-                    <td className="d-none d-xl-table-cell">{client.phone}</td>
+                    {/* <td className="d-none d-xl-table-cell">{client.phone}</td> */}
                     <td className="d-none d-xl-table-cell small text-muted">
                       {/* <span className="d-block text-nowrap">
                         Aadhaar: {client.pan}
