@@ -34,8 +34,7 @@ const MainLogin = () => {
       localStorage.setItem("login_details", JSON.stringify({ token, data }));
       localStorage.setItem("user_id", data?.id || data?._id || "");
       localStorage.setItem("user_role", body?.data?.role || "");
-      console.log("Login successful, token and user info saved.", data);
-      toast.success("Login successful 🎉");
+      toast.success("Login successful! Redirecting...");
       setTimeout(() => navigate("/admin/dashboard"), 800);
     } catch (err) {
       console.error("Login error:", err);

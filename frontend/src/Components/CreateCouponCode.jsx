@@ -64,37 +64,42 @@ const CreateCouponCode = () => {
   }, [filteredCoupons, currentPage]);
 
   // Create coupon
-  const handleAddCoupon = async () => {
-    if (!newCoupon.discount || !newCoupon.validTill) return;
+ const handleAddCoupon = async () => {
+  if (!newCoupon.discount || !newCoupon.validTill) return;
 
-    await dispatch(
-      createCoupon({
-        code: newCoupon.code,
-        discount: Number(newCoupon.discount), // your backend expects NUMBER
-        validTill: newCoupon.validTill,
-      })
-    );
+  // newCoupon.validTill is like "2025-11-20T10:00"
+  const iso = new Date(newCoupon.validTill).toISOString(); // correct UTC ISO
 
-    // Refetch coupons
-    dispatch(fetchCoupons());
+  await dispatch(
+    createCoupon({
+      code: newCoupon.code,
+      discount: Number(newCoupon.discount),
+      validTill: iso,
+    })
+  );
 
-    setShowModal(false);
-    setNewCoupon({
-      code: generateCouponCode(),
-      discount: "",
-      validTill: "",
-    });
-  };
+  dispatch(fetchCoupons());
+  setShowModal(false);
+  setNewCoupon({ code: generateCouponCode(), discount: "", validTill: "" });
+};
 
   // Delete coupon
   const handleDelete = async (id) => {
     await dispatch(deleteCoupon(id));
     dispatch(fetchCoupons());
   };
+const formatIST = (isoString) =>
+  new Intl.DateTimeFormat("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Kolkata",
+  }).format(new Date(isoString));
+
+// inside JSX
 
   return (
     <div className="page-content">
-      <h2 className="mb-4">🎟️ Coupon Code Management</h2>
+      <h2 className="mb-4">Coupon Code Management</h2>
 
       <Card>
         <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center">
@@ -147,7 +152,7 @@ const CreateCouponCode = () => {
                       <strong>{coupon.code}</strong>
                     </td>
                     <td>{coupon.discount}%</td>
-                    <td>{new Date(coupon.validTill).toLocaleString()}</td>
+                    <td>{formatIST(coupon?.validTill)}</td>
 
                     <td>
                       <Button
