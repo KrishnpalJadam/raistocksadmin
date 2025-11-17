@@ -19,20 +19,22 @@ const MainLogin = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+      console.log("Login response status:", res);
       const body = await res.json();
       if (!res.ok) {
         throw new Error(body.message || "Login failed");
       }
+      console.log("Login response body:", body);
 
       // backend returns { message, user, token }
-      const { token, user } = body;
+      const { token, data } = body;
+      console.log("Login successful, received token and user data:", token, data);
 
       // Save token and user info in localStorage for other components (Settings reads login_details.token)
-      localStorage.setItem("login_details", JSON.stringify({ token, user }));
-      localStorage.setItem("user_id", user?.id || user?._id || "");
-      localStorage.setItem("user_role", user?.role || "");
-
+      localStorage.setItem("login_details", JSON.stringify({ token, data }));
+      localStorage.setItem("user_id", data?.id || data?._id || "");
+      localStorage.setItem("user_role", body?.data?.role || "");
+      console.log("Login successful, token and user info saved.", data);
       toast.success("Login successful 🎉");
       setTimeout(() => navigate("/admin/dashboard"), 800);
     } catch (err) {
