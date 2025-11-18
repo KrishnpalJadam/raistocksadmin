@@ -354,19 +354,23 @@ useEffect(()=>{
    dispatch(fetchTicketReplies(ticketData._id));
 
 },[])
-const reply = useSelector((state)=>state)
+const reply = useSelector((state)=>state?.support)
 console.log("reply",reply)
   const [localReplies, setLocalReplies] = useState([]);
-   const user = {
-        id: "69131995026801b57d6542fa",
-        name: "Ankit Verma",
-        email: "ankitverma3490@gmail.com",
-        role: "Admin",
-        status: "Active"
-    }
+  const userDetails = JSON.parse(localStorage.getItem("login_details"));
+  const user = userDetails?.data;
+// console.log("userDet",userDetails?.data)
+//    const user = {
+//         id: "69131995026801b57d6542fa",
+//         name: "Ankit Verma",
+//         email: "ankitverma3490@gmail.com",
+//         role: "Admin",
+//         status: "Active"
+//     }
   const fullTicket = useSelector((state) =>
     state.support.tickets.find((t) => t._id === ticketData._id)
   );
+  console.log("full ticket",fullTicket)
   const replies = fullTicket?.replies || [];
     const API_URL = import.meta.env.VITE_API_URL;
 
@@ -477,7 +481,7 @@ console.log("reply",reply)
                 <hr />
 
                 {/* Status */}
-                <Form.Group className="mb-3">
+                {/* <Form.Group className="mb-3">
                   <Form.Label className="d-block">
                     <StatusIcon
                       className={`lucide-icon me-2 text-${getStatusColor(
@@ -494,7 +498,7 @@ console.log("reply",reply)
                     <option value="In-progress">In-progress</option>
                     <option value="Resolved">Resolved</option>
                   </Form.Select>
-                </Form.Group>
+                </Form.Group> */}
               </Card.Body>
             </Card>
           </Col>
