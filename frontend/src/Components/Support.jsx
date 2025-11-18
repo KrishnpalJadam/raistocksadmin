@@ -51,6 +51,7 @@ const Support = () => {
 
   // ✅ Handle view details modal
   const handleOpenModal = (ticket) => {
+    console.log(ticket)
     setViewingTicket(ticket);
     setShowModal(true);
   };
@@ -220,7 +221,9 @@ const Support = () => {
                           variant="outline-primary"
                           size="sm"
                           title="View Details"
-                          onClick={() => handleOpenModal(ticket)}
+                          onClick={
+                             
+                            () => handleOpenModal(ticket)}
                         >
                           <Eye className="lucide-icon" />
                         </Button>
