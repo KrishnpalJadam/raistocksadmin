@@ -324,7 +324,7 @@ import {
   Send,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTicketDetails, addTicketReply } from "../slices/supportSlice";
+import { fetchTicketDetails, addTicketReply , fetchTicketReplies } from "../slices/supportSlice";
 import axios from "axios";
 
 const getStatusColor = (status) => {
@@ -351,7 +351,11 @@ const TicketDetailModal = ({ show, handleClose, ticketData }) => {
 //   const {  user, token } = useSelector((state) => state.user);
 useEffect(()=>{
    dispatch(fetchTicketDetails())
+   dispatch(fetchTicketReplies(ticketData._id));
+
 },[])
+const reply = useSelector((state)=>state)
+console.log("reply",reply)
   const [localReplies, setLocalReplies] = useState([]);
    const user = {
         id: "69131995026801b57d6542fa",
