@@ -106,17 +106,40 @@
 
 // export default InvoiceModal;
 
+
+
+
+
+
 import React from "react";
 import { Modal, Button, Table, Row, Col } from "react-bootstrap";
 import { Download, Printer } from "lucide-react";
 import logo2 from "../assets/image/logo.png"
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { useRef } from "react";
 const InvoiceModal = ({ show, handleClose, invoiceData }) => {
   if (!invoiceData) return null;
-
+  const invoiceRef = useRef();
   const subtotal = invoiceData.items.reduce(
     (sum, item) => sum + item.amount,
     0
   );
+  const downloadPDF = async () => {
+    const element = invoiceRef.current;
+
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+    pdf.save(`Invoice-${invoiceData.id}.pdf`);
+  };
 
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
@@ -124,10 +147,11 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
         <Modal.Title>GST Invoice: {invoiceData.id}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="p-3 border rounded">
+        <div className="p-3 border rounded" ref={invoiceRef}>
+
           <Row className="mb-4">
             <Col>
-            <img src={logo2} alt="" />
+              <img src={logo2} alt="" />
               <h4 className="text-primary">Raistocks.com</h4>
               <p className="mb-0">{invoiceData.companyAddress}</p>
               <p className="mb-0">GSTIN: 22FNBPS4078F1ZY</p>
@@ -279,12 +303,11 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="outline-primary">
+        <Button variant="outline-primary" onClick={downloadPDF}>
           <Download className="lucide-icon me-2" /> Download PDF
         </Button>
-        <Button variant="primary">
-          <Printer className="lucide-icon me-2" /> Print Invoice
-        </Button>
+
+
       </Modal.Footer>
     </Modal>
   );
