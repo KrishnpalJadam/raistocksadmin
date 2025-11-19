@@ -1,17 +1,3 @@
-<<<<<<< HEAD
- import React, { useEffect, useState } from "react";
-import { Card, Row, Col, ListGroup } from "react-bootstrap";
-import { Zap, Shield, Briefcase, Headset } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchRolePermissions, updateRolePermission } from "../slices/rolesPermissionSlice";
-
-const iconMap = {
-    Admin: Zap,
-    Manager: Shield,
-    "Sales Executive": Briefcase,
-    "Support Agent": Headset,
-};
-=======
 import React, { useState } from 'react';
 import { Card, Row, Col, ListGroup } from 'react-bootstrap';
 import { Zap, Shield, Briefcase, Headset } from 'lucide-react';
@@ -42,7 +28,6 @@ const initialRoleAccessData = [
         access: { dashboard: true, clients: true, payments: false, plans: false, emails: true, rai: false, support: true, users: false, leads: false, settings: false },
     },
 ];
->>>>>>> krishna16
 
 const moduleNames = [
     { key: "dashboard", name: "Dashboard" },
@@ -61,26 +46,6 @@ const moduleNames = [
 ];
 
 const AccessControl = () => {
-<<<<<<< HEAD
-    const dispatch = useDispatch();
-    // const { roles } = useSelector((state) => state.rolePermission || { roles: [] });
-     const roles = useSelector((state) => state?.rolesPermission?.roles || []);
-    //  console.log("Roles Permission State:", rolesPermissionState);
-    useEffect(() => {
-        dispatch(fetchRolePermissions());
-    }, [dispatch]);
-
-    // 🔄 Handle toggle + auto-save to backend
-    const handleToggle = (roleObj, key) => {
-        const updatedAccess = { ...roleObj.access, [key]: !roleObj.access[key] };
-
-        dispatch(
-            updateRolePermission({
-                role: roleObj.role,
-                access: updatedAccess,
-            })
-        );
-=======
     const [roles, setRoles] = useState(initialRoleAccessData);
 
     // 🔄 Handle checkbox toggle
@@ -88,7 +53,6 @@ const AccessControl = () => {
         const updatedRoles = [...roles];
         updatedRoles[roleIndex].access[key] = !updatedRoles[roleIndex].access[key];
         setRoles(updatedRoles);
->>>>>>> krishna16
     };
 
     return (
@@ -100,13 +64,8 @@ const AccessControl = () => {
 
             <Card.Body>
                 <Row>
-<<<<<<< HEAD
-                    {roles.map((roleData) => {
-                        const Icon = iconMap[roleData.role] || Zap;
-=======
                     {roles.map((roleData, index) => {
                         const Icon = roleData.icon;
->>>>>>> krishna16
 
                         return (
                             <Col lg={3} md={6} className="mb-4" key={roleData.role}>
@@ -127,11 +86,7 @@ const AccessControl = () => {
                                                 <input
                                                     type="checkbox"
                                                     checked={roleData.access[mod.key]}
-<<<<<<< HEAD
-                                                    onChange={() => handleToggle(roleData, mod.key)}
-=======
                                                     onChange={() => handleToggle(index, mod.key)}
->>>>>>> krishna16
                                                     style={{ width: "16px", height: "16px" }}
                                                 />
                                             </ListGroup.Item>
@@ -148,7 +103,4 @@ const AccessControl = () => {
 };
 
 export default AccessControl;
-<<<<<<< HEAD
-=======
  
->>>>>>> krishna16
