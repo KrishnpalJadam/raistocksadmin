@@ -636,7 +636,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMdCall } from "react-icons/io";
 import InvoiceModal from "../InvoiceModal";
-import { useDispatch ,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { uploadAgreement } from "../../slices/kycSlice";
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -701,7 +701,7 @@ const ClientDocumentsTab = ({ kycData }) => {
     { name: "Signature", url: kycData?.your_signature_url, icon: Edit },
     { name: "Agreement", url: kycData?.agreement_url, icon: Edit },
   ];
-const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(kycData?.agreement_url || null);
   const [uploading, setUploading] = useState(false);
 
@@ -772,12 +772,12 @@ const [selectedFile, setSelectedFile] = useState(null);
 
 // --- AGREEMENT TAB ---
 // --- AGREEMENT TAB (UI ONLY) ---
- const AgrementTab = ({ kycData }) => {
-     const dispatch = useDispatch();
+const AgrementTab = ({ kycData }) => {
+  const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(kycData?.agreement_url || null);
   const [uploading, setUploading] = useState(false);
- 
+
   const handleFileSelect = (file) => {
     if (!file) return;
     setSelectedFile(file);
@@ -803,7 +803,6 @@ const [selectedFile, setSelectedFile] = useState(null);
       setUploading(false);
     }
   };
-
 
   return (
     <div className="row g-4">
@@ -872,25 +871,42 @@ const ClientAllDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
+  const handleOpenInvoiceModal = async (invoiceId) => {
+    try {
+      const { data } = await axios.get(`${API_URL}/api/invoice/${invoiceId}`);
+      setInvoiceData(data);
+      setShowInvoiceModal(true);
+    } catch (err) {
+      console.error("Error fetching invoice:", err);
+      alert("Failed to load invoice");
+    }
+  };
+
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const [clientRes, invoiceRes] = await Promise.all([
-          axios.get(`${API_URL}/api/clients/${clientId}`),
-          axios.get(`${API_URL}/api/invoice/${clientId}`),
-        ]);
+        // 1) FETCH CLIENT
+        const clientRes = await axios.get(`${API_URL}/api/clients/${clientId}`);
         setClientData(clientRes.data);
-        setInvoiceData(invoiceRes.data);
 
-        // --- Fetch KYC by PAN ---
-        const email = clientRes.data.email;
-        if (email) {
-          const kycRes = await axios.get(`${API_URL}/api/kyc/email/${email}`);
-          console.log("KYC Data:", kycRes.data);
+        // 2) FETCH INVOICE USING invoiceId
+        if (clientRes.data.invoiceId) {
+          const encodedInvoiceId = encodeURIComponent(clientRes.data.invoiceId);
+          const invoiceRes = await axios.get(
+            `${API_URL}/api/invoice/${encodedInvoiceId}`
+          );
+          setInvoiceData(invoiceRes.data);
+        }
+
+        // 3) FETCH KYC USING CLIENT EMAIL
+        if (clientRes.data.email) {
+          const kycRes = await axios.get(
+            `${API_URL}/api/kyc/email/${clientRes.data.email}`
+          );
           setKycData(kycRes.data.data);
         }
-      } catch (error) {
-        console.error("Error fetching client details:", error);
+      } catch (err) {
+        console.error("Error fetching client details:", err);
       } finally {
         setLoading(false);
       }
@@ -909,38 +925,128 @@ const ClientAllDetails = () => {
     return <div className="text-center p-5 text-danger">No client found!</div>;
 
   // --- PAYMENT TAB ---
-  const PaymentTab = () => (
-    <div className="table-responsive">
-      <table className="table table-sm table-bordered table-hover mb-0 crm-table">
-        <thead className="table-light">
-          <tr>
-            <th>Date</th>
-            <th>Plan Type</th>
-            <th>Amount</th>
-            <th>Payment Mode</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{new Date(clientData.createdAt).toLocaleDateString()}</td>
-            <td>{clientData.planType}</td>
-            <td className="fw-semibold text-success">₹ {clientData.amount}</td>
-            <td>{clientData.method}</td>
-            <td>
-              <span
-                className={`badge rounded-pill bg-${
-                  clientData.status === "Success" ? "success" : "danger"
-                }`}
-              >
-                {clientData.status}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+  // const PaymentTab = () => {
+  //   if (!clientData.paymentHistory || clientData.paymentHistory.length === 0) {
+  //     return (
+  //       <div className="text-center text-muted py-3">
+  //         No payment history found.
+  //       </div>
+  //     );
+  //   }
+
+  //   return (
+  //     <div className="table-responsive">
+  //       <table className="table table-sm table-bordered table-hover mb-0 crm-table">
+  //         <thead className="table-light">
+  //           <tr>
+  //             <th>Date</th>
+  //             <th>Plan</th>
+  //             <th>Amount</th>
+  //             <th>Payment Mode</th>
+  //             <th>Status</th>
+  //           </tr>
+  //         </thead>
+
+  //         <tbody>
+  //           {clientData.paymentHistory.map((pay, index) => (
+  //             <tr key={index}>
+  //               <td>{new Date(pay.date).toLocaleDateString()}</td>
+
+  //               <td>
+  //                 {clientData.subscription} ({clientData.planType})
+  //               </td>
+
+  //               <td className="fw-semibold text-success">₹ {pay.amount}</td>
+
+  //               <td>{pay.method}</td>
+
+  //               <td>
+  //                 <span
+  //                   className={`badge rounded-pill bg-${
+  //                     pay.status === "Success" ? "success" : "danger"
+  //                   }`}
+  //                 >
+  //                   {pay.status}
+  //                 </span>
+  //               </td>
+  //             </tr>
+  //           ))}
+  //         </tbody>
+  //       </table>
+  //     </div>
+  //   );
+  // };
+  const PaymentTab = () => {
+    if (!clientData.paymentHistory || clientData.paymentHistory.length === 0) {
+      return (
+        <div className="text-center text-muted py-3">
+          No payment history found.
+        </div>
+      );
+    }
+
+    return (
+      <div className="table-responsive">
+        <table className="table table-sm table-bordered table-hover mb-0 crm-table">
+          <thead className="table-light">
+            <tr>
+              <th>Date</th>
+              <th>Plan</th>
+              <th>Amount</th>
+              <th>Payment Mode</th>
+              <th>Status</th>
+              <th>Invoice</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {clientData.paymentHistory.map((pay, index) => (
+              <tr key={index}>
+                <td>{new Date(pay.date).toLocaleDateString()}</td>
+
+                <td>
+                  {clientData.subscription} ({clientData.planType})
+                </td>
+
+                <td className="fw-semibold text-success">₹ {pay.amount}</td>
+
+                <td>{pay.method}</td>
+
+                <td>
+                  <span
+                    className={`badge rounded-pill bg-${
+                      pay.status === "Success" ? "success" : "danger"
+                    }`}
+                  >
+                    {pay.status}
+                  </span>
+                </td>
+
+                {/* --- INVOICE BUTTON HERE --- */}
+                <td className="text-center">
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() =>
+                      handleOpenInvoiceModal(encodeURIComponent(pay.invoiceId))
+                    }
+                  >
+                    <FileText size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Invoice Modal */}
+        <InvoiceModal
+          show={showInvoiceModal}
+          handleClose={() => setShowInvoiceModal(false)}
+          invoiceData={invoiceData}
+        />
+      </div>
+    );
+  };
 
   // --- INVOICE TAB ---
   const InvoiceTab = () => {
@@ -1052,22 +1158,20 @@ const ClientAllDetails = () => {
       <div className="card shadow-sm rounded-3 border-0">
         <div className="card-header p-0 bg-white">
           <ul className="nav nav-tabs crm-nav-tabs" role="tablist">
-            {["Payment", "Invoice", "Client Documents", "Agrement Upload"].map(
-              (tab) => (
-                <li className="nav-item" key={tab}>
-                  <a
-                    className={`nav-link ${activeTab === tab ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTab(tab);
-                    }}
-                    href="#"
-                  >
-                    {tab}
-                  </a>
-                </li>
-              )
-            )}
+            {["Payment", "Client Documents", "Agrement Upload"].map((tab) => (
+              <li className="nav-item" key={tab}>
+                <a
+                  className={`nav-link ${activeTab === tab ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab(tab);
+                  }}
+                  href="#"
+                >
+                  {tab}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="card-body p-4">{renderTabContent()}</div>

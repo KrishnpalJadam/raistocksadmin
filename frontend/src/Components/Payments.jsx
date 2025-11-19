@@ -379,7 +379,7 @@ const Payments = () => {
     loading,
     error,
   } = useSelector((state) => state.payments);
-  console.log("Transactions:", transactions);
+  // console.log("Transactions:", transactions);
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
@@ -387,9 +387,9 @@ const Payments = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handleOpenInvoiceModal = async (clientId) => {
+  const handleOpenInvoiceModal = async (invoiceId) => {
     try {
-      const { data } = await axios.get(`${API_URL}/api/invoice/${clientId}`);
+      const { data } = await axios.get(`${API_URL}/api/invoice/${invoiceId}`);
       setInvoiceData(data);
       setShowInvoiceModal(true);
     } catch (err) {
@@ -415,7 +415,8 @@ const Payments = () => {
             name: client.name,
             subscription: client.subscription,
             planType: client.planType,
-            updatedAt: pay.date, // date fix
+            updatedAt: pay.date,
+            invoiceId: pay.invoiceId,
           });
         });
       }
@@ -625,7 +626,11 @@ const Payments = () => {
                         variant="outline-primary"
                         size="sm"
                         title="View Invoice"
-                        onClick={() => handleOpenInvoiceModal(trx.invoiceId)}
+                        onClick={() =>
+                          handleOpenInvoiceModal(
+                            encodeURIComponent(trx.invoiceId)
+                          )
+                        }
                       >
                         <FileText className="lucide-icon" />
                       </Button>

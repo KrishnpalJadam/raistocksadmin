@@ -3,10 +3,9 @@ import { Search, ChevronDown, Edit, Eye, FileText } from "lucide-react";
 import { Card, Pagination, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import { fetchPayments } from "../../slices/paymentSlice";
 import "./clint.css";
 import { useMemo } from "react";
-import { updateKycStatus,fetchClients } from "../../slices/clientSlice";
+import { updateKycStatus, fetchClients } from "../../slices/clientSlice";
 
 const getSubscriptionBadge = (sub) => {
   let color;
@@ -65,9 +64,7 @@ const Clients = () => {
   //   loading,
   //   error,
   // } = useSelector((state) => state.payments);
-  const {clients , loading,error}= useSelector((state) => state?.clients
-
-);
+  const { clients, loading, error } = useSelector((state) => state?.clients);
 
   console.log("Clients data:", clients);
   const [searchTerm, setSearchTerm] = useState("");
@@ -100,7 +97,12 @@ const Clients = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-console.log("Current page:", currentPage, "Clients displayed:", paginatedClients.map(c => c.name));
+  console.log(
+    "Current page:",
+    currentPage,
+    "Clients displayed:",
+    paginatedClients.map((c) => c.name)
+  );
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
@@ -139,41 +141,6 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
               }}
             />
           </div>
-
-          {/* <div className="dropdown">
-            <button
-              className="btn btn-outline-secondary btn-sm dropdown-toggle text-start"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <ChevronDown size={14} className="me-1" />
-              {filter}
-            </button>
-            <ul className="dropdown-menu">
-              {[
-                "All Subscriptions",
-                "Trial",
-                "Extended Trial",
-                "Investor",
-                "Trader",
-                "Trader Premium",
-              ].map((item) => (
-                <li key={item}>
-                  <a
-                    className="dropdown-item"
-                    href="#"
-                    onClick={() => {
-                      setFilter(item);
-                      setCurrentPage(1); // reset page on filter
-                    }}
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div> */}
         </div>
 
         <p className="mb-0 ms-auto text-muted small mt-2 mt-md-0">
@@ -224,9 +191,7 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                       {/* <span className="d-block text-nowrap">
                         Aadhaar: {client.pan}
                       </span> */}
-                      <span className="d-block text-nowrap">
-                        {client.pan}
-                      </span>
+                      <span className="d-block text-nowrap">{client.pan}</span>
                     </td>
                     <td>{getSubscriptionBadge(client.subscription)}</td>
                     <td className="small text-muted d-none d-md-table-cell text-nowrap">
@@ -243,25 +208,26 @@ console.log("Current page:", currentPage, "Clients displayed:", paginatedClients
                     <td className="d-none d-md-table-cell small text-nowrap">
                       {client.planType}
                     </td>
-                      <td className="d-none d-md-table-cell small text-nowrap">
+                    <td className="d-none d-md-table-cell small text-nowrap">
                       {client.clientGST}
                     </td>
-                     <td
-  onClick={async () => {
-    const newStatus = client.kyc === "Approved" ? "Pending" : "Approved";
+                    <td
+                      onClick={async () => {
+                        const newStatus =
+                          client.kyc === "Approved" ? "Pending" : "Approved";
 
-    await dispatch(
-      updateKycStatus({
-        clientId: client.clientId,
-        kyc: newStatus,
-      })
-    );
-  }}
-  style={{ cursor: "pointer" }}
-  title="Click to update KYC status"
->
-  {getKycBadge(client.kyc)}
-</td>
+                        await dispatch(
+                          updateKycStatus({
+                            clientId: client.clientId,
+                            kyc: newStatus,
+                          })
+                        );
+                      }}
+                      style={{ cursor: "pointer" }}
+                      title="Click to update KYC status"
+                    >
+                      {getKycBadge(client.kyc)}
+                    </td>
                     <td className="text-center">
                       <div className="d-flex justify-content-center">
                         <button
