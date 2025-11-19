@@ -174,63 +174,6 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
             </tbody>
           </Table>
 
-          {/* <Row className="justify-content-end">
-          <Row className="justify-content-end">
-            <span className="">HSN/SAC: 998371</span>
-            <Col md={5}>
-              <Table borderless size="sm">
-                <tbody>
-                  <tr>
-                    <td>Sub Total:</td>
-                    <td className="text-end">
-                      ₹
-                      {subtotal.toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>IGST:</td>
-                    <td className="text-end text-success">
-                      ₹
-                      {invoiceData.gstBreakup?.igst?.toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      Total Tax ({(invoiceData.taxRate * 100).toFixed(0)}%):
-                    </td>
-                    <td className="text-end text-success">
-                      ₹
-                      {invoiceData.gstBreakup?.totalTax.toLocaleString(
-                        "en-IN",
-                        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                      )}
-                    </td>
-                  </tr>
-                  <tr className="border-top border-2">
-                    <td>
-                      <strong>Total Amount Due:</strong>
-                    </td>
-                    <td className="text-end">
-                      <strong>
-                        ₹
-                        {invoiceData.totalAmount.toLocaleString("en-IN", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </strong>
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row> */}
-
           <Row className="justify-content-end">
             <span className="">HSN/SAC: 998371</span>
             <Col md={5}>
