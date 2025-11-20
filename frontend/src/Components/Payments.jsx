@@ -347,6 +347,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPayments } from "../slices/paymentSlice";
 import InvoiceModal from "./InvoiceModal";
 import axios from "axios";
+import { fetchAllInvoices,fetchInvoiceById } from "../slices/invoiceSlice";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // --- Helper to get status badge class
@@ -402,62 +403,73 @@ const Payments = () => {
   useEffect(() => {
     dispatch(fetchPayments());
   }, [dispatch]);
+  useEffect(()=>{
+     dispatch(fetchAllInvoices())
+  },[])
+  const invoices = useSelector((state)=>state?.invoices?.invoices)
+  console.log(invoices)
+  // const flattenedTransactions = useMemo(() => {
+  //   let list = [];
 
-  const flattenedTransactions = useMemo(() => {
-    let list = [];
+  //   transactions.forEach((client) => {
+  //     if (client.paymentHistory && client.paymentHistory.length > 0) {
+  //       client.paymentHistory.forEach((pay) => {
+  //         list.push({
+  //           ...pay,
+  //           clientId: client.clientId,
+  //           name: client.name,
+  //           subscription: client.subscription,
+  //           planType: client.planType,
+  //           updatedAt: pay.date,
+  //           invoiceId: pay.invoiceId,
+  //         });
+  //       });
+  //     }
+  //   });
 
-    transactions.forEach((client) => {
-      if (client.paymentHistory && client.paymentHistory.length > 0) {
-        client.paymentHistory.forEach((pay) => {
-          list.push({
-            ...pay,
-            clientId: client.clientId,
-            name: client.name,
-            subscription: client.subscription,
-            planType: client.planType,
-            updatedAt: pay.date,
-            invoiceId: pay.invoiceId,
-          });
-        });
-      }
-    });
-
-    return list;
-  }, [transactions]);
+  //   return list;
+  // }, [transactions]);
 
   // --- Search + Filter
+  
   const filteredTransactions = useMemo(() => {
-    return flattenedTransactions.filter((trx) => {
-      const searchMatch =
-        trx.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        trx.paymentId?.toLowerCase().includes(searchTerm.toLowerCase());
+  if (!invoices || invoices.length === 0) return [];
 
-      const statusMatch = filterStatus === "All" || trx.status === filterStatus;
+  return invoices.filter((inv) => {
+    const searchLower = searchTerm.toLowerCase();
 
-      return searchMatch && statusMatch;
-    });
-  }, [flattenedTransactions, searchTerm, filterStatus]);
+    const searchMatch =
+      inv.clientName.toLowerCase().includes(searchLower) ||
+      inv.paymentId?.toLowerCase().includes(searchLower) ||
+      inv.id?.toLowerCase().includes(searchLower);
+
+    const statusMatch =
+      filterStatus === "All" || inv.status === filterStatus;
+
+    return searchMatch && statusMatch;
+  });
+}, [invoices, searchTerm, filterStatus]);
 
   // --- Pagination
-  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+ const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
 
-  const paginatedTransactions = filteredTransactions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+const paginatedTransactions = filteredTransactions.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
   };
 
   // --- Status Count Cards (dynamic)
-  const successCount = transactions.filter(
-    (t) => t.status === "Success"
-  ).length;
-  const pendingCount = transactions.filter(
-    (t) => t.status === "Pending"
-  ).length;
-  const failedCount = transactions.filter((t) => t.status === "Failed").length;
+  // const successCount = transactions.filter(
+  //   (t) => t.status === "Success"
+  // ).length;
+  // const pendingCount = transactions.filter(
+  //   (t) => t.status === "Pending"
+  // ).length;
+  // const failedCount = transactions.filter((t) => t.status === "Failed").length;
 
   // --- Loading & Error UI
   if (loading)
@@ -479,7 +491,7 @@ const Payments = () => {
       <h2 className="mb-4">💳 Payments & Invoices</h2>
 
       {/* --- Payment Confirmation Status --- */}
-      <Row className="mb-4">
+      {/* <Row className="mb-4">
         <Col md={12}>
           <h5>Payment Confirmation Status Overview</h5>
         </Col>
@@ -525,13 +537,13 @@ const Payments = () => {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
 
       {/* --- Transactions Table --- */}
       <Card>
         <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center">
           <h5 className="mb-0">
-            All Transactions List ({filteredTransactions.length})
+            All Transactions List ({paginatedTransactions?.length})
           </h5>
         </Card.Header>
         <Card.Body>
@@ -587,15 +599,15 @@ const Payments = () => {
             </thead>
 
             <tbody>
-              {paginatedTransactions.length > 0 ? (
-                paginatedTransactions.map((trx) => (
+              {paginatedTransactions?.length > 0 ? (
+                paginatedTransactions?.map((trx) => (
                   <tr key={trx._id}>
                     <td>
                       <strong>{trx.paymentId}</strong>
                     </td>
 
                     {/* Client Name */}
-                    <td>{trx.name}</td>
+                    <td>{trx.clientName}</td>
 
                     {/* Plan */}
                     <td>
@@ -605,7 +617,7 @@ const Payments = () => {
                     </td>
 
                     {/* Amount */}
-                    <td>₹{trx.amount}</td>
+                    <td>₹{trx.totalAmount}</td>
 
                     {/* Date */}
                     <td>{formatDate(trx.date)}</td>
@@ -628,7 +640,7 @@ const Payments = () => {
                         title="View Invoice"
                         onClick={() =>
                           handleOpenInvoiceModal(
-                            encodeURIComponent(trx.invoiceId)
+                            encodeURIComponent(trx.id)
                           )
                         }
                       >

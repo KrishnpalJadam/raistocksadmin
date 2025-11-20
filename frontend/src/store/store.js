@@ -20,6 +20,7 @@ import dashboardReducer from "../slices/dashboardSlice";
 import kycReducer from "../slices/kycSlice";
 import couponReducer from "../slices/couponSlice";
 import rolesPermissionReducer from "../slices/rolesPermissionSlice";
+import invoiceReducer from "../slices/invoiceSlice"
 
 export const store = configureStore({
   reducer: {
@@ -43,5 +44,6 @@ export const store = configureStore({
     kyc: kycReducer,
     coupons: couponReducer,
     rolesPermission: rolesPermissionReducer,
+    invoices:invoiceReducer,
   },
 });
