@@ -255,6 +255,7 @@ const AddSubscriptionModal = ({
                 <option value="Trial">Trial</option>
                 <option value="Trader">Trader</option>
                 <option value="Investor">Investor</option>
+                <option value="Trader Premium">Trader Premium</option>
                 <option value="Extended Trial">Extended Trial</option>
               </Form.Select>
             </Col>

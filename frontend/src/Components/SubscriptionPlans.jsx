@@ -161,6 +161,8 @@ const SubscriptionPlans = () => {
         return "bg-primary";
       case "Trader":
         return "bg-success";
+      case "Trader Premium":
+        return "bg-success";
       default:
         return "bg-light text-dark";
     }
