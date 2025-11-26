@@ -324,6 +324,15 @@
 
 // export default Payments;
 
+
+
+
+
+
+
+
+
+
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Card,
@@ -347,9 +356,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPayments } from "../slices/paymentSlice";
 import InvoiceModal from "./InvoiceModal";
 import axios from "axios";
-import { fetchAllInvoices,fetchInvoiceById } from "../slices/invoiceSlice";
+import { fetchAllInvoices, fetchInvoiceById } from "../slices/invoiceSlice";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
+import Papa from "papaparse";
 // --- Helper to get status badge class
 const getStatusBadge = (status) => {
   switch (status) {
@@ -387,6 +396,8 @@ const Payments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handleOpenInvoiceModal = async (invoiceId) => {
     try {
@@ -403,10 +414,10 @@ const Payments = () => {
   useEffect(() => {
     dispatch(fetchPayments());
   }, [dispatch]);
-  useEffect(()=>{
-     dispatch(fetchAllInvoices())
-  },[])
-  const invoices = useSelector((state)=>state?.invoices?.invoices)
+  useEffect(() => {
+    dispatch(fetchAllInvoices())
+  }, [])
+  const invoices = useSelector((state) => state?.invoices?.invoices)
   console.log(invoices)
   // const flattenedTransactions = useMemo(() => {
   //   let list = [];
@@ -431,36 +442,96 @@ const Payments = () => {
   // }, [transactions]);
 
   // --- Search + Filter
-  
+
   const filteredTransactions = useMemo(() => {
-  if (!invoices || invoices.length === 0) return [];
+    if (!invoices) return [];
 
-  return invoices.filter((inv) => {
-    const searchLower = searchTerm.toLowerCase();
+    return invoices.filter((inv) => {
+      const searchLower = searchTerm.toLowerCase();
 
-    const searchMatch =
-      inv.clientName.toLowerCase().includes(searchLower) ||
-      inv.paymentId?.toLowerCase().includes(searchLower) ||
-      inv.id?.toLowerCase().includes(searchLower);
+      const matchesSearch =
+        inv.clientName.toLowerCase().includes(searchLower) ||
+        inv.paymentId?.toLowerCase().includes(searchLower) ||
+        inv.id?.toLowerCase().includes(searchLower);
 
-    const statusMatch =
-      filterStatus === "All" || inv.status === filterStatus;
+      const matchesStatus =
+        filterStatus === "All" || inv.status === filterStatus;
 
-    return searchMatch && statusMatch;
-  });
-}, [invoices, searchTerm, filterStatus]);
+      const trxDate = new Date(inv.date);
+
+      const matchesDate =
+        (!startDate || trxDate >= new Date(startDate)) &&
+        (!endDate || trxDate <= new Date(endDate + " 23:59:59"));
+
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [invoices, searchTerm, filterStatus, startDate, endDate]);
 
   // --- Pagination
- const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
 
-const paginatedTransactions = filteredTransactions.slice(
-  (currentPage - 1) * ITEMS_PER_PAGE,
-  currentPage * ITEMS_PER_PAGE
-);
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
   };
+
+
+  const handleDownloadCSV = () => {
+    if (!filteredTransactions || filteredTransactions.length === 0) {
+      alert("No data available to export.");
+      return;
+    }
+
+    const csvData = filteredTransactions.map((trx) => ({
+      "HSN/SAC Number": "HSN/SAC: 998371",
+
+      "Date of payment": formatDate(trx.date).replace(" ", "-"),
+
+      "Invoice number": `Invoice No: ${trx.id}`,
+
+      "Client name": trx.clientName,
+
+      "Client phone number": trx.phone || "",
+
+      "Client Email Id": trx.email || "",
+
+      "Client GST number": trx.clientGST || "",
+
+      "Client state": trx.state || "",
+      "Description( Plan Type)":
+        `${(trx?.planName || "").toString()} (${(trx?.planType || "").toString()})`,
+
+
+      "Taxable value": trx.subTotal || trx.taxableValue || (trx.totalAmount - (trx.gstBreakup?.totalTax || 0)),
+
+      "CGST (9%)": trx.gstBreakup?.cgstAmount || "",
+
+      "SGST (9%)": trx.gstBreakup?.sgstAmount || "",
+
+      "IGST (18%)": trx.gstBreakup?.igstAmount || "",
+
+      "Total Tax (18%)": trx.gstBreakup?.totalTax || 0,
+
+      "Total Amount paid": trx.totalAmount,
+    }));
+
+    const csv = Papa.unparse(csvData);
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "Invoices_Export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   // --- Status Count Cards (dynamic)
   // const successCount = transactions.filter(
@@ -542,16 +613,54 @@ const paginatedTransactions = filteredTransactions.slice(
       {/* --- Transactions Table --- */}
       <Card>
         <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">
+          <Col md={3}>
+            <h5 className="mb-0">
             All Transactions List ({paginatedTransactions?.length})
           </h5>
+          </Col>
+        
+
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label>From Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+
+          <Col md={3} className="ms-3">
+            <Form.Group>
+              <Form.Label>To Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={3} className="ms-3 ">
+
+            <Button className="mt-4"
+              variant="success"
+              onClick={handleDownloadCSV}
+            >
+              Download CSV
+            </Button></Col>
         </Card.Header>
+
+
+
+
+
         <Card.Body>
           {/* --- Search & Filter --- */}
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group className="d-flex">
-                <Search className="lucide-icon me-2 mt-2 text-secondary" />
+               
                 <Form.Control
                   type="text"
                   placeholder="Search by ID or Client Name..."
@@ -566,7 +675,7 @@ const paginatedTransactions = filteredTransactions.slice(
 
             <Col md={3}>
               <Form.Group className="d-flex">
-                <Filter className="lucide-icon me-2 mt-2 text-secondary" />
+               
                 <Form.Select
                   value={filterStatus}
                   onChange={(e) => {
@@ -580,7 +689,9 @@ const paginatedTransactions = filteredTransactions.slice(
                   <option value="Failed">Failed</option>
                 </Form.Select>
               </Form.Group>
+
             </Col>
+
           </Row>
 
           {/* --- Table --- */}

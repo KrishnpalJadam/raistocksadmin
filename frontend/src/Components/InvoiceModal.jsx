@@ -158,7 +158,12 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
             </Col>
             <Col className="text-end">
               <h5 className="mb-0">Invoice No: {invoiceData.id}</h5>
-              <p className="mb-0">Date: {invoiceData.date}</p>
+              <p className="mb-0">Date: {new Date(invoiceData.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+              })}</p>
+
             </Col>
           </Row>
 
@@ -281,7 +286,7 @@ const InvoiceModal = ({ show, handleClose, invoiceData }) => {
 
                   <tr className="border-top border-2">
                     <td>
-                      <strong>Total Amount Due:</strong>
+                      <strong>Total Amount Paid:</strong>
                     </td>
                     <td className="text-end">
                       <strong>
