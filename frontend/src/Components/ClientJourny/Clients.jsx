@@ -212,18 +212,18 @@ const Clients = () => {
                       {client.clientGST}
                     </td>
                     <td
-                      onClick={async () => {
-                        const newStatus =
-                          client.kyc === "Approved" ? "Pending" : "Approved";
+                      // onClick={async () => {
+                      //   const newStatus =
+                      //     client.kyc === "Approved" ? "Pending" : "Approved";
 
-                        await dispatch(
-                          updateKycStatus({
-                            clientId: client.clientId,
-                            kyc: newStatus,
-                          })
-                        );
-                      }}
-                      style={{ cursor: "pointer" }}
+                      //   await dispatch(
+                      //     updateKycStatus({
+                      //       clientId: client.clientId,
+                      //       kyc: newStatus,
+                      //     })
+                      //   );
+                      // }}
+                      // style={{ cursor: "pointer" }}
                       title="Click to update KYC status"
                     >
                       {getKycBadge(client.kyc)}
