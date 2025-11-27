@@ -18,8 +18,8 @@ const AddSubscriptionModal = ({
 
   const initialFormData = {
     planName: "",
-    description: "",
-    descriptionsPoint: [""],
+    shortDescription: "",
+descriptionsPoint: [""],
     isPopular: false,
     isFree: false,
     duration: "",
@@ -51,7 +51,9 @@ const AddSubscriptionModal = ({
         ...planData,
         isPopular: planData.isPopular ?? false,
         popular: planData.popular || "",
+        shortDescription: planData.shortDescription || "",
         descriptionsPoint: planData.descriptionsPoint || [""],
+  
         pricingOptions: planData.pricingOptions.map((option) => ({
           ...option,
           additionalBenefits: option.additionalBenefits || [""],
@@ -341,13 +343,16 @@ const removeBenefit = (pIndex, index) => {
               </Form.Select>
             </Col>
             <Col>
-              <Form.Label>Short Description</Form.Label>
-              <Form.Control
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-              />
+               <Col>
+  <Form.Label>Short Description</Form.Label>
+  <Form.Control
+    type="text"
+    name="shortDescription"
+    value={formData.shortDescription}
+    onChange={handleChange}
+  />
+</Col>
+
             </Col>
           </Row>
           <h6>Description Points:</h6>

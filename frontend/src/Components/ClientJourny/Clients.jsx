@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "./clint.css";
 import { useMemo } from "react";
-import { updateKycStatus, fetchClients } from "../../slices/clientSlice";
+import {  fetchClients } from "../../slices/clientSlice";
 
 const getSubscriptionBadge = (sub) => {
   let color;
