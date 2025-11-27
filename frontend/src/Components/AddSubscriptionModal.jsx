@@ -19,6 +19,9 @@ const AddSubscriptionModal = ({
   const initialFormData = {
     planName: "",
     description: "",
+    descriptionsPoint: [""],
+    additionalBenefits: [""],
+    popular: "",
     isFree: false,
     duration: "",
     accessLevel: "",
@@ -46,6 +49,7 @@ const AddSubscriptionModal = ({
       // Convert subServices from objects to strings for input
       const formattedPlan = {
         ...planData,
+        popular: planData.popular || "",
         pricingOptions: planData.pricingOptions.map((option) => ({
           ...option,
           services: option.services.map((service) => ({
@@ -99,6 +103,45 @@ const AddSubscriptionModal = ({
     options[pIndex].features.push("");
     setFormData((prev) => ({ ...prev, pricingOptions: options }));
   };
+  // Description Points handler
+  const handleDescriptionPointChange = (index, value) => {
+    const updated = [...formData.descriptionsPoint];
+    updated[index] = value;
+    setFormData(prev => ({ ...prev, descriptionsPoint: updated }));
+  };
+
+  const addDescriptionPoint = () => {
+    setFormData(prev => ({
+      ...prev,
+      descriptionsPoint: [...prev.descriptionsPoint, ""],
+    }));
+  };
+
+  const removeDescriptionPoint = (index) => {
+    const updated = [...formData.descriptionsPoint];
+    updated.splice(index, 1);
+    setFormData(prev => ({ ...prev, descriptionsPoint: updated }));
+  };
+  // --- Additional Benefits ---
+  const handleBenefitChange = (index, value) => {
+    const updated = [...formData.additionalBenefits];
+    updated[index] = value;
+    setFormData(prev => ({ ...prev, additionalBenefits: updated }));
+  };
+
+  const addBenefit = () => {
+    setFormData(prev => ({
+      ...prev,
+      additionalBenefits: [...prev.additionalBenefits, ""],
+    }));
+  };
+
+  const removeBenefit = (index) => {
+    const updated = [...formData.additionalBenefits];
+    updated.splice(index, 1);
+    setFormData(prev => ({ ...prev, additionalBenefits: updated }));
+  };
+
 
   const removeFeature = (pIndex, fIndex) => {
     const options = [...formData.pricingOptions];
@@ -257,10 +300,11 @@ const AddSubscriptionModal = ({
                 <option value="Investor">Investor</option>
                 <option value="Trader Premium">Trader Premium</option>
                 <option value="Extended Trial">Extended Trial</option>
+                <option value="Custom">Custom Plan</option>
               </Form.Select>
             </Col>
             <Col>
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Short Description</Form.Label>
               <Form.Control
                 type="text"
                 name="description"
@@ -269,7 +313,30 @@ const AddSubscriptionModal = ({
               />
             </Col>
           </Row>
-          <Row className="mb-3">
+          <h6>Description Points:</h6>
+
+          {formData.descriptionsPoint.map((point, index) => (
+            <InputGroup className="mb-2" key={index}>
+              <Form.Control
+                value={point}
+                onChange={(e) => handleDescriptionPointChange(index, e.target.value)}
+                placeholder="Enter description point"
+              />
+              <Button variant="danger" onClick={() => removeDescriptionPoint(index)}>
+                X
+              </Button>
+            </InputGroup>
+          ))}
+
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={addDescriptionPoint}
+          >
+            Add Point
+          </Button>
+
+          <Row className="mb-3 mt-3">
             <Col>
               <Form.Check
                 type="checkbox"
@@ -278,6 +345,18 @@ const AddSubscriptionModal = ({
                 checked={formData.isFree}
                 onChange={handleChange}
               />
+            </Col>
+            <Col>
+              <Form.Label>Most Popular</Form.Label>
+              <Form.Select
+                name="popular"
+                value={formData.popular}
+                onChange={handleChange}
+              >
+                <option value="">No</option>
+                <option value="true">Yes</option>
+              </Form.Select>
+
             </Col>
             <Col>
               <Form.Label>Duration</Form.Label>
@@ -413,6 +492,31 @@ const AddSubscriptionModal = ({
               >
                 Add Service
               </Button>
+
+
+              <h6 className="mt-3">Additional Benefits:</h6>
+
+              {formData.additionalBenefits.map((benefit, index) => (
+                <InputGroup className="mb-2" key={index}>
+                  <Form.Control
+                    value={benefit}
+                    placeholder="Enter additional benefit"
+                    onChange={(e) => handleBenefitChange(index, e.target.value)}
+                  />
+                  <Button variant="danger" onClick={() => removeBenefit(index)}>
+                    X
+                  </Button>
+                </InputGroup>
+              ))}
+
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={addBenefit}
+              >
+                Add Benefit
+              </Button>
+
             </div>
           ))}
         </Form>

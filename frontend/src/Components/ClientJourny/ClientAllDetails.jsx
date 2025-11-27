@@ -37,6 +37,8 @@ const getSubscriptionBadge = (sub) => {
       break;
     case "Trader Premium":
       color = "success";
+    case "Custom":
+      color = "success";
       break;
     default:
       color = "light";
