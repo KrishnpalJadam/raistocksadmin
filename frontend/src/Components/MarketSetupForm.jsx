@@ -9,7 +9,9 @@ const MarketSetupForm = () => {
     "Breakdown",
     "Retest",
     "Confirmation",
+    "Others"
   ];
+
 
   const [formData, setFormData] = useState({
     onWhat: "",
@@ -151,7 +153,14 @@ const MarketSetupForm = () => {
     data.append("chartPatternComment", formData.chartPatternComment);
     data.append("candlePattern", formData.candlePattern);
     data.append("candlePatternComment", formData.candlePatternComment);
-    data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
+    // data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
+    const finalBreakouts = formData.breakoutEvents.map(ev => ({
+      formation: ev.formation === "Others" ? ev.customEvent : ev.formation,
+      eventComment: ev.eventComment || ""
+    }));
+
+    data.append("breakoutEvents", JSON.stringify(finalBreakouts));
+
 
     if (formData.image) data.append("image", formData.image);
 
@@ -385,6 +394,7 @@ const MarketSetupForm = () => {
                 )}
               </div>
 
+              {/* Dropdown */}
               <select
                 className="form-select mb-2"
                 value={event.formation}
@@ -399,9 +409,23 @@ const MarketSetupForm = () => {
                 ))}
               </select>
 
+              {/* CUSTOM INPUT only when Others selected */}
+              {event.formation === "Others" && (
+                <input
+                  type="text"
+                  className="form-control mb-2"
+                  placeholder="Enter your custom event"
+                  value={event.customEvent || ""}
+                  onChange={(e) =>
+                    handleBreakoutChange(index, "customEvent", e.target.value)
+                  }
 
+                />
+              )}
             </div>
           ))}
+
+
 
           <button
             type="button"
@@ -411,14 +435,14 @@ const MarketSetupForm = () => {
             ➕ Add Event
           </button>
           <textarea
-            type="text"
             className="form-control mt-4"
-            placeholder="Event Comment"
-            value={event.eventComment}
+            placeholder="Event Comment (Global)"
+            value={formData.breakoutComment}
             onChange={(e) =>
-              handleBreakoutChange(index, "eventComment", e.target.value)
+              setFormData(prev => ({ ...prev, breakoutComment: e.target.value }))
             }
           />
+
         </div>
 
         {/* Image Upload */}

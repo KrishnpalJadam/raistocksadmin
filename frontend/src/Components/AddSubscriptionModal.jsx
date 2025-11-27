@@ -131,11 +131,14 @@ const AddSubscriptionModal = ({
   //   updated[index] = value;
   //   setFormData(prev => ({ ...prev, additionalBenefits: updated }));
   // };
-  const handleBenefitChange = (pIndex, index, value) => {
-  const options = [...formData.pricingOptions];
-  options[pIndex].additionalBenefits[index] = value;
-  setFormData({ ...formData, pricingOptions: options });
+const handleBenefitChange = (pIndex, index, value) => {
+  setFormData(prev => {
+    const options = [...prev.pricingOptions];
+    options[pIndex].additionalBenefits[index] = value;
+    return { ...prev, pricingOptions: options };
+  });
 };
+
 
 
   // const addBenefit = () => {
@@ -158,15 +161,24 @@ const AddSubscriptionModal = ({
   // };
 
 const addBenefit = (pIndex) => {
-  const options = [...formData.pricingOptions];
-  options[pIndex].additionalBenefits.push("");
-  setFormData({ ...formData, pricingOptions: options });
+  setFormData(prev => {
+    const options = [...prev.pricingOptions];
+    options[pIndex].additionalBenefits = [
+      ...options[pIndex].additionalBenefits,
+      ""
+    ];
+    return { ...prev, pricingOptions: options };
+  });
 };
+
 const removeBenefit = (pIndex, index) => {
-  const options = [...formData.pricingOptions];
-  options[pIndex].additionalBenefits.splice(index, 1);
-  setFormData({ ...formData, pricingOptions: options });
+  setFormData(prev => {
+    const options = [...prev.pricingOptions];
+    options[pIndex].additionalBenefits.splice(index, 1);
+    return { ...prev, pricingOptions: options };
+  });
 };
+
 
   const removeFeature = (pIndex, fIndex) => {
     const options = [...formData.pricingOptions];
