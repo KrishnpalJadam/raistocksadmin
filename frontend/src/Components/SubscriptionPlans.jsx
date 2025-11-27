@@ -155,6 +155,8 @@ const SubscriptionPlans = () => {
     switch (planName) {
       case "Trial":
         return "bg-secondary";
+      case "Custom":
+        return "bg-secondary";
       case "Extended Trial":
         return "bg-info";
       case "Investor":
@@ -308,54 +310,53 @@ const SubscriptionPlans = () => {
                 {plan.pricingOptions?.some(
                   (option) => option.services?.length > 0
                 ) && (
-                  <>
-                    <h6 className="text-secondary mb-2">Services:</h6>
-                    <ListGroup variant="flush">
-                      {plan.pricingOptions.map((option, idx) =>
-                        option.services?.map((service, sIdx) => (
-                          <React.Fragment key={`${idx}-${sIdx}`}>
-                            <ListGroup.Item className="d-flex align-items-start p-2 border-0">
-                              <Check
-                                size={18}
-                                className="text-success me-2 flex-shrink-0"
-                              />
-                              <span className="small">
-                                {service.serviceName}
-                              </span>
-                            </ListGroup.Item>
-
-                            {service.subServices?.map((sub, subIdx) => (
-                              <ListGroup.Item
-                                key={`${idx}-${sIdx}-${subIdx}`}
-                                className="d-flex align-items-start ps-5 py-1 border-0"
-                              >
+                    <>
+                      <h6 className="text-secondary mb-2">Services:</h6>
+                      <ListGroup variant="flush">
+                        {plan.pricingOptions.map((option, idx) =>
+                          option.services?.map((service, sIdx) => (
+                            <React.Fragment key={`${idx}-${sIdx}`}>
+                              <ListGroup.Item className="d-flex align-items-start p-2 border-0">
                                 <Check
-                                  size={16}
-                                  className="text-info me-2 flex-shrink-0"
+                                  size={18}
+                                  className="text-success me-2 flex-shrink-0"
                                 />
-                                <span className="small">{sub.name}</span>
+                                <span className="small">
+                                  {service.serviceName}
+                                </span>
                               </ListGroup.Item>
-                            ))}
-                          </React.Fragment>
-                        ))
-                      )}
-                    </ListGroup>
-                  </>
-                )}
+
+                              {service.subServices?.map((sub, subIdx) => (
+                                <ListGroup.Item
+                                  key={`${idx}-${sIdx}-${subIdx}`}
+                                  className="d-flex align-items-start ps-5 py-1 border-0"
+                                >
+                                  <Check
+                                    size={16}
+                                    className="text-info me-2 flex-shrink-0"
+                                  />
+                                  <span className="small">{sub.name}</span>
+                                </ListGroup.Item>
+                              ))}
+                            </React.Fragment>
+                          ))
+                        )}
+                      </ListGroup>
+                    </>
+                  )}
               </Card.Body>
-              <Card.Footer className="bg-white border-top text-center">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedPlan(plan.planName);
-                    setModalShow(true);
-                  }}
-                >
-                  <Users className="lucide-icon me-2" /> View Clients on this
-                  Plan
-                </Button>
-              </Card.Footer>
+              {plan.planName === "Custom" && (
+                <Card.Footer className="bg-white border-top text-center">
+                  <a
+                    href={`https://www.dashboard.raistocks.com/raisctocksCustomPlan/${plan._id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary"
+                  >
+                    https://www.dashboard.raistocks.com/raisctocksCustomPlan/{plan._id}
+                  </a>
+                </Card.Footer>
+              )}
             </Card>
           </Col>
         ))}
