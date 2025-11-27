@@ -187,7 +187,7 @@ const SubscriptionPlans = () => {
   return (
     <div className="page-content">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">📑 Subscription Plans Management</h2>
+        <h2 className="mb-0">Subscription Plans Management</h2>
         <Button
           variant="success"
           onClick={() => {
