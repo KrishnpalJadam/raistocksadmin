@@ -27,6 +27,7 @@ const MarketSetupForm = () => {
     candlePattern: "Bullish Marubozu",
     candlePatternComment: "",
     breakoutEvents: [{ formation: breakoutOptions[0], eventComment: "" }],
+    globalComment:"",
     image: null,
   });
 
@@ -153,6 +154,8 @@ const MarketSetupForm = () => {
     data.append("chartPatternComment", formData.chartPatternComment);
     data.append("candlePattern", formData.candlePattern);
     data.append("candlePatternComment", formData.candlePatternComment);
+    data.append("globalComment", formData.globalComment);
+
     // data.append("breakoutEvents", JSON.stringify(formData.breakoutEvents));
     const finalBreakouts = formData.breakoutEvents.map(ev => ({
       formation: ev.formation === "Others" ? ev.customEvent : ev.formation,
@@ -437,9 +440,9 @@ const MarketSetupForm = () => {
           <textarea
             className="form-control mt-4"
             placeholder="Event Comment (Global)"
-            value={formData.breakoutComment}
+            value={formData.globalComment}
             onChange={(e) =>
-              setFormData(prev => ({ ...prev, breakoutComment: e.target.value }))
+              setFormData(prev => ({ ...prev,  globalComment: e.target.value }))
             }
           />
 
