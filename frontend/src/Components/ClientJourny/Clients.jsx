@@ -168,7 +168,7 @@ const Clients = () => {
                   <th className="d-none d-xl-table-cell">PAN</th>
                   <th>Subscription</th>
                   <th className="d-none d-md-table-cell">
-                    Validity (From - To)
+                    Expiry Date
                   </th>
                   <th>Days Left</th>
                   <th className="d-none d-md-table-cell">Plan</th>
@@ -196,7 +196,7 @@ const Clients = () => {
                       <span className="d-block text-nowrap">{client.pan}</span>
                     </td>
                     <td>{getSubscriptionBadge(client.subscription)}</td>
-                    <td className="small text-muted d-none d-md-table-cell text-nowrap">
+                    {/* <td className="small text-muted d-none d-md-table-cell text-nowrap">
                       {(() => {
                         const from = new Date(client.createdAt);
                         const to = new Date(from);
@@ -205,7 +205,21 @@ const Clients = () => {
                           "en-GB"
                         )} - ${to.toLocaleDateString("en-GB")}`;
                       })()}
-                    </td>
+                    </td> */}
+                    {/* <td className="small text-muted d-none d-md-table-cell text-nowrap">
+  {client.subscriptionEndDate
+    ? `${new Date(client.createdAt).toLocaleDateString("en-GB")} - ${new Date(
+        client.subscriptionEndDate
+      ).toLocaleDateString("en-GB")}`
+    : "—"}
+</td> */}
+<td className="small text-muted d-none d-md-table-cell text-nowrap">
+  {client.subscriptionEndDate
+    ? new Date(client.subscriptionEndDate).toLocaleDateString("en-GB")
+    : "—"}
+</td>
+
+
                     <td>{getDaysLeftBadge(client.daysLeft)}</td>
                     <td className="d-none d-md-table-cell small text-nowrap">
                       {client.planType}
