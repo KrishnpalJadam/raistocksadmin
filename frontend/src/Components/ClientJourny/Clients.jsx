@@ -26,6 +26,9 @@ const getSubscriptionBadge = (sub) => {
       color = "success";
     case "Custom":
       color = "success";
+    case "Trial Plan":
+      color = "success";
+   
       break;
     default:
       color = "light";
@@ -241,12 +244,12 @@ const Clients = () => {
                         >
                           <Eye size={16} />
                         </button>
-                        <button
+                        {/* <button
                           className="btn btn-outline-primary btn-sm crm-action-btn me-2"
                           title="Edit Client"
                         >
                           <Edit size={16} />
-                        </button>
+                        </button> */}
                         {/* <button
                           className="btn btn-outline-secondary btn-sm crm-action-btn me-2 d-none d-sm-block"
                           title="Generate Invoice"
