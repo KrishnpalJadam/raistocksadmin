@@ -37,7 +37,6 @@ const TemplateModal = ({ show, handleClose, templateData }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Placeholder for saving data (UI only)
-        console.log('Saving Email Template:', formData);
         alert(`${templateData ? 'Updated' : 'Created'} Template: ${formData.name}`);
         handleClose();
     };

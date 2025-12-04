@@ -24,7 +24,6 @@ const DataInputForm = () => {
         setStatus(null);
         
         // Placeholder for data validation and API call (UI only)
-        console.log('Submitting RAI Data:', formData);
 
         // Simulate success/error response
         setTimeout(() => {

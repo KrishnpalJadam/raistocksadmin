@@ -35,7 +35,6 @@ const CreateCouponCode = () => {
   //  const { coupons, loading } = useSelector((state) => state.coupon);
 
   const coupons1 = useSelector((state) => state);
-  console.log("Coupons1:", coupons1);
   // const loading = useSelector((state) => state.coupons.loading);
 
   const [showModal, setShowModal] = useState(false);

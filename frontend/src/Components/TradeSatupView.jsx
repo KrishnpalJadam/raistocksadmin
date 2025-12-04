@@ -75,7 +75,6 @@ const TradeSatupView = () => {
     return str.slice(0, 20) + "..";
   };
   const handleDelete = (item) => {
-    console.log("cponmsple",item)
     if (!window.confirm(`Delete ${item.module} "${item.title}"?`)) return;
 
     if (item.module === "Market Insight") {

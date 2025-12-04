@@ -355,7 +355,6 @@ useEffect(()=>{
 
 },[])
 const reply = useSelector((state)=>state?.support)
-console.log("reply",reply)
   const [localReplies, setLocalReplies] = useState([]);
   const userDetails = JSON.parse(localStorage.getItem("login_details"));
   const user = userDetails?.data;
@@ -370,14 +369,12 @@ console.log("reply",reply)
   const fullTicket = useSelector((state) =>
     state.support.tickets.find((t) => t._id === ticketData._id)
   );
-  console.log("full ticket",fullTicket)
   const replies = fullTicket?.replies || [];
     const API_URL = import.meta.env.VITE_API_URL;
 
  const userId = localStorage.getItem("user_id");
   useEffect(() => {
     if (ticketData) {
-      console.log("🎟️ Ticket data received in modal:", ticketData);
       setCurrentStatus(ticketData.status || "Open");
     } else {
       console.log("⚠️ Modal rendered but no ticket data yet");
@@ -385,8 +382,6 @@ console.log("reply",reply)
   }, [ticketData]);
   useEffect(() => {
     if (ticketData) {
-      console.log("🎟️ Ticket data received in modal:", ticketData);
-      console.log(userId); // <-- add here
       setCurrentStatus(ticketData.status || "Open");
     } else {
       console.log("⚠️ Modal rendered but no ticket data yet");

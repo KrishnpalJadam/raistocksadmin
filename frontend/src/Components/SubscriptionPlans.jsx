@@ -114,7 +114,6 @@ import {
 const SubscriptionPlans = () => {
   const dispatch = useDispatch();
   const { plans, status } = useSelector((state) => state.subscriptions);
-  console.log("Fetched Plans:", plans);
 
   const [showModal, setShowModal] = useState(false);
   const [addModal, setAddModal] = useState(false);

@@ -159,7 +159,6 @@ const AgrementTab = ({ kycData }) => {
   const [previewUrl, setPreviewUrl] = useState(kycData?.agreement_url || null);
   const [uploading, setUploading] = useState(false);
   const { clientId } = useParams();
-   console.log(kycData)
   const handleFileSelect = (file) => {
     if (!file) return;
     setSelectedFile(file);

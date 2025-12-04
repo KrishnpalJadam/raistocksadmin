@@ -12,15 +12,19 @@ import {
 import { Card } from "react-bootstrap";
 import { Line, Doughnut } from "react-chartjs-2";
 import "chart.js/auto";
-import { fetchDashboardStats } from "../slices/dashboardSlice";
+import { fetchDashboardStats ,fetchRevenueStats} from "../slices/dashboardSlice";
 import { useDispatch, useSelector } from "react-redux";  
 const Dashboard = () => {
   // KPI Data - As per CRM Requirements
 const dispatch = useDispatch();
-  const { stats, loading, error } = useSelector((state) => state.dashboard);
+  const { stats,revenue, loading, error } = useSelector((state) => state.dashboard);
+  // const { stats, revenue } = useSelector((state) => state.dashboard);
 
+  console.log(revenue)
   React.useEffect(() => {
     dispatch(fetchDashboardStats());
+    dispatch(fetchRevenueStats());
+
   }, [dispatch]);
 
 console.log("Dashboard stats:", stats, "Loading:", loading, "Error:", error);

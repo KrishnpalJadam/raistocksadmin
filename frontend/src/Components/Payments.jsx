@@ -83,7 +83,6 @@ const Payments = () => {
     dispatch(fetchAllInvoices())
   }, [])
   const invoices = useSelector((state) => state?.invoices?.invoices)
-  console.log(invoices)
   // const flattenedTransactions = useMemo(() => {
   //   let list = [];
 

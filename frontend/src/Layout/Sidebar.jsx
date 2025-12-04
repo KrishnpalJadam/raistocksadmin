@@ -1,67 +1,4 @@
-// // src/components/shared/Sidebar.jsx
-
-// import React, { useEffect} from 'react';
-// import { Home, Users, CreditCard, FileText, Mail, BarChart3, Ticket, User, TrendingUp, Settings } from 'lucide-react';
-// import { Link, useLocation } from 'react-router-dom';
-// import { fetchRolePermissions } from '../slices/rolesPermissionSlice';
-// import { useDispatch, useSelector } from 'react-redux';
-
-// const Sidebar = () => {
-//     const location = useLocation();
-//     const activePage = location.pathname.split('/')[2]; 
-//     const dispatch = useDispatch();
-//     const  userRole = localStorage.getItem("user_role") || "";
-//     useEffect(() => {
-//         dispatch(fetchRolePermissions());
-//     }, []);
-//          const roles = useSelector((state) => state?.rolesPermission?.roles || []);
-//          console.log("Roles in Sidebar:", roles);
-      
-    
-
-//     const menuItems = [
-//         { name: 'Dashboard', icon: Home, path: 'dashboard', section: 'Main' },
-//         { name: 'Clients', icon: Users, path: 'clients', section: 'Main' },
-//         { name: 'Payments & Invoices', icon: CreditCard, path: 'payments', section: 'Main' },
-//         { name: 'Subscription Plans', icon: FileText, path: 'plans', section: 'Main' },
-//         { name: 'Emails & Notifications', icon: Mail, path: 'emails', section: 'Main' },
-//         { name: 'Trade Recommendation', icon: BarChart3, path: 'rai-data', section: 'Admin' },
-//         { name: 'Trade Satup', icon: BarChart3, path: 'tradeSatup', section: 'Admin' },
-//         { name: 'Support', icon: Ticket, path: 'support', section: 'Admin' },
-//         { name: 'User Management', icon: User, path: 'user-management', section: 'Admin' },
-//         { name: 'Leads', icon: TrendingUp, path: 'leads', section: 'Admin' },
-//         { name: 'Create Coupon Code', icon: TrendingUp, path: 'CreateCouponCode', section: 'Admin' },
-//         { name: 'Add Research Report', icon: TrendingUp, path: 'addResearchReport', section: 'Admin' },
-//         { name: 'Settings', icon: Settings, path: 'settings', section: 'System' },
-//     ];
-
-//     return (
-//         <div className="sidebar d-flex flex-column">
-//             <div className="sidebar-header">
-//                 CRM Admin Panel
-//             </div>
-//             <nav className="nav flex-column mt-3">
-//                 {menuItems.map((item) => {
-//                     const Icon = item.icon;
-//                     return (
-//                         <Link
-//                             key={item.path}
-//                             to={`/admin/${item.path}`}
-//                             className={`nav-link ${activePage === item.path ? 'active' : ''}`}
-//                         >
-//                             <Icon className="lucide-icon" />
-//                             {item.name}
-//                         </Link>
-//                     );
-//                 })}
-//             </nav>
-//         </div>
-//     );
-// };
-
-// export default Sidebar;
-// src/components/shared/Sidebar.jsx
-
+ 
 import React, { useEffect } from "react";
 import {
   Home,
@@ -85,7 +22,6 @@ const Sidebar = () => {
   const dispatch = useDispatch();
 
   const userRole = localStorage.getItem("user_role") || "";
-console.log("User Role in Sidebar:", userRole);
   useEffect(() => {
     dispatch(fetchRolePermissions());
   }, []);
@@ -98,7 +34,6 @@ console.log("User Role in Sidebar:", userRole);
   const currentRole = roles.find((r) => r.role === userRole);
   const access = currentRole?.access || {};
 
-  console.log("Current Role Access:", access);
 
   // 🔥 Map menu items to backend permission keys
   const menuItems = [

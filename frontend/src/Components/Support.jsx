@@ -51,7 +51,6 @@ const Support = () => {
 
   // ✅ Handle view details modal
   const handleOpenModal = (ticket) => {
-    console.log(ticket)
     setViewingTicket(ticket);
     setShowModal(true);
   };

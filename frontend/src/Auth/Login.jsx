@@ -19,16 +19,13 @@ const MainLogin = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      console.log("Login response status:", res);
       const body = await res.json();
       if (!res.ok) {
         throw new Error(body.message || "Login failed");
       }
-      console.log("Login response body:", body);
 
       // backend returns { message, user, token }
       const { token, data } = body;
-      console.log("Login successful, received token and user data:", token, data);
 
       // Save token and user info in localStorage for other components (Settings reads login_details.token)
       localStorage.setItem("login_details", JSON.stringify({ token, data }));

@@ -19,16 +19,28 @@ export const fetchDashboardStats = createAsyncThunk(
     }
   }
 );
+export const fetchRevenueStats = createAsyncThunk(
+  "dashboard/fetchRevenue",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`${API_URL}/revenue`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch revenue stats");
+    }
+  }
+);
 
-const dashboardSlice = createSlice({
+ const dashboardSlice = createSlice({
   name: "dashboard",
   initialState: {
-    stats: {
-      totalClients: 0,
-      kycPending: 0,
-      openTickets: 0,
-      activeSubscriptions: 0,
-      totalRevenue: 0,
+    stats: {},
+    revenue: {
+      daily: [],
+      weekly: [],
+      monthly: [],
     },
     loading: false,
     error: null,
@@ -36,20 +48,23 @@ const dashboardSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // 🔄 Fetch Dashboard Stats
       .addCase(fetchDashboardStats.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchDashboardStats.fulfilled, (state, action) => {
         state.loading = false;
         state.stats = action.payload;
       })
       .addCase(fetchDashboardStats.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload;
+      })
+
+      // ⭐ NEW REVENUE REDUCER
+      .addCase(fetchRevenueStats.fulfilled, (state, action) => {
+        state.revenue = action.payload;
       });
   },
 });
+
 
 export default dashboardSlice.reducer;

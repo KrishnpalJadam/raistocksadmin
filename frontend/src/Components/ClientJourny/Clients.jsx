@@ -71,7 +71,6 @@ const Clients = () => {
   // } = useSelector((state) => state.payments);
   const { clients, loading, error } = useSelector((state) => state?.clients);
 
-  console.log("Clients data:", clients);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All Subscriptions");
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,13 +101,7 @@ const Clients = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-  console.log(
-    "Current page:",
-    currentPage,
-    "Clients displayed:",
-    paginatedClients.map((c) => c.name)
-  );
-
+ 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) setCurrentPage(pageNumber);
   };
