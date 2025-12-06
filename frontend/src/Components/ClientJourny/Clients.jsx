@@ -163,9 +163,9 @@ const Clients = () => {
                   {/* <th className="d-none d-xl-table-cell">WhatsApp</th> */}
                   <th className="d-none d-xl-table-cell">PAN</th>
                   <th>Subscription</th>
-                  <th className="d-none d-md-table-cell">
+                  {/* <th className="d-none d-md-table-cell">
                     Expiry Date
-                  </th>
+                  </th> */}
                   <th>Days Left</th>
                   <th className="d-none d-md-table-cell">Plan</th>
                   <th className="d-none d-md-table-cell">GST No.</th>
@@ -209,11 +209,11 @@ const Clients = () => {
       ).toLocaleDateString("en-GB")}`
     : "—"}
 </td> */}
-<td className="small text-muted d-none d-md-table-cell text-nowrap">
+{/* <td className="small text-muted d-none d-md-table-cell text-nowrap">
   {client.subscriptionEndDate
     ? new Date(client.subscriptionEndDate).toLocaleDateString("en-GB")
     : "—"}
-</td>
+</td> */}
 
 
                     <td>{getDaysLeftBadge(client.daysLeft)}</td>
